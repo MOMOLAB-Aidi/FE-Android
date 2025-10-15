@@ -6,7 +6,7 @@ import android.os.Handler
 import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
 import com.example.momolabfe.R
-import com.example.momolabfe.ui.auth.LoginActivity
+import com.example.momolabfe.ui.main.MainActivity
 
 class SplashActivity : AppCompatActivity() {
 
@@ -16,13 +16,8 @@ class SplashActivity : AppCompatActivity() {
 
         // 일정 시간 지연 이후 실행
         Handler(Looper.getMainLooper()).postDelayed({
-
-            val intent = Intent(this, LoginActivity::class.java)
-            startActivity(intent)
-
-            // 이전 키를 눌렀을 때 스플래시 화면으로 이동 방지
+            startActivity(Intent(this, MainActivity::class.java))
             finish()
-
-        }, 2000) // 시간 2초 이후 실행
+        }, 200) // 시간 2초 이후 실행
     }
 }

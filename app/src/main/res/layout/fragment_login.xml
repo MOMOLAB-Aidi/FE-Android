@@ -19,7 +19,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <!-- 로고 -->
         <ImageView
             android:id="@+id/logo_iv"
             android:layout_width="120dp"
@@ -30,7 +29,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="0dp" />
 
-        <!-- 로그인 버튼들 묶는 LinearLayout -->
         <LinearLayout
             android:id="@+id/frame2"
             android:layout_width="0dp"
@@ -43,7 +41,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/logo_iv">
 
-            <!-- 카카오 -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/kakao_login_btn"
                 android:layout_width="match_parent"
@@ -66,7 +63,6 @@
                 android:insetTop="0dp"
                 android:insetBottom="0dp"/>
 
-            <!-- 네이버 -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/naver_login_btn"
                 android:layout_width="match_parent"
@@ -92,7 +88,6 @@
                 android:insetTop="0dp"
                 android:insetBottom="0dp"/>
 
-            <!-- 구글 -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/google_login_btn"
                 android:layout_width="match_parent"
