@@ -7,6 +7,11 @@ android {
     namespace = "com.example.momolabfe"
     compileSdk = 36
 
+    buildFeatures {
+        viewBinding = true
+        buildConfig = true
+    }
+
     defaultConfig {
         applicationId = "com.example.momolabfe"
         minSdk = 26
@@ -40,7 +45,13 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
+    implementation(libs.androidx.activity)
+    implementation(libs.androidx.constraintlayout)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    // bottom nav
+    implementation("androidx.navigation:navigation-fragment-ktx:2.7.7")
+    implementation("androidx.navigation:navigation-ui-ktx:2.7.7")
 }
