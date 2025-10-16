@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.momolabfe.R
 import com.example.momolabfe.databinding.FragmentLoginBinding
-import com.example.momolabfe.ui.onboarding.AgreementFragment
+import com.example.momolabfe.ui.onboarding.PermissionFragment
 
 class LoginFragment : Fragment() {
 
@@ -27,7 +27,7 @@ class LoginFragment : Fragment() {
 
         binding.kakaoLoginBtn.setOnClickListener {
             parentFragmentManager.beginTransaction()
-                .replace(R.id.main_frm, AgreementFragment())
+                .replace(R.id.main_frm, PermissionFragment())
                 .addToBackStack(null)
                 .commit()
         }
