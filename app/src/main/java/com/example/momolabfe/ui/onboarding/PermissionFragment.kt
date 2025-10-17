@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.example.momolabfe.R
 import com.example.momolabfe.databinding.FragmentPermissionBinding
 
 class PermissionFragment : Fragment() {
@@ -23,5 +24,11 @@ class PermissionFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.nextBtn.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.main_frm, AgreementFragment())
+                .addToBackStack(null)
+                .commit()
+        }
     }
 }
