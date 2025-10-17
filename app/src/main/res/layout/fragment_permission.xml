@@ -342,20 +342,20 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
 
-            <TextView
-                android:id="@+id/info_tv"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:layout_marginTop="20dp"
-                android:fontFamily="@font/noto_sans_kr_regular"
-                android:text="동의하지 않아도 서비스 이용이 가능하며 \n필요한 때에 동의 받고 있어요."
-                android:textColor="@color/text_primary"
-                android:background="@color/gray"
-                android:textSize="14sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/location_cv"/>
+    <TextView
+        android:id="@+id/info_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginTop="20dp"
+        android:fontFamily="@font/noto_sans_kr_regular"
+        android:text="동의하지 않아도 서비스 이용이 가능하며 \n필요한 때에 동의 받고 있어요."
+        android:textColor="@color/text_primary"
+        android:background="@color/gray"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/location_cv"/>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/next_btn"
@@ -371,7 +371,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginStart="19dp"
         android:layout_marginEnd="19dp"
-        android:layout_marginBottom="10dp"
-        android:enabled="false"/>
+        android:layout_marginBottom="10dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
