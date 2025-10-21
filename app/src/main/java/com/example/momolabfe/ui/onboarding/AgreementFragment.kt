@@ -11,6 +11,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.momolabfe.R
 import com.example.momolabfe.databinding.FragmentAgreementBinding
+import com.example.momolabfe.ui.record.SelectRecordMethodFragment
 
 class AgreementFragment : Fragment() {
 
@@ -38,7 +39,7 @@ class AgreementFragment : Fragment() {
 
         binding.nextBtn.setOnClickListener {
             parentFragmentManager.beginTransaction()
-                .replace(R.id.main_frm, UserInfoFragment())
+                .replace(R.id.main_frm, SelectRecordMethodFragment()) // 추후 UserInfoFragment로 변경 필요
                 .addToBackStack(null)
                 .commit()
         }
