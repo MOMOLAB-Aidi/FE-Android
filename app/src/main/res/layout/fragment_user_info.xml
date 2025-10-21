@@ -57,6 +57,7 @@
         android:layout_marginTop="20dp"
         android:background="@color/transparent"
         android:hint="최대 10자까지 입력 가능합니다."
+        android:maxLength="10"
         android:includeFontPadding="false"
         android:textSize="18sp"
         app:layout_constraintStart_toStartOf="@id/name_tv"
@@ -92,6 +93,7 @@
         android:layout_marginTop="20dp"
         android:background="@color/transparent"
         android:hint="01012345678 형식으로 입력해주세요."
+        android:maxLength="11"
         android:includeFontPadding="false"
         android:textSize="18sp"
         app:layout_constraintStart_toStartOf="@id/phone_tv"
@@ -127,6 +129,7 @@
         android:layout_marginTop="20dp"
         android:background="@color/transparent"
         android:hint="생년월일 6자리"
+        android:maxLength="6"
         android:includeFontPadding="false"
         android:textSize="18sp"
         app:layout_constraintStart_toStartOf="@id/regist_tv"
@@ -152,14 +155,27 @@
         app:layout_constraintStart_toEndOf="@id/horizon_03_iv"
         app:layout_constraintTop_toBottomOf="@id/regist_tv"/>
 
-    <TextView
+    <EditText
+        android:id="@+id/gender_et"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="●●●●●●"
+        android:background="@color/transparent"
+        android:layout_marginStart="5dp"
+        android:hint="      "
+        android:maxLength="1"
         android:includeFontPadding="false"
         android:textSize="18sp"
-        app:layout_constraintBottom_toTopOf="@id/horizon_05_iv"
-        app:layout_constraintEnd_toEndOf="@id/horizon_05_iv"/>
+        app:layout_constraintStart_toEndOf="@id/horizon_04_iv"
+        app:layout_constraintTop_toTopOf="@id/regist_et"/>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        android:layout_marginStart="10dp"
+        android:src="@drawable/regist_secret_sv"
+        app:layout_constraintStart_toEndOf="@id/gender_et"
+        app:layout_constraintTop_toTopOf="@id/gender_et"/>
 
     <ImageView
         android:id="@+id/horizon_05_iv"
