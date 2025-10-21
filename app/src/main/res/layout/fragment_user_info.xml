@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".ui.onboarding.AgreementFragment">
+
+    <TextView
+        android:id="@+id/title_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="기본 정보를 입력해주세요."
+        android:textSize="28sp"
+        android:fontFamily="@font/noto_sans_kr_regular"
+        android:textColor="@color/text_primary"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="120dp"
+        android:includeFontPadding="false"/>
+
+    <TextView
+        android:id="@+id/content_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="에이디 서비스에 필요한 정보입니다."
+        android:textSize="20sp"
+        android:fontFamily="@font/noto_sans_kr_regular"
+        android:textColor="@color/text_primary"
+        app:layout_constraintTop_toBottomOf="@id/title_tv"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="15dp"
+        android:includeFontPadding="false"/>
+
+    <TextView
+        android:id="@+id/name_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:text="이름"
+        android:includeFontPadding="false"
+        android:fontFamily="@font/noto_sans_kr_regular"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/content_tv"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="@id/content_tv"/>
+
+    <EditText
+        android:id="@+id/name_et"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:background="@color/transparent"
+        android:hint="최대 10자까지 입력 가능합니다."
+        android:maxLength="10"
+        android:includeFontPadding="false"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="@id/name_tv"
+        app:layout_constraintTop_toBottomOf="@id/name_tv"/>
+
+    <ImageView
+        android:id="@+id/horizon_01_iv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_horizon_sv"
+        app:layout_constraintTop_toBottomOf="@id/name_et"
+        app:layout_constraintStart_toStartOf="@id/name_et"/>
+
+    <TextView
+        android:id="@+id/phone_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:text="휴대폰번호"
+        android:includeFontPadding="false"
+        android:fontFamily="@font/noto_sans_kr_regular"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/horizon_01_iv"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="@id/horizon_01_iv"/>
+
+    <EditText
+        android:id="@+id/phone_et"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:background="@color/transparent"
+        android:hint="01012345678 형식으로 입력해주세요."
+        android:inputType="number"
+        android:digits="0123456789"
+        android:maxLength="11"
+        android:includeFontPadding="false"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="@id/phone_tv"
+        app:layout_constraintTop_toBottomOf="@id/phone_tv"/>
+
+    <ImageView
+        android:id="@+id/horizon_02_iv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_horizon_sv"
+        app:layout_constraintTop_toBottomOf="@id/phone_et"
+        app:layout_constraintStart_toStartOf="@id/phone_et"/>
+
+    <TextView
+        android:id="@+id/regist_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:text="주민등록번호"
+        android:includeFontPadding="false"
+        android:fontFamily="@font/noto_sans_kr_regular"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/horizon_02_iv"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="@id/horizon_02_iv"/>
+
+    <EditText
+        android:id="@+id/regist_et"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:background="@color/transparent"
+        android:hint="생년월일 6자리"
+        android:inputType="number"
+        android:digits="0123456789"
+        android:maxLength="6"
+        android:includeFontPadding="false"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="@id/regist_tv"
+        app:layout_constraintTop_toBottomOf="@id/regist_tv"/>
+
+    <ImageView
+        android:id="@+id/horizon_03_iv"
+        android:layout_width="160dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_horizon_sv"
+        app:layout_constraintTop_toBottomOf="@id/regist_et"
+        app:layout_constraintStart_toStartOf="@id/regist_et"/>
+
+    <ImageView
+        android:id="@+id/horizon_04_iv"
+        android:layout_width="20dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_horizon_sv"
+        app:layout_constraintStart_toEndOf="@id/horizon_03_iv"
+        app:layout_constraintTop_toBottomOf="@id/regist_tv"/>
+
+    <EditText
+        android:id="@+id/gender_et"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/transparent"
+        android:layout_marginStart="15dp"
+        android:hint="    "
+        android:inputType="number"
+        android:digits="1234"
+        android:maxLength="1"
+        android:includeFontPadding="false"
+        android:textSize="18sp"
+        app:layout_constraintStart_toEndOf="@id/horizon_04_iv"
+        app:layout_constraintTop_toTopOf="@id/regist_et"/>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:layout_marginStart="3dp"
+        android:src="@drawable/regist_secret_sv"
+        app:layout_constraintStart_toEndOf="@id/gender_et"
+        app:layout_constraintTop_toTopOf="@id/gender_et"/>
+
+    <ImageView
+        android:id="@+id/horizon_05_iv"
+        android:layout_width="160dp"
+        android:layout_height="wrap_content"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_horizon_sv"
+        app:layout_constraintStart_toEndOf="@id/horizon_04_iv"
+        app:layout_constraintTop_toTopOf="@id/horizon_03_iv"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/next_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="다음으로"
+        android:textSize="15sp"
+        android:fontFamily="@font/noto_sans_kr_regular"
+        android:textColor="#0F0F0F"
+        app:cornerRadius="12dp"
+        android:backgroundTint="#F6F6F6"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginStart="19dp"
+        android:layout_marginEnd="19dp"
+        android:layout_marginBottom="10dp"
+        android:enabled="false"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

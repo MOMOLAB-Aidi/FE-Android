@@ -36,6 +36,13 @@ class AgreementFragment : Fragment() {
         setupSelectAllCheckbox()
         updateNextButtonState()
 
+        binding.nextBtn.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.main_frm, UserInfoFragment())
+                .addToBackStack(null)
+                .commit()
+        }
+
         listOf(
             binding.term1Checkbox,
             binding.term2Checkbox,
