@@ -78,7 +78,7 @@
                 android:textColor="@color/text_primary"
                 android:includeFontPadding="false"
                 android:textStyle="bold"
-                android:textSize="16sp"
+                android:textSize="18sp"
                 app:layout_constraintStart_toEndOf="@id/mic_iv"
                 app:layout_constraintTop_toTopOf="@id/mic_iv" />
 
@@ -139,7 +139,7 @@
                 android:textColor="@color/text_primary"
                 android:includeFontPadding="false"
                 android:textStyle="bold"
-                android:textSize="16sp"
+                android:textSize="18sp"
                 app:layout_constraintStart_toEndOf="@id/camera_iv"
                 app:layout_constraintTop_toTopOf="@id/camera_iv" />
 
@@ -200,7 +200,7 @@
                 android:textColor="@color/text_primary"
                 android:includeFontPadding="false"
                 android:textStyle="bold"
-                android:textSize="16sp"
+                android:textSize="18sp"
                 app:layout_constraintStart_toEndOf="@id/notification_iv"
                 app:layout_constraintTop_toTopOf="@id/notification_iv" />
 
@@ -261,7 +261,7 @@
                 android:textColor="@color/text_primary"
                 android:includeFontPadding="false"
                 android:textStyle="bold"
-                android:textSize="16sp"
+                android:textSize="18sp"
                 app:layout_constraintStart_toEndOf="@id/album_iv"
                 app:layout_constraintTop_toTopOf="@id/album_iv" />
 
@@ -322,7 +322,7 @@
                 android:textColor="@color/text_primary"
                 android:includeFontPadding="false"
                 android:textStyle="bold"
-                android:textSize="16sp"
+                android:textSize="18sp"
                 app:layout_constraintStart_toEndOf="@id/location_iv"
                 app:layout_constraintTop_toTopOf="@id/location_iv" />
 
@@ -341,21 +341,6 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
-
-    <TextView
-        android:id="@+id/info_tv"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:layout_marginTop="20dp"
-        android:fontFamily="@font/noto_sans_kr_regular"
-        android:text="동의하지 않아도 서비스 이용이 가능하며 \n필요한 때에 동의 받고 있어요."
-        android:textColor="@color/text_primary"
-        android:background="@color/gray"
-        android:textSize="14sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/location_cv"/>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/next_btn"
