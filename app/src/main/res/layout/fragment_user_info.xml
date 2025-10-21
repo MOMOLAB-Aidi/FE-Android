@@ -164,8 +164,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@color/transparent"
-        android:layout_marginStart="5dp"
-        android:hint="      "
+        android:layout_marginStart="15dp"
+        android:hint="    "
         android:inputType="number"
         android:digits="1234"
         android:maxLength="1"
@@ -177,8 +177,8 @@
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="3dp"
-        android:layout_marginStart="10dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginStart="3dp"
         android:src="@drawable/regist_secret_sv"
         app:layout_constraintStart_toEndOf="@id/gender_et"
         app:layout_constraintTop_toTopOf="@id/gender_et"/>
