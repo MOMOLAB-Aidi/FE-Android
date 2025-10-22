@@ -5,18 +5,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.example.momolabfe.databinding.FragmentCommonRecordInfoBinding
+import com.example.momolabfe.databinding.FragmentRecordCommonInfoBinding
 
 class CommonRecordInfoFragment : Fragment() {
 
-    private var _binding: FragmentCommonRecordInfoBinding? = null
+    private var _binding: FragmentRecordCommonInfoBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentCommonRecordInfoBinding.inflate(inflater, container, false)
+        _binding = FragmentRecordCommonInfoBinding.inflate(inflater, container, false)
         return binding.root
     }
 

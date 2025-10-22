@@ -10,22 +10,22 @@ import android.view.ViewGroup
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import com.example.momolabfe.R
-import com.example.momolabfe.databinding.FragmentUserInfoBinding
+import com.example.momolabfe.databinding.FragmentOnboardingUserInfoBinding
 import com.example.momolabfe.ui.record.SelectRecordMethodFragment
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class UserInfoFragment : Fragment() {
+class OnboardingUserInfoFragment : Fragment() {
 
-    private var _binding: FragmentUserInfoBinding? = null
+    private var _binding: FragmentOnboardingUserInfoBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentUserInfoBinding.inflate(inflater, container, false)
+        _binding = FragmentOnboardingUserInfoBinding.inflate(inflater, container, false)
         return binding.root
     }
 

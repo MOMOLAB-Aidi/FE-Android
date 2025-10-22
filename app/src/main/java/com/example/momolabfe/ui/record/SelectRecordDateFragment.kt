@@ -13,7 +13,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.momolabfe.R
-import com.example.momolabfe.databinding.FragmentSelectRecordDateBinding
+import com.example.momolabfe.databinding.FragmentRecordSelectDateBinding
 import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.CalendarMonth
 import com.kizitonwose.calendar.core.DayPosition
@@ -27,7 +27,7 @@ import java.time.format.DateTimeFormatter
 
 class SelectRecordDateFragment : Fragment() {
 
-    private var _binding: FragmentSelectRecordDateBinding? = null
+    private var _binding: FragmentRecordSelectDateBinding? = null
     private val binding get() = _binding!!
 
     private lateinit var monthCalendar: CalendarView
@@ -45,7 +45,7 @@ class SelectRecordDateFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentSelectRecordDateBinding.inflate(inflater, container, false)
+        _binding = FragmentRecordSelectDateBinding.inflate(inflater, container, false)
 
         selectedDate = today
         updateHeaderForCurrentMode()
