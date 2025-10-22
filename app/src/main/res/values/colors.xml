@@ -12,5 +12,6 @@
 
     <color name="text_primary">#0F0F0F</color>
     <color name="gray">#C2C4C6</color>
+    <color name="deactive">#B1B2B3</color>
     <color name="transparent">#00000000</color>
 </resources>
