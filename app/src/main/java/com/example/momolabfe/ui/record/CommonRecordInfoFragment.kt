@@ -1,11 +1,14 @@
 package com.example.momolabfe.ui.record
 
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CompoundButton
+import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import com.example.momolabfe.R
@@ -42,13 +45,26 @@ class CommonRecordInfoFragment : Fragment() {
         binding.urineCountEt.addTextChangedListener(afterTextChanged = watcher)
 
         // 체크박스 변경 감지
-        binding.turbidityNCheckbox.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked) binding.turbidityYCheckbox.isChecked = false
+        binding.turbidityNCheckbox.setOnCheckedChangeListener { button, isChecked ->
+            if (isChecked) {
+                binding.turbidityYCheckbox.isChecked = false
+                setCheckBoxTint(binding.turbidityYCheckbox, false)
+            }
+            setCheckBoxTint(button, isChecked)
             updateNextButtonState()
         }
-        binding.turbidityYCheckbox.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked) binding.turbidityNCheckbox.isChecked = false
+        binding.turbidityYCheckbox.setOnCheckedChangeListener { button, isChecked ->
+            if (isChecked) {
+                binding.turbidityNCheckbox.isChecked = false
+                setCheckBoxTint(binding.turbidityYCheckbox, false)
+            }
+            setCheckBoxTint(button, isChecked)
             updateNextButtonState()
+        }
+
+        // 초기 진입 시 현재 체크 상태에 맞춰 틴트 정렬
+        listOf(binding.turbidityNCheckbox, binding.turbidityYCheckbox).forEach {
+            setCheckBoxTint(it, it.isChecked)
         }
 
         updateNextButtonState()
@@ -116,6 +132,13 @@ class CommonRecordInfoFragment : Fragment() {
     // 소변 횟수: 0 ~ 50
     private fun isValidUrineFreq(s: String): Boolean =
         s.toIntOrNull()?.let { it in 0..50 } == true
+
+    private fun setCheckBoxTint(checkBox: CompoundButton, isChecked: Boolean) {
+        val color = ContextCompat.getColor(
+            requireContext(), if (isChecked) R.color.text_primary else R.color.gray
+        )
+        checkBox.buttonTintList = ColorStateList.valueOf(color)
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()
