@@ -78,18 +78,18 @@ class OnboardingUserInfoFragment : Fragment() {
         )
     }
 
+    // 이름: 공백이 아닌 1~10자
     private fun isValidName(name: String): Boolean {
-        // 공백이 아닌 1~10자
         return name.isNotBlank() && name.length <= 10
     }
 
+    // 전화번호: 숫자 11자리 (010 포함)
     private fun isValidPhone(phone: String): Boolean {
-        // 숫자 11자리 (010 포함)
         return phone.matches(Regex("^010\\d{8}$"))
     }
 
+    // 생년월일: 숫자 6자리 + 실제 달력상 유효한 날짜(YYMMDD)인지 검증
     private fun isValidBirth(birth: String): Boolean {
-        // 숫자 6자리 + 실제 달력상 유효한 날짜(YYMMDD)인지 검증
         if (!birth.matches(Regex("^\\d{6}$"))) return false
         val sdf = SimpleDateFormat("yyMMdd", Locale.KOREA).apply { isLenient = false }
         return try {
@@ -99,8 +99,8 @@ class OnboardingUserInfoFragment : Fragment() {
         }
     }
 
+    // 주민등록번호 뒷자리의 첫 숫자: 1(남자) | 2(여자) | 3(남자) | 4(여자)
     private fun isValidGenderDigit(g: String): Boolean {
-        // 주민등록번호 뒷자리의 첫 숫자: 1 | 2 | 3 | 4
         return g.matches(Regex("^[1-4]$"))
     }
 
