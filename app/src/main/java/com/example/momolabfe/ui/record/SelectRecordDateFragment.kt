@@ -145,6 +145,12 @@ class SelectRecordDateFragment : Fragment() {
             monthCalendar.findFirstVisibleMonth()?.let { requestForMonth(it) }
         }
 
+        binding.nextBtn.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.main_frm, CommonRecordInfoFragment())
+                .addToBackStack(null)
+                .commit()
+        }
     }
 
     private fun updateHeaderForCurrentMode() {
@@ -161,7 +167,7 @@ class SelectRecordDateFragment : Fragment() {
             val tv = TextView(requireContext()).apply {
                 layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
                 gravity = Gravity.CENTER
-                setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
+                setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f)
                 text = weekdayShortKorean(dow)
                 setTextColor(ContextCompat.getColor(requireContext(), R.color.text_primary))
             }
