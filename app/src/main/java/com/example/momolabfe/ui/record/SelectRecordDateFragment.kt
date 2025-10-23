@@ -37,6 +37,7 @@ class SelectRecordDateFragment : Fragment() {
 
     private var visibleMonth: YearMonth = YearMonth.now()
     private val headerFormatter = DateTimeFormatter.ofPattern(DATE_PATTERN)
+    private val sendFormatter = DateTimeFormatter.ofPattern("yyyy년 M월 d일")
 
     // 중복 호출 방지용 캐시: 마지막으로 서버에 요청했던 [시작일, 종료일]
     private var lastRequestedRange: Pair<LocalDate, LocalDate>? = null
@@ -146,8 +147,12 @@ class SelectRecordDateFragment : Fragment() {
         }
 
         binding.nextBtn.setOnClickListener {
+            val dateText = selectedDate.format(sendFormatter) // 선택한 날짜 값 전달
+            val args = Bundle().apply { putString("selected_date_text", dateText) }
+            val fragment = CommonRecordInfoFragment().apply { arguments = args }
+
             parentFragmentManager.beginTransaction()
-                .replace(R.id.main_frm, CommonRecordInfoFragment())
+                .replace(R.id.main_frm, fragment)
                 .addToBackStack(null)
                 .commit()
         }
