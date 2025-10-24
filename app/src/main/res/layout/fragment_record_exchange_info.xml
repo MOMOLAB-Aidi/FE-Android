@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="ui.record.RecordExchangeInfoFragment">
+
+    <TextView
+        android:id="@+id/title_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="120dp"
+        android:layout_marginStart="20dp"
+        android:fontFamily="@font/noto_sans_kr_regular"
+        android:includeFontPadding="false"
+        android:text="오늘 기록 - "
+        android:textColor="@color/text_primary"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/date_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:fontFamily="@font/noto_sans_kr_regular"
+        android:includeFontPadding="false"
+        android:text="2025년 10월 22일"
+        android:textColor="@color/text_primary"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@id/title_tv"
+        app:layout_constraintTop_toTopOf="@id/title_tv"/>
+
+    <TextView
+        android:id="@+id/exchange_no_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="40dp"
+        android:text="회차"
+        android:textSize="20sp"
+        android:fontFamily="@font/noto_sans_kr_regular"
+        android:textColor="@color/text_primary"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@id/title_tv"
+        app:layout_constraintTop_toBottomOf="@id/title_tv"/>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/exchange_data_cv"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="50dp"
+        android:backgroundTint="@color/edit_card"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/exchange_no_tv">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="7dp">
+
+            <TextView
+                android:id="@+id/exchange_data_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:text="1"
+                android:textSize="20sp"
+                android:textColor="@color/text_primary"
+                android:fontFamily="@font/noto_sans_kr_regular"
+                android:includeFontPadding="false" />
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <TextView
+        android:id="@+id/exchange_time_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="교환 시각"
+        android:textSize="20sp"
+        android:fontFamily="@font/noto_sans_kr_regular"
+        android:textStyle="bold"
+        android:textColor="@color/text_primary"
+        app:layout_constraintStart_toStartOf="@id/exchange_no_tv"
+        app:layout_constraintTop_toBottomOf="@id/exchange_no_tv"/>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/exchange_time_cv"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="50dp"
+        android:backgroundTint="@color/edit_card"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/exchange_time_tv">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="7dp">
+
+            <EditText
+                android:id="@+id/exchange_time_et"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_weight="1"
+                android:background="@color/transparent"
+                android:fontFamily="@font/noto_sans_kr_regular"
+                android:includeFontPadding="false"
+                android:textColor="@color/text_primary"
+                android:inputType="datetime"
+                android:textSize="20sp" />
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <TextView
+        android:id="@+id/drain_volume_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="배액량 (g)"
+        android:textSize="20sp"
+        android:fontFamily="@font/noto_sans_kr_regular"
+        android:textColor="@color/text_primary"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@id/exchange_time_tv"
+        app:layout_constraintTop_toBottomOf="@id/exchange_time_tv"/>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/drain_volume_cv"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="50dp"
+        android:backgroundTint="@color/edit_card"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/drain_volume_tv">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="7dp">
+
+            <EditText
+                android:id="@+id/drain_volume_et"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_weight="1"
+                android:textColor="@color/text_primary"
+                android:fontFamily="@font/noto_sans_kr_regular"
+                android:includeFontPadding="false"
+                android:background="@color/transparent"
+                android:inputType="number"
+                android:textSize="20sp" />
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <TextView
+        android:id="@+id/fill_volume_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="주입액 중량 (g)"
+        android:textSize="20sp"
+        android:fontFamily="@font/noto_sans_kr_regular"
+        android:textColor="@color/text_primary"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@id/drain_volume_tv"
+        app:layout_constraintTop_toBottomOf="@id/drain_volume_tv"/>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/fill_volume_cv"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="50dp"
+        android:backgroundTint="@color/edit_card"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/fill_volume_tv">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="7dp">
+
+            <EditText
+                android:id="@+id/fill_volume_et"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_weight="1"
+                android:background="@color/transparent"
+                android:fontFamily="@font/noto_sans_kr_regular"
+                android:includeFontPadding="false"
+                android:textColor="@color/text_primary"
+                android:inputType="number"
+                android:textSize="20sp" />
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <TextView
+        android:id="@+id/fill_concentration_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="주입액 농도"
+        android:textSize="20sp"
+        android:fontFamily="@font/noto_sans_kr_regular"
+        android:textColor="@color/text_primary"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@id/fill_volume_tv"
+        app:layout_constraintTop_toBottomOf="@id/fill_volume_tv"/>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/fill_concentration_cv"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="50dp"
+        android:backgroundTint="@color/edit_card"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/fill_concentration_tv">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="7dp">
+
+            <EditText
+                android:id="@+id/fill_concentration_et"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_weight="1"
+                android:background="@color/transparent"
+                android:fontFamily="@font/noto_sans_kr_regular"
+                android:includeFontPadding="false"
+                android:textColor="@color/text_primary"
+                android:inputType="numberDecimal"
+                android:textSize="20sp" />
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <TextView
+        android:id="@+id/uf_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="제수량"
+        android:textSize="20sp"
+        android:fontFamily="@font/noto_sans_kr_regular"
+        android:textColor="@color/text_primary"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@id/fill_concentration_tv"
+        app:layout_constraintTop_toBottomOf="@id/fill_concentration_tv"/>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/uf_data_cv"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="50dp"
+        android:backgroundTint="@color/edit_card"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/uf_tv">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="7dp">
+
+            <TextView
+                android:id="@+id/uf_data_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:text="-100"
+                android:textSize="20sp"
+                android:fontFamily="@font/noto_sans_kr_regular"
+                android:textColor="@color/text_primary"
+                android:includeFontPadding="false"
+                app:layout_constraintEnd_toEndOf="@id/date_tv"
+                app:layout_constraintTop_toTopOf="@id/uf_tv"/>
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <TextView
+        android:id="@+id/uf_info_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="*제수량은 배액량에서 주입액 중량을 뺀 값입니다. \n사용자가 입력한 데이터에 따라 자동으로 계산됩니다."
+        android:textSize="15sp"
+        android:fontFamily="@font/noto_sans_kr_regular"
+        android:textColor="@color/main_2"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@id/uf_tv"
+        app:layout_constraintTop_toBottomOf="@id/uf_tv"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/search_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="회차별 기록 조회하기"
+        android:textSize="15sp"
+        android:fontFamily="@font/noto_sans_kr_regular"
+        android:textColor="@color/white"
+        app:cornerRadius="12dp"
+        android:backgroundTint="@color/main_2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginStart="19dp"
+        android:layout_marginEnd="19dp"
+        android:layout_marginBottom="10dp"/>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

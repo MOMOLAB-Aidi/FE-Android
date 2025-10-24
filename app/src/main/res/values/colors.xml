@@ -7,11 +7,13 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="transparent">#00000000</color>
 
     <color name="main_1">#007E8C</color>
-
+    <color name="main_2">#306CF0</color>
     <color name="text_primary">#0F0F0F</color>
+
     <color name="gray">#C2C4C6</color>
     <color name="deactive">#B1B2B3</color>
-    <color name="transparent">#00000000</color>
+    <color name="edit_card">#F6F6F6</color>
 </resources>

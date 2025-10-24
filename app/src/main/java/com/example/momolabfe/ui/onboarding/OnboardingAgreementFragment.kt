@@ -10,19 +10,19 @@ import android.widget.CompoundButton
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.momolabfe.R
-import com.example.momolabfe.databinding.FragmentAgreementBinding
+import com.example.momolabfe.databinding.FragmentOnboardingAgreementBinding
 import com.example.momolabfe.ui.record.SelectRecordMethodFragment
 
-class AgreementFragment : Fragment() {
+class OnboardingAgreementFragment : Fragment() {
 
-    private var _binding: FragmentAgreementBinding? = null
+    private var _binding: FragmentOnboardingAgreementBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentAgreementBinding.inflate(inflater, container, false)
+        _binding = FragmentOnboardingAgreementBinding.inflate(inflater, container, false)
         return binding.root
     }
 

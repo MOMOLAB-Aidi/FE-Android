@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.onboarding.AgreementFragment">
+    tools:context=".ui.onboarding.OnboardingUserInfoFragment">
 
     <TextView
         android:id="@+id/title_tv"
@@ -44,6 +44,7 @@
         android:text="이름"
         android:includeFontPadding="false"
         android:fontFamily="@font/noto_sans_kr_regular"
+        android:textColor="@color/text_primary"
         android:textStyle="bold"
         app:layout_constraintTop_toBottomOf="@id/content_tv"
         app:layout_constraintStart_toStartOf="@id/title_tv"
@@ -80,6 +81,7 @@
         android:text="휴대폰번호"
         android:includeFontPadding="false"
         android:fontFamily="@font/noto_sans_kr_regular"
+        android:textColor="@color/text_primary"
         android:textStyle="bold"
         app:layout_constraintTop_toBottomOf="@id/horizon_01_iv"
         android:textSize="18sp"
@@ -118,6 +120,7 @@
         android:text="주민등록번호"
         android:includeFontPadding="false"
         android:fontFamily="@font/noto_sans_kr_regular"
+        android:textColor="@color/text_primary"
         android:textStyle="bold"
         app:layout_constraintTop_toBottomOf="@id/horizon_02_iv"
         android:textSize="18sp"
@@ -198,7 +201,7 @@
         android:text="다음으로"
         android:textSize="15sp"
         android:fontFamily="@font/noto_sans_kr_regular"
-        android:textColor="#0F0F0F"
+        android:textColor="@color/text_primary"
         app:cornerRadius="12dp"
         android:backgroundTint="#F6F6F6"
         app:layout_constraintStart_toStartOf="parent"

@@ -6,18 +6,18 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.momolabfe.R
-import com.example.momolabfe.databinding.FragmentPermissionBinding
+import com.example.momolabfe.databinding.FragmentOnboardingPermissionBinding
 
-class PermissionFragment : Fragment() {
+class OnboardingPermissionFragment : Fragment() {
 
-    private var _binding: FragmentPermissionBinding? = null
+    private var _binding: FragmentOnboardingPermissionBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentPermissionBinding.inflate(inflater, container, false)
+        _binding = FragmentOnboardingPermissionBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -26,7 +26,7 @@ class PermissionFragment : Fragment() {
 
         binding.nextBtn.setOnClickListener {
             parentFragmentManager.beginTransaction()
-                .replace(R.id.main_frm, AgreementFragment())
+                .replace(R.id.main_frm, OnboardingAgreementFragment())
                 .addToBackStack(null)
                 .commit()
         }

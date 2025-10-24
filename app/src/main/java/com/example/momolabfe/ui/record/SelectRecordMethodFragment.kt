@@ -6,18 +6,18 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.momolabfe.R
-import com.example.momolabfe.databinding.FragmentSelectRecordMethodBinding
+import com.example.momolabfe.databinding.FragmentRecordSelectMethodBinding
 
 class SelectRecordMethodFragment : Fragment() {
 
-    private var _binding: FragmentSelectRecordMethodBinding? = null
+    private var _binding: FragmentRecordSelectMethodBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentSelectRecordMethodBinding.inflate(inflater, container, false)
+        _binding = FragmentRecordSelectMethodBinding.inflate(inflater, container, false)
         return binding.root
     }
 

@@ -13,7 +13,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.momolabfe.R
-import com.example.momolabfe.databinding.FragmentSelectRecordDateBinding
+import com.example.momolabfe.databinding.FragmentRecordSelectDateBinding
 import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.CalendarMonth
 import com.kizitonwose.calendar.core.DayPosition
@@ -27,7 +27,7 @@ import java.time.format.DateTimeFormatter
 
 class SelectRecordDateFragment : Fragment() {
 
-    private var _binding: FragmentSelectRecordDateBinding? = null
+    private var _binding: FragmentRecordSelectDateBinding? = null
     private val binding get() = _binding!!
 
     private lateinit var monthCalendar: CalendarView
@@ -37,6 +37,7 @@ class SelectRecordDateFragment : Fragment() {
 
     private var visibleMonth: YearMonth = YearMonth.now()
     private val headerFormatter = DateTimeFormatter.ofPattern(DATE_PATTERN)
+    private val sendFormatter = DateTimeFormatter.ofPattern("yyyy년 M월 d일")
 
     // 중복 호출 방지용 캐시: 마지막으로 서버에 요청했던 [시작일, 종료일]
     private var lastRequestedRange: Pair<LocalDate, LocalDate>? = null
@@ -45,7 +46,7 @@ class SelectRecordDateFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentSelectRecordDateBinding.inflate(inflater, container, false)
+        _binding = FragmentRecordSelectDateBinding.inflate(inflater, container, false)
 
         selectedDate = today
         updateHeaderForCurrentMode()
@@ -146,8 +147,12 @@ class SelectRecordDateFragment : Fragment() {
         }
 
         binding.nextBtn.setOnClickListener {
+            val dateText = selectedDate.format(sendFormatter) // 선택한 날짜 값 전달
+            val args = Bundle().apply { putString("selected_date_text", dateText) }
+            val fragment = RecordExchangeInfoFragment().apply { arguments = args } // 추후에 CommonRecordInfoFragment로 수정 필요
+
             parentFragmentManager.beginTransaction()
-                .replace(R.id.main_frm, CommonRecordInfoFragment())
+                .replace(R.id.main_frm, fragment)
                 .addToBackStack(null)
                 .commit()
         }
