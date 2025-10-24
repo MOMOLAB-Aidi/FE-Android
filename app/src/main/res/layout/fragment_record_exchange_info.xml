@@ -295,18 +295,18 @@
             android:orientation="horizontal"
             android:padding="7dp">
 
-            <TextView
-                android:id="@+id/uf_data_tv"
-                android:layout_width="match_parent"
+            <EditText
+                android:id="@+id/uf_data_et"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:text="-100"
-                android:textSize="16sp"
+                android:layout_weight="1"
+                android:background="@color/transparent"
                 android:fontFamily="@font/noto_sans_kr_regular"
-                android:textColor="@color/text_primary"
                 android:includeFontPadding="false"
-                app:layout_constraintEnd_toEndOf="@id/date_tv"
-                app:layout_constraintTop_toTopOf="@id/uf_tv"/>
+                android:textColor="@color/text_primary"
+                android:inputType="number"
+                android:textSize="16sp" />
 
         </LinearLayout>
     </androidx.cardview.widget.CardView>
@@ -315,7 +315,7 @@
         android:id="@+id/uf_info_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="*제수량은 배액량에서 주입액 중량을 뺀 값입니다. \n사용자가 입력한 데이터에 따라 자동으로 계산됩니다."
+        android:text="*제수량은 배액량에서 주입액 중량을 뺀 값입니다."
         android:textSize="13sp"
         android:fontFamily="@font/noto_sans_kr_regular"
         android:textColor="@color/main_2"
