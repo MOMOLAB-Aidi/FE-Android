@@ -40,10 +40,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="40dp"
         android:text="회차"
         android:textSize="20sp"
         android:fontFamily="@font/noto_sans_kr_regular"
+        android:textColor="@color/text_primary"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="@id/title_tv"
         app:layout_constraintTop_toBottomOf="@id/title_tv"/>
@@ -73,6 +74,7 @@
                 android:layout_marginStart="20dp"
                 android:text="1"
                 android:textSize="20sp"
+                android:textColor="@color/text_primary"
                 android:fontFamily="@font/noto_sans_kr_regular"
                 android:includeFontPadding="false" />
 
@@ -87,6 +89,7 @@
         android:textSize="20sp"
         android:fontFamily="@font/noto_sans_kr_regular"
         android:textStyle="bold"
+        android:textColor="@color/text_primary"
         app:layout_constraintStart_toStartOf="@id/exchange_no_tv"
         app:layout_constraintTop_toBottomOf="@id/exchange_no_tv"/>
 
@@ -115,6 +118,9 @@
                 android:layout_marginStart="20dp"
                 android:layout_weight="1"
                 android:background="@color/transparent"
+                android:fontFamily="@font/noto_sans_kr_regular"
+                android:includeFontPadding="false"
+                android:textColor="@color/text_primary"
                 android:inputType="datetime"
                 android:textSize="20sp" />
 
@@ -128,6 +134,7 @@
         android:text="배액량 (g)"
         android:textSize="20sp"
         android:fontFamily="@font/noto_sans_kr_regular"
+        android:textColor="@color/text_primary"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="@id/exchange_time_tv"
         app:layout_constraintTop_toBottomOf="@id/exchange_time_tv"/>
@@ -156,6 +163,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_weight="1"
+                android:textColor="@color/text_primary"
+                android:fontFamily="@font/noto_sans_kr_regular"
+                android:includeFontPadding="false"
                 android:background="@color/transparent"
                 android:inputType="number"
                 android:textSize="20sp" />
@@ -170,6 +180,7 @@
         android:text="주입액 중량 (g)"
         android:textSize="20sp"
         android:fontFamily="@font/noto_sans_kr_regular"
+        android:textColor="@color/text_primary"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="@id/drain_volume_tv"
         app:layout_constraintTop_toBottomOf="@id/drain_volume_tv"/>
@@ -199,6 +210,9 @@
                 android:layout_marginStart="20dp"
                 android:layout_weight="1"
                 android:background="@color/transparent"
+                android:fontFamily="@font/noto_sans_kr_regular"
+                android:includeFontPadding="false"
+                android:textColor="@color/text_primary"
                 android:inputType="number"
                 android:textSize="20sp" />
 
@@ -212,6 +226,7 @@
         android:text="주입액 농도"
         android:textSize="20sp"
         android:fontFamily="@font/noto_sans_kr_regular"
+        android:textColor="@color/text_primary"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="@id/fill_volume_tv"
         app:layout_constraintTop_toBottomOf="@id/fill_volume_tv"/>
@@ -241,6 +256,9 @@
                 android:layout_marginStart="20dp"
                 android:layout_weight="1"
                 android:background="@color/transparent"
+                android:fontFamily="@font/noto_sans_kr_regular"
+                android:includeFontPadding="false"
+                android:textColor="@color/text_primary"
                 android:inputType="numberDecimal"
                 android:textSize="20sp" />
 
@@ -254,6 +272,7 @@
         android:text="제수량"
         android:textSize="20sp"
         android:fontFamily="@font/noto_sans_kr_regular"
+        android:textColor="@color/text_primary"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="@id/fill_concentration_tv"
         app:layout_constraintTop_toBottomOf="@id/fill_concentration_tv"/>
@@ -284,12 +303,25 @@
                 android:text="-100"
                 android:textSize="20sp"
                 android:fontFamily="@font/noto_sans_kr_regular"
+                android:textColor="@color/text_primary"
                 android:includeFontPadding="false"
                 app:layout_constraintEnd_toEndOf="@id/date_tv"
                 app:layout_constraintTop_toTopOf="@id/uf_tv"/>
 
         </LinearLayout>
     </androidx.cardview.widget.CardView>
+
+    <TextView
+        android:id="@+id/uf_info_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="*제수량은 배액량에서 주입액 중량을 뺀 값입니다. \n사용자가 입력한 데이터에 따라 자동으로 계산됩니다."
+        android:textSize="15sp"
+        android:fontFamily="@font/noto_sans_kr_regular"
+        android:textColor="@color/main_2"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@id/uf_tv"
+        app:layout_constraintTop_toBottomOf="@id/uf_tv"/>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/search_btn"
