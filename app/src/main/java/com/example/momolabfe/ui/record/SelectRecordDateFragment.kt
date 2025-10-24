@@ -172,7 +172,7 @@ class SelectRecordDateFragment : Fragment() {
             val tv = TextView(requireContext()).apply {
                 layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
                 gravity = Gravity.CENTER
-                setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f)
+                setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f)
                 text = weekdayShortKorean(dow)
                 setTextColor(ContextCompat.getColor(requireContext(), R.color.text_primary))
             }

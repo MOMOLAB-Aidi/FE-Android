@@ -13,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="에이디 접근권한 안내"
-        android:textSize="28sp"
+        android:textSize="25sp"
         android:fontFamily="@font/noto_sans_kr_regular"
         android:textColor="@color/text_primary"
         android:textStyle="bold"
@@ -78,7 +78,7 @@
                 android:textColor="@color/text_primary"
                 android:includeFontPadding="false"
                 android:textStyle="bold"
-                android:textSize="18sp"
+                android:textSize="15sp"
                 app:layout_constraintStart_toEndOf="@id/mic_iv"
                 app:layout_constraintTop_toTopOf="@id/mic_iv" />
 
@@ -86,11 +86,14 @@
                 android:id="@+id/mic_content_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="10dp"
                 android:layout_marginStart="6dp"
                 android:fontFamily="@font/noto_sans_kr_regular"
-                android:text="음성 문진을 위해 사용합니다. 거부 시 텍스트 입력만 가능해요."
+                android:text="음성 문진을 위해 사용합니다. \n거부 시 텍스트 입력만 가능해요."
                 android:textColor="@color/text_primary"
-                android:textSize="14sp"
+                android:textSize="13sp"
+                android:includeFontPadding="false"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/mic_title_tv"/>
@@ -139,7 +142,7 @@
                 android:textColor="@color/text_primary"
                 android:includeFontPadding="false"
                 android:textStyle="bold"
-                android:textSize="18sp"
+                android:textSize="15sp"
                 app:layout_constraintStart_toEndOf="@id/camera_iv"
                 app:layout_constraintTop_toTopOf="@id/camera_iv" />
 
@@ -151,7 +154,7 @@
                 android:fontFamily="@font/noto_sans_kr_regular"
                 android:text="신분증/문서 촬영 및 정보 추출에 사용합니다."
                 android:textColor="@color/text_primary"
-                android:textSize="14sp"
+                android:textSize="13sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/camera_title_tv"/>
@@ -200,7 +203,7 @@
                 android:textColor="@color/text_primary"
                 android:includeFontPadding="false"
                 android:textStyle="bold"
-                android:textSize="18sp"
+                android:textSize="15sp"
                 app:layout_constraintStart_toEndOf="@id/notification_iv"
                 app:layout_constraintTop_toTopOf="@id/notification_iv" />
 
@@ -208,11 +211,14 @@
                 android:id="@+id/notification_content_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="10dp"
                 android:layout_marginStart="6dp"
                 android:fontFamily="@font/noto_sans_kr_regular"
-                android:text="예약 알림-진료 안내를 받습니다. 언제든 끌 수 있어요."
+                android:text="예약 알림-진료 안내를 받습니다. \n언제든 끌 수 있어요."
                 android:textColor="@color/text_primary"
-                android:textSize="14sp"
+                android:textSize="13sp"
+                android:includeFontPadding="false"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/notification_title_tv"/>
@@ -261,7 +267,7 @@
                 android:textColor="@color/text_primary"
                 android:includeFontPadding="false"
                 android:textStyle="bold"
-                android:textSize="18sp"
+                android:textSize="15sp"
                 app:layout_constraintStart_toEndOf="@id/album_iv"
                 app:layout_constraintTop_toTopOf="@id/album_iv" />
 
@@ -273,7 +279,7 @@
                 android:fontFamily="@font/noto_sans_kr_regular"
                 android:text="문서 이미지를 업로드할 때 사용합니다."
                 android:textColor="@color/text_primary"
-                android:textSize="14sp"
+                android:textSize="13sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/album_title_tv"/>
@@ -322,7 +328,7 @@
                 android:textColor="@color/text_primary"
                 android:includeFontPadding="false"
                 android:textStyle="bold"
-                android:textSize="18sp"
+                android:textSize="15sp"
                 app:layout_constraintStart_toEndOf="@id/location_iv"
                 app:layout_constraintTop_toTopOf="@id/location_iv" />
 
@@ -334,7 +340,7 @@
                 android:fontFamily="@font/noto_sans_kr_regular"
                 android:text="근처 병원을 확인하기 위해 사용합니다."
                 android:textColor="@color/text_primary"
-                android:textSize="14sp"
+                android:textSize="13sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/location_title_tv"/>
