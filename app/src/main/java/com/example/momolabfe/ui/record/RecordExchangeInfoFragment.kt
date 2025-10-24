@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.example.momolabfe.R
 import com.example.momolabfe.databinding.FragmentRecordExchangeInfoBinding
 
 class RecordExchangeInfoFragment : Fragment() {
@@ -22,6 +23,13 @@ class RecordExchangeInfoFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        binding.searchBtn.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.main_frm, RecordExchangeListFragment())
+                .addToBackStack(null)
+                .commit()
+        }
 
     }
 }

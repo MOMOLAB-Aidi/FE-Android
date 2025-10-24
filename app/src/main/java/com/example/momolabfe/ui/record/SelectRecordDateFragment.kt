@@ -149,7 +149,7 @@ class SelectRecordDateFragment : Fragment() {
         binding.nextBtn.setOnClickListener {
             val dateText = selectedDate.format(sendFormatter) // 선택한 날짜 값 전달
             val args = Bundle().apply { putString("selected_date_text", dateText) }
-            val fragment = CommonRecordInfoFragment().apply { arguments = args }
+            val fragment = RecordExchangeInfoFragment().apply { arguments = args } // 추후에 CommonRecordInfoFragment로 수정 필요
 
             parentFragmentManager.beginTransaction()
                 .replace(R.id.main_frm, fragment)
