@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false"
-        android:paddingBottom="100dp">
+        android:paddingBottom="140dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -55,7 +55,7 @@
                 android:fontFamily="@font/noto_sans_kr_regular"
                 android:text="공통 정보 작성"
                 android:textColor="@color/text_primary"
-                android:textSize="21sp"
+                android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="@id/title_tv"
                 app:layout_constraintTop_toBottomOf="@id/title_tv" />
@@ -441,8 +441,10 @@
                         android:layout_weight="1"
                         android:hint="추가 정보를 입력하세요"
                         android:maxLines="4"
+                        android:scrollbars="vertical"
+                        android:overScrollMode="ifContentScrolls"
                         android:background="@color/transparent"
-                        android:inputType="text"
+                        android:inputType="textMultiLine"
                         android:textSize="16sp" />
 
                 </LinearLayout>
@@ -455,14 +457,10 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/white"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent">
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="85dp"
-            android:background="@color/white"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/next_btn"
