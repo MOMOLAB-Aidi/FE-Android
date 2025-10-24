@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false"
-        android:paddingBottom="100dp">
+        android:paddingBottom="140dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -28,7 +28,7 @@
                 android:includeFontPadding="false"
                 android:text="오늘 기록 - "
                 android:textColor="@color/text_primary"
-                android:textSize="28sp"
+                android:textSize="23sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -42,7 +42,7 @@
                 android:includeFontPadding="false"
                 tools:text="2025년 10월 22일"
                 android:textColor="@color/text_primary"
-                android:textSize="28sp"
+                android:textSize="23sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toEndOf="@id/title_tv"
                 app:layout_constraintTop_toTopOf="@id/title_tv" />
@@ -55,7 +55,7 @@
                 android:fontFamily="@font/noto_sans_kr_regular"
                 android:text="공통 정보 작성"
                 android:textColor="@color/text_primary"
-                android:textSize="25sp"
+                android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="@id/title_tv"
                 app:layout_constraintTop_toBottomOf="@id/title_tv" />
@@ -69,7 +69,7 @@
                 android:includeFontPadding="false"
                 android:text="체중"
                 android:textColor="@color/main_2"
-                android:textSize="20sp"
+                android:textSize="16sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="@id/common_info_tv"
                 app:layout_constraintTop_toBottomOf="@id/common_info_tv" />
@@ -115,7 +115,7 @@
                 android:textColor="@color/text_primary"
                 android:includeFontPadding="false"
                 android:text="kg"
-                android:textSize="20sp"
+                android:textSize="16sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toEndOf="@id/weight_cv"
                 app:layout_constraintTop_toTopOf="@id/weight_cv" />
@@ -129,7 +129,7 @@
                 android:includeFontPadding="false"
                 android:text="혈압"
                 android:textColor="@color/main_2"
-                android:textSize="20sp"
+                android:textSize="16sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="@id/weight_tv"
                 app:layout_constraintTop_toBottomOf="@id/weight_cv" />
@@ -173,7 +173,7 @@
                 android:textColor="@color/text_primary"
                 android:includeFontPadding="false"
                 android:text="/"
-                android:textSize="20sp"
+                android:textSize="16sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toEndOf="@id/systolic_cv"
                 app:layout_constraintTop_toTopOf="@id/systolic_cv" />
@@ -217,7 +217,7 @@
                 android:textColor="@color/text_primary"
                 android:includeFontPadding="false"
                 android:text="mmHg"
-                android:textSize="20sp"
+                android:textSize="16sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="@id/weight_unit"
                 app:layout_constraintTop_toTopOf="@id/diastolic_cv" />
@@ -231,7 +231,7 @@
                 android:includeFontPadding="false"
                 android:text="공복 혈당"
                 android:textColor="@color/main_2"
-                android:textSize="20sp"
+                android:textSize="16sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="@id/blood_pressure_tv"
                 app:layout_constraintTop_toBottomOf="@id/systolic_cv" />
@@ -277,7 +277,7 @@
                 android:textColor="@color/text_primary"
                 android:includeFontPadding="false"
                 android:text="mg/dL"
-                android:textSize="20sp"
+                android:textSize="16sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toEndOf="@id/fasting_glucose_cv"
                 app:layout_constraintTop_toTopOf="@id/fasting_glucose_cv" />
@@ -291,7 +291,7 @@
                 android:includeFontPadding="false"
                 android:text="소변 횟수"
                 android:textColor="@color/main_2"
-                android:textSize="20sp"
+                android:textSize="16sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="@id/fasting_glucose_tv"
                 app:layout_constraintTop_toBottomOf="@id/fasting_glucose_cv" />
@@ -337,7 +337,7 @@
                 android:textColor="@color/text_primary"
                 android:includeFontPadding="false"
                 android:text="회"
-                android:textSize="20sp"
+                android:textSize="16sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toEndOf="@id/urine_count_cv"
                 app:layout_constraintTop_toTopOf="@id/urine_count_cv" />
@@ -351,7 +351,7 @@
                 android:includeFontPadding="false"
                 android:text="복막액 혼탁"
                 android:textColor="@color/main_2"
-                android:textSize="20sp"
+                android:textSize="16sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="@id/urine_count_tv"
                 app:layout_constraintTop_toBottomOf="@id/urine_count_cv" />
@@ -371,7 +371,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="없음"
-                android:textSize="18sp"
+                android:textSize="16sp"
                 android:fontFamily="@font/noto_sans_kr_regular"
                 android:textColor="@color/text_primary"
                 android:includeFontPadding="false"
@@ -393,7 +393,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="있음"
-                android:textSize="18sp"
+                android:textSize="16sp"
                 android:fontFamily="@font/noto_sans_kr_regular"
                 android:textColor="@color/text_primary"
                 android:includeFontPadding="false"
@@ -409,7 +409,7 @@
                 android:includeFontPadding="false"
                 android:text="비고"
                 android:textColor="@color/main_2"
-                android:textSize="20sp"
+                android:textSize="16sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="@id/turbidity_tv"
                 app:layout_constraintTop_toBottomOf="@id/turbidity_n_checkbox" />
@@ -441,8 +441,10 @@
                         android:layout_weight="1"
                         android:hint="추가 정보를 입력하세요"
                         android:maxLines="4"
+                        android:scrollbars="vertical"
+                        android:overScrollMode="ifContentScrolls"
                         android:background="@color/transparent"
-                        android:inputType="text"
+                        android:inputType="textMultiLine"
                         android:textSize="16sp" />
 
                 </LinearLayout>
@@ -455,14 +457,10 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/white"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent">
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="85dp"
-            android:background="@color/white"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/next_btn"

@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="120dp"
         android:text="기록 방식을 선택해주세요"
-        android:textSize="28sp"
+        android:textSize="25sp"
         android:fontFamily="@font/noto_sans_kr_regular"
         android:textColor="@color/text_primary"
         android:textStyle="bold"
@@ -62,7 +62,7 @@
                 android:textColor="@color/text_primary"
                 android:includeFontPadding="false"
                 android:textStyle="bold"
-                android:textSize="18sp"
+                android:textSize="15sp"
                 app:layout_constraintStart_toEndOf="@id/manual_entry_iv"
                 app:layout_constraintTop_toTopOf="@id/manual_entry_iv" />
 
@@ -70,11 +70,12 @@
                 android:id="@+id/manual_entry_content_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
                 android:layout_marginStart="6dp"
                 android:fontFamily="@font/noto_sans_kr_regular"
                 android:text="기록일지를 직접 텍스트로 작성합니다."
                 android:textColor="@color/text_primary"
-                android:textSize="14sp"
+                android:textSize="13sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/manual_entry_title_tv"/>
@@ -123,7 +124,7 @@
                 android:textColor="@color/text_primary"
                 android:includeFontPadding="false"
                 android:textStyle="bold"
-                android:textSize="18sp"
+                android:textSize="15sp"
                 app:layout_constraintStart_toEndOf="@id/camera_scan_iv"
                 app:layout_constraintTop_toTopOf="@id/camera_scan_iv" />
 
@@ -131,11 +132,12 @@
                 android:id="@+id/camera_scan_content_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
                 android:layout_marginStart="6dp"
                 android:fontFamily="@font/noto_sans_kr_regular"
                 android:text="작성한 기록일지를 스캔합니다."
                 android:textColor="@color/text_primary"
-                android:textSize="14sp"
+                android:textSize="13sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/camera_scan_title_tv"/>
