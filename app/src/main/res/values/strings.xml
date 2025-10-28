@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">MOMOLABFE</string>
+    <string name="content_desc_captured_image">촬영된 이미지</string>
+    <string name="btn_open_camera">카메라 열기</string>
+    <string name="camera_hint">문서가 잘 보이도록 화면을 채워주세요\n그림자가 보이지 않도록 해주세요</string>
 </resources>

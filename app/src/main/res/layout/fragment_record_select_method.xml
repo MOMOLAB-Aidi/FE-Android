@@ -120,7 +120,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
                 android:fontFamily="@font/noto_sans_kr_regular"
-                android:text="이미지 스캔"
+                android:text="카메라 스캔"
                 android:textColor="@color/text_primary"
                 android:includeFontPadding="false"
                 android:textStyle="bold"
@@ -141,6 +141,68 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/camera_scan_title_tv"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/image_album_cv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:backgroundTint="@color/white"
+        app:cardCornerRadius="10dp"
+        app:cardElevation="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/camera_scan_cv"
+        app:strokeWidth="1dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="5dp">
+
+            <ImageView
+                android:id="@+id/image_album_iv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginStart="7dp"
+                android:src="@drawable/ic_album_sv"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"/>
+
+            <TextView
+                android:id="@+id/image_album_title_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:fontFamily="@font/noto_sans_kr_regular"
+                android:text="파일 가져오기"
+                android:textColor="@color/text_primary"
+                android:includeFontPadding="false"
+                android:textStyle="bold"
+                android:textSize="15sp"
+                app:layout_constraintStart_toEndOf="@id/image_album_iv"
+                app:layout_constraintTop_toTopOf="@id/image_album_iv" />
+
+            <TextView
+                android:id="@+id/image_album_content_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginStart="6dp"
+                android:fontFamily="@font/noto_sans_kr_regular"
+                android:text="갤러리에서 파일을 불러옵니다."
+                android:textColor="@color/text_primary"
+                android:textSize="13sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/image_album_title_tv"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>

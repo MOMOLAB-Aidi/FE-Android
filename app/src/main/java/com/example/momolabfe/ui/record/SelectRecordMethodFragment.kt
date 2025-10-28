@@ -1,5 +1,6 @@
 package com.example.momolabfe.ui.record
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -29,6 +30,11 @@ class SelectRecordMethodFragment : Fragment() {
                 .replace(R.id.main_frm, SelectRecordDateFragment())
                 .addToBackStack(null)
                 .commit()
+        }
+
+        binding.cameraScanCv.setOnClickListener {
+            val intent = Intent(requireContext(), CameraActivity::class.java)
+            startActivity(intent)
         }
     }
 }
