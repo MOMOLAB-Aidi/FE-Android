@@ -8,13 +8,15 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.widget.Button
 import android.widget.ImageView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.example.momolabfe.R
+import com.example.momolabfe.databinding.ActivityCameraBinding
 
 class CameraActivity : AppCompatActivity() {
+
+    private var _binding: ActivityCameraBinding? = null
+    private val binding get() = _binding!!
 
     private val REQUEST_IMAGE_CAPTURE = 101
     private val CAMERA_PERMISSION_CODE = 102
@@ -24,10 +26,12 @@ class CameraActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_camera)
 
-        imageView = findViewById(R.id.imageView)
-        openCameraButton = findViewById(R.id.openCameraButton)
+        _binding = ActivityCameraBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        imageView = binding.imageView
+        openCameraButton = binding.openCameraButton
 
         openCameraButton.setOnClickListener {
             checkCameraPermission()
