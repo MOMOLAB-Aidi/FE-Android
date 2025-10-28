@@ -1,0 +1,46 @@
+package com.example.momolabfe.data.remote.record.model
+
+import com.google.gson.annotations.SerializedName
+import java.time.LocalDate
+import java.time.LocalTime
+
+
+data class RecordResponse (
+    @SerializedName("id") val id: Int,
+    @SerializedName("record_date") val recordDate: LocalDate,
+    @SerializedName("record_dw") val recordDw: DayWeek,
+    @SerializedName("weight") val weight: Double,
+    @SerializedName("systolic") val systolic: Int,
+    @SerializedName("diastolic") val diastolic: Int,
+    @SerializedName("fasting_glucose") val fastingGlucose: Int,
+    @SerializedName("urine_count") val urineCount: Int,
+    @SerializedName("turbidity") val turbidity: Turbidity,
+    @SerializedName("notes") val notes: String?,
+    @SerializedName("total_uf") val totalUf: Int,
+    @SerializedName("exchanges") val exchanges: List<RecordExchangeResponse> = emptyList()
+)
+
+data class RecordExchangeResponse (
+    @SerializedName("id") val id: Int,
+    @SerializedName("exchange_no") val exchangeNo: Int,
+    @SerializedName("exchange_time") val exchangeTime: LocalTime,
+    @SerializedName("drain_volume") val drainVolume: Int,
+    @SerializedName("fill_volume") val fillVolume: Int,
+    @SerializedName("fill_concentration") val fillConcentration: Double,
+    @SerializedName("uf") val uf: Int
+)
+
+enum class DayWeek {
+    @SerializedName("월") MON,
+    @SerializedName("화") TUE,
+    @SerializedName("수") WED,
+    @SerializedName("목") THU,
+    @SerializedName("금") FRI,
+    @SerializedName("토") SAT,
+    @SerializedName("일") SUN
+}
+
+enum class Turbidity {
+    @SerializedName("없음") NONE,
+    @SerializedName("있음") PRESENT
+}

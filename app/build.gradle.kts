@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.hilt.android)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -72,4 +74,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.2")
 
     implementation("androidx.datastore:datastore-preferences:1.1.1")
+
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
 }
