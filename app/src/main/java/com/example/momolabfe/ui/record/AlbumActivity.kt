@@ -12,6 +12,7 @@ import android.provider.MediaStore
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
@@ -83,8 +84,9 @@ class AlbumActivity : AppCompatActivity() {
         adapter.submitList(imageUris)
 
         if (imageUris.isEmpty()) {
-            Snackbar.make(binding.root, "표시할 이미지가 없습니다.", Snackbar.LENGTH_SHORT).show()
+            binding.imageNotExistsCv.isVisible = true
         }  else {
+            binding.imageNotExistsCv.isVisible = false
             showPreview(imageUris.first())
         }
     }

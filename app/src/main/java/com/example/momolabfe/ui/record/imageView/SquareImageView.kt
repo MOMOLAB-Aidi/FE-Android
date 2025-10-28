@@ -1,4 +1,4 @@
-package com.example.momolabfe.ui.record
+package com.example.momolabfe.ui.record.imageView
 
 import android.content.Context
 import android.util.AttributeSet
