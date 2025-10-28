@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -25,13 +26,10 @@ class CameraActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_camera)
 
-        // XML 레이아웃에서 ImageView 및 Button 참조
         imageView = findViewById(R.id.imageView)
         openCameraButton = findViewById(R.id.openCameraButton)
 
-        // 카메라 버튼 클릭 이벤트 처리
         openCameraButton.setOnClickListener {
-            // 카메라 권한 확인 및 요청
             checkCameraPermission()
         }
     }
@@ -74,9 +72,6 @@ class CameraActivity : AppCompatActivity() {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // 권한이 허용되면 사진 촬영 진행
                 dispatchTakePictureIntent()
-            } else {
-                // 권한이 거부되었을 때 처리
-                // (예: 사용자에게 권한이 필요하다는 메시지 표시)
             }
         }
     }
@@ -85,8 +80,7 @@ class CameraActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            // 사진 찍기 완료 후 결과 이미지를 ImageView에 설정
-            val imageBitmap = data?.extras?.get("data") as Bitmap
+            val imageBitmap = data?.extras?.get("data") as Bitmap // 사진 찍기 완료 후 결과 이미지를 ImageView에 설정
             imageView.setImageBitmap(imageBitmap)
         }
     }

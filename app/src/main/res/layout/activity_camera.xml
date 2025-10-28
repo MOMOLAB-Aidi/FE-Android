@@ -2,16 +2,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="20dp"
+    android:paddingTop="40dp"
     android:paddingBottom="40dp">
 
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="match_parent"
         android:adjustViewBounds="true"
         android:contentDescription="촬영된 이미지"
-        android:scaleType="centerCrop"
+        android:scaleType="fitCenter"
         android:src="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
