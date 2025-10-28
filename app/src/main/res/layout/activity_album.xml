@@ -10,7 +10,7 @@
     <TextView
         android:id="@+id/cancel_tv"
         android:layout_width="wrap_content"
-        android:layout_height="48dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="80dp"
         android:layout_marginStart="16dp"
         android:gravity="center_vertical"
@@ -18,19 +18,21 @@
         android:textColor="@color/text_primary"
         android:fontFamily="@font/noto_sans_kr_regular"
         android:textSize="18sp"
+        android:includeFontPadding="false"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
 
     <TextView
         android:id="@+id/title_tv"
         android:layout_width="wrap_content"
-        android:layout_height="48dp"
+        android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="새 게시물"
+        android:text="사진 선택"
         android:textColor="@color/text_primary"
         android:fontFamily="@font/noto_sans_kr_regular"
         android:textStyle="bold"
         android:textSize="20sp"
+        android:includeFontPadding="false"
         app:layout_constraintTop_toTopOf="@id/cancel_tv"
         app:layout_constraintBottom_toBottomOf="@id/cancel_tv"
         app:layout_constraintStart_toStartOf="parent"
@@ -39,13 +41,14 @@
     <TextView
         android:id="@+id/next_tv"
         android:layout_width="wrap_content"
-        android:layout_height="48dp"
+        android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:gravity="center_vertical"
         android:text="다음"
         android:textColor="@color/main_2"
         android:fontFamily="@font/noto_sans_kr_regular"
         android:textSize="18sp"
+        android:includeFontPadding="false"
         app:layout_constraintTop_toTopOf="@id/cancel_tv"
         app:layout_constraintEnd_toEndOf="parent"/>
 
@@ -61,12 +64,12 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <ImageView
+    <com.example.momolabfe.ui.record.ZoomImageView
         android:id="@+id/preview_iv"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:adjustViewBounds="true"
-        android:scaleType="centerCrop"
+        android:scaleType="matrix"
         app:layout_constraintTop_toBottomOf="@id/divider_top"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -79,12 +82,22 @@
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:gravity="center_vertical"
-        android:text="최근 항목 ▼"
+        android:text="최근 항목"
         android:textColor="@color/text_primary"
         android:fontFamily="@font/noto_sans_kr_regular"
-        android:textSize="18sp"
+        android:textSize="16sp"
+        android:includeFontPadding="false"
         app:layout_constraintTop_toBottomOf="@id/preview_iv"
         app:layout_constraintStart_toStartOf="parent"/>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="3dp"
+        android:src="@drawable/ic_down_arrow_sv"
+        app:layout_constraintStart_toEndOf="@id/album_tv"
+        app:layout_constraintTop_toTopOf="@id/album_tv"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/photos_rv"

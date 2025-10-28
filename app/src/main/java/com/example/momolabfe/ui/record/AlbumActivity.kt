@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.pm.PackageManager
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -13,7 +14,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.Glide
-import com.example.momolabfe.R
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import com.example.momolabfe.databinding.ActivityAlbumBinding
 import com.example.momolabfe.ui.record.adapter.AlbumAdapter
 import com.google.android.material.snackbar.Snackbar
@@ -27,12 +29,12 @@ class AlbumActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         _binding = ActivityAlbumBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         adapter = AlbumAdapter { uri ->
-            // 상단 미리보기 갱신
-            Glide.with(this).load(uri).centerCrop().into(binding.previewIv)
+            showPreview(uri)
         }
         binding.photosRv.layoutManager = GridLayoutManager(this, 3)
         binding.photosRv.adapter = adapter
@@ -83,8 +85,7 @@ class AlbumActivity : AppCompatActivity() {
         if (imageUris.isEmpty()) {
             Snackbar.make(binding.root, "표시할 이미지가 없습니다.", Snackbar.LENGTH_SHORT).show()
         }  else {
-            // 최초 진입 시 첫 이미지로 미리보기 세팅
-            Glide.with(this).load(imageUris.first()).centerCrop().into(binding.previewIv)
+            showPreview(imageUris.first())
         }
     }
 
@@ -123,6 +124,35 @@ class AlbumActivity : AppCompatActivity() {
 
         return uris
     }
+
+    // 클릭 시 항상 초기화 -> 로드 -> 재배치
+    private fun showPreview(uri: Uri) {
+        val iv = binding.previewIv
+
+        Glide.with(this)
+            .load(uri)
+            .dontTransform()
+            .dontAnimate()
+            .into(object : CustomTarget<Drawable>() {
+
+                override fun onResourceReady(
+                    resource: Drawable,
+                    transition: Transition<in Drawable>?
+                ) {
+                    // 리소스 크기로 먼저 매트릭스 계산 & 적용
+                    val w = resource.intrinsicWidth
+                    val h = resource.intrinsicHeight
+                    iv.applyFitAndCenter(w, h)
+
+                    iv.setImageDrawable(resource)
+                }
+
+                override fun onLoadCleared(placeholder: Drawable?) {
+                    iv.setImageDrawable(placeholder)
+                }
+            })
+    }
+
 
     override fun onDestroy() {
         super.onDestroy()
