@@ -36,5 +36,10 @@ class SelectRecordMethodFragment : Fragment() {
             val intent = Intent(requireContext(), CameraActivity::class.java)
             startActivity(intent)
         }
+
+        binding.imageAlbumCv.setOnClickListener {
+            val intent = Intent(requireContext(), AlbumActivity::class.java)
+            startActivity(intent)
+        }
     }
 }

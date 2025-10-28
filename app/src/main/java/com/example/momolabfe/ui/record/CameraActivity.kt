@@ -30,8 +30,8 @@ class CameraActivity : AppCompatActivity() {
         _binding = ActivityCameraBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        imageView = binding.imageView
-        openCameraButton = binding.openCameraButton
+        imageView = binding.capturedImageIv
+        openCameraButton = binding.openCameraBtn
 
         openCameraButton.setOnClickListener {
             checkCameraPermission()
