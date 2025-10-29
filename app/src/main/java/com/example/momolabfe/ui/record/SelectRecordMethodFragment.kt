@@ -30,5 +30,19 @@ class SelectRecordMethodFragment : Fragment() {
                 .addToBackStack(null)
                 .commit()
         }
+
+        binding.cameraScanCv.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.main_frm, CameraFragment())
+                .addToBackStack(null)
+                .commit()
+        }
+
+        binding.imageAlbumCv.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.main_frm, AlbumFragment())
+                .addToBackStack(null)
+                .commit()
+        }
     }
 }
