@@ -6,16 +6,19 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.provider.MediaStore
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.example.momolabfe.databinding.ActivityCameraBinding
+import androidx.fragment.app.Fragment
+import com.example.momolabfe.databinding.FragmentCameraBinding
 
-class CameraActivity : AppCompatActivity() {
+class CameraFragment : Fragment() {
 
-    private var _binding: ActivityCameraBinding? = null
+    private var _binding: FragmentCameraBinding? = null
     private val binding get() = _binding!!
 
     private val REQUEST_IMAGE_CAPTURE = 101
@@ -24,12 +27,14 @@ class CameraActivity : AppCompatActivity() {
     private lateinit var imageView: ImageView
     private lateinit var openCameraButton: Button
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentCameraBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
-        _binding = ActivityCameraBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         imageView = binding.capturedImageIv
         openCameraButton = binding.openCameraBtn
 
@@ -40,52 +45,48 @@ class CameraActivity : AppCompatActivity() {
 
     // 카메라 권한 확인 및 요청
     private fun checkCameraPermission() {
-        // 카메라 권한이 부여되었는지 확인
-        if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.CAMERA
-            ) != PackageManager.PERMISSION_GRANTED
+        val ctx = requireContext()
+        if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.CAMERA)
+            != PackageManager.PERMISSION_GRANTED
         ) {
-            // 권한이 없다면 권한 요청
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.CAMERA),
-                CAMERA_PERMISSION_CODE
-            )
+            // 권한 요청 (Fragment의 requestPermissions 사용)
+            requestPermissions(arrayOf(Manifest.permission.CAMERA), CAMERA_PERMISSION_CODE)
         } else {
-            // 권한이 이미 허용되었다면 사진 촬영 진행
             dispatchTakePictureIntent()
         }
     }
 
     // 카메라로 사진 찍기
     private fun dispatchTakePictureIntent() {
-        // 카메라 앱을 실행하기 위한 Intent 생성
         val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        @Suppress("DEPRECATION")
         startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
     }
 
-    // 권한 요청 결과 처리
+    // 권한 요청 결과 처리 (Fragment 버전)
     override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
+        requestCode: Int, permissions: Array<out String>, grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == CAMERA_PERMISSION_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // 권한이 허용되면 사진 촬영 진행
                 dispatchTakePictureIntent()
             }
         }
     }
 
-    // 찍은 사진 결과 표시
+    // 찍은 사진 결과 표시 (Fragment 버전)
+    @Deprecated("구방식 유지")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            val imageBitmap = data?.extras?.get("data") as Bitmap // 사진 찍기 완료 후 결과 이미지를 ImageView에 설정
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == android.app.Activity.RESULT_OK) {
+            val imageBitmap = data?.extras?.get("data") as Bitmap
             imageView.setImageBitmap(imageBitmap)
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
