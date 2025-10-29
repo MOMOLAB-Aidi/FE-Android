@@ -10,7 +10,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false"
-        android:paddingBottom="140dp">
+        android:paddingBottom="80dp"
+        android:fillViewport="true">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -46,18 +47,21 @@
                 tools:text="2025년 10월 22일" />
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/exchange_list_rv"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
+                android:id="@+id/exchange_rv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="40dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
                 android:clipToPadding="false"
                 android:nestedScrollingEnabled="true"
                 android:overScrollMode="never"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/date_tv"
-                tools:listitem="@layout/item_record_exchange_list" />
+                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                app:spanCount="2"
+                tools:listitem="@layout/item_record_exchange_info" />
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/common_info_cv"
@@ -67,13 +71,12 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
                 android:layout_marginTop="40dp"
-                android:layout_marginBottom="80dp"
                 android:backgroundTint="@color/edit_card"
                 app:cardCornerRadius="10dp"
                 app:cardElevation="0dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/exchange_list_rv"
+                app:layout_constraintTop_toBottomOf="@id/exchange_rv"
                 app:strokeWidth="0dp">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
