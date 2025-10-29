@@ -62,10 +62,10 @@
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/common_info_cv"
                 android:layout_width="match_parent"
-                android:layout_height="350dp"
+                android:layout_height="300dp"
                 android:layout_marginHorizontal="10dp"
-                android:layout_marginStart="40dp"
-                android:layout_marginEnd="40dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
                 android:layout_marginTop="40dp"
                 android:layout_marginBottom="80dp"
                 android:backgroundTint="@color/edit_card"
@@ -78,7 +78,7 @@
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="350dp">
+                    android:layout_height="wrap_content">
 
                     <TextView
                         android:id="@+id/weight_tv"
@@ -95,18 +95,20 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
-                    <TextView
-                        android:id="@+id/weight_data_tv"
+                    <EditText
+                        android:id="@+id/weight_data_et"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="5dp"
-                        android:fontFamily="@font/noto_sans_kr_regular"
+                        android:background="@color/transparent"
+                        android:fontFamily="@font/noto_sans_kr_medium"
                         android:includeFontPadding="false"
-                        android:text="56"
+                        android:hint="56"
+                        android:inputType="numberDecimal"
                         android:textColor="@color/text_primary"
                         android:textSize="16sp"
-                        app:layout_constraintEnd_toStartOf="@id/weight_unit_tv"
-                        app:layout_constraintTop_toTopOf="@id/weight_tv" />
+                        app:layout_constraintTop_toTopOf="@id/weight_tv"
+                        app:layout_constraintEnd_toStartOf="@id/weight_unit_tv"/>
 
                     <TextView
                         android:id="@+id/weight_unit_tv"
@@ -135,18 +137,20 @@
                         app:layout_constraintStart_toStartOf="@id/weight_tv"
                         app:layout_constraintTop_toBottomOf="@id/weight_tv" />
 
-                    <TextView
-                        android:id="@+id/systolic_tv"
+                    <EditText
+                        android:id="@+id/systolic_et"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="5dp"
-                        android:fontFamily="@font/noto_sans_kr_regular"
+                        android:background="@color/transparent"
+                        android:fontFamily="@font/noto_sans_kr_medium"
                         android:includeFontPadding="false"
-                        android:text="150"
+                        android:hint="150"
+                        android:inputType="number"
                         android:textColor="@color/text_primary"
                         android:textSize="16sp"
-                        app:layout_constraintEnd_toStartOf="@id/blood_pressure_divider"
-                        app:layout_constraintTop_toTopOf="@id/blood_pressure_tv" />
+                        app:layout_constraintTop_toTopOf="@id/blood_pressure_tv"
+                        app:layout_constraintEnd_toStartOf="@id/blood_pressure_divider"/>
 
                     <TextView
                         android:id="@+id/blood_pressure_divider"
@@ -159,21 +163,23 @@
                         android:textColor="@color/text_primary"
                         android:textSize="16sp"
                         android:textStyle="bold"
-                        app:layout_constraintEnd_toStartOf="@id/diastolic_tv"
+                        app:layout_constraintEnd_toStartOf="@id/diastolic_et"
                         app:layout_constraintTop_toTopOf="@id/blood_pressure_tv" />
 
-                    <TextView
-                        android:id="@+id/diastolic_tv"
+                    <EditText
+                        android:id="@+id/diastolic_et"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="5dp"
-                        android:fontFamily="@font/noto_sans_kr_regular"
+                        android:background="@color/transparent"
+                        android:fontFamily="@font/noto_sans_kr_medium"
                         android:includeFontPadding="false"
-                        android:text="90"
+                        android:hint="90"
+                        android:inputType="number"
                         android:textColor="@color/text_primary"
                         android:textSize="16sp"
-                        app:layout_constraintEnd_toStartOf="@id/blood_pressure_unit_tv"
-                        app:layout_constraintTop_toTopOf="@id/blood_pressure_tv" />
+                        app:layout_constraintTop_toTopOf="@id/blood_pressure_tv"
+                        app:layout_constraintEnd_toStartOf="@id/blood_pressure_unit_tv"/>
 
                     <TextView
                         android:id="@+id/blood_pressure_unit_tv"
@@ -202,18 +208,20 @@
                         app:layout_constraintStart_toStartOf="@id/blood_pressure_tv"
                         app:layout_constraintTop_toBottomOf="@id/blood_pressure_tv" />
 
-                    <TextView
-                        android:id="@+id/fasting_glucose_data_tv"
+                    <EditText
+                        android:id="@+id/fasting_glucose_et"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="5dp"
-                        android:fontFamily="@font/noto_sans_kr_regular"
+                        android:background="@color/transparent"
+                        android:fontFamily="@font/noto_sans_kr_medium"
                         android:includeFontPadding="false"
-                        android:text="134"
+                        android:hint="134"
+                        android:inputType="number"
                         android:textColor="@color/text_primary"
                         android:textSize="16sp"
-                        app:layout_constraintEnd_toStartOf="@id/fasting_glucose_unit_tv"
-                        app:layout_constraintTop_toTopOf="@id/fasting_glucose_tv" />
+                        app:layout_constraintTop_toTopOf="@id/fasting_glucose_tv"
+                        app:layout_constraintEnd_toStartOf="@id/fasting_glucose_unit_tv"/>
 
                     <TextView
                         android:id="@+id/fasting_glucose_unit_tv"
@@ -242,18 +250,20 @@
                         app:layout_constraintStart_toStartOf="@id/fasting_glucose_tv"
                         app:layout_constraintTop_toBottomOf="@id/fasting_glucose_tv" />
 
-                    <TextView
-                        android:id="@+id/urine_count_data_tv"
+                    <EditText
+                        android:id="@+id/urine_count_et"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="5dp"
-                        android:fontFamily="@font/noto_sans_kr_regular"
+                        android:background="@color/transparent"
+                        android:fontFamily="@font/noto_sans_kr_medium"
                         android:includeFontPadding="false"
-                        android:text="4"
+                        android:hint="4"
+                        android:inputType="number"
                         android:textColor="@color/text_primary"
                         android:textSize="16sp"
-                        app:layout_constraintEnd_toStartOf="@id/urine_count_unit_tv"
-                        app:layout_constraintTop_toTopOf="@id/urine_count_tv" />
+                        app:layout_constraintTop_toTopOf="@id/urine_count_tv"
+                        app:layout_constraintEnd_toStartOf="@id/urine_count_unit_tv"/>
 
                     <TextView
                         android:id="@+id/urine_count_unit_tv"
@@ -344,18 +354,20 @@
                         app:layout_constraintStart_toStartOf="@id/turbidity_tv"
                         app:layout_constraintTop_toBottomOf="@id/turbidity_tv" />
 
-                    <TextView
-                        android:id="@+id/total_uf_data_tv"
+                    <EditText
+                        android:id="@+id/total_uf_et"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="5dp"
-                        android:fontFamily="@font/noto_sans_kr_regular"
+                        android:background="@color/transparent"
+                        android:fontFamily="@font/noto_sans_kr_medium"
                         android:includeFontPadding="false"
-                        android:text="600"
+                        android:hint="600"
+                        android:inputType="number"
                         android:textColor="@color/text_primary"
                         android:textSize="16sp"
-                        app:layout_constraintEnd_toStartOf="@id/total_uf_unit_tv"
-                        app:layout_constraintTop_toTopOf="@id/total_uf_tv" />
+                        app:layout_constraintTop_toTopOf="@id/total_uf_tv"
+                        app:layout_constraintEnd_toStartOf="@id/total_uf_unit_tv"/>
 
                     <TextView
                         android:id="@+id/total_uf_unit_tv"
@@ -384,6 +396,23 @@
                         app:layout_constraintStart_toStartOf="@id/total_uf_tv"
                         app:layout_constraintTop_toBottomOf="@id/total_uf_tv" />
 
+                    <EditText
+                        android:id="@+id/notes_et"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:background="@color/transparent"
+                        android:fontFamily="@font/noto_sans_kr_medium"
+                        android:includeFontPadding="false"
+                        android:hint="추가 정보를 입력하세요"
+                        android:maxLines="4"
+                        android:overScrollMode="ifContentScrolls"
+                        android:scrollbars="vertical"
+                        android:inputType="textMultiLine"
+                        android:textColor="@color/text_primary"
+                        android:textSize="16sp"
+                        app:layout_constraintTop_toTopOf="@id/notes_tv"
+                        app:layout_constraintStart_toEndOf="@id/total_uf_tv"/>
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.card.MaterialCardView>
