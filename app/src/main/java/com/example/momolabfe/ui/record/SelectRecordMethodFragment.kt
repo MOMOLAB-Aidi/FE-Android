@@ -1,6 +1,5 @@
 package com.example.momolabfe.ui.record
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -33,13 +32,17 @@ class SelectRecordMethodFragment : Fragment() {
         }
 
         binding.cameraScanCv.setOnClickListener {
-            val intent = Intent(requireContext(), CameraActivity::class.java)
-            startActivity(intent)
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.main_frm, CameraFragment())
+                .addToBackStack(null)
+                .commit()
         }
 
         binding.imageAlbumCv.setOnClickListener {
-            val intent = Intent(requireContext(), AlbumActivity::class.java)
-            startActivity(intent)
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.main_frm, AlbumFragment())
+                .addToBackStack(null)
+                .commit()
         }
     }
 }

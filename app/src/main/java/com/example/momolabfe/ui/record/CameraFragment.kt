@@ -1,31 +1,26 @@
 package com.example.momolabfe.ui.record
 
 import android.Manifest
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Bundle
-import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageView
-import androidx.core.app.ActivityCompat
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
+import com.example.momolabfe.R
 import com.example.momolabfe.databinding.FragmentCameraBinding
+import java.io.File
 
 class CameraFragment : Fragment() {
 
     private var _binding: FragmentCameraBinding? = null
     private val binding get() = _binding!!
 
-    private val REQUEST_IMAGE_CAPTURE = 101
-    private val CAMERA_PERMISSION_CODE = 102
-
-    private lateinit var imageView: ImageView
-    private lateinit var openCameraButton: Button
+    private var capturedUriString: String? = null // 촬영한 이미지를 파일로 저장하고 얻은 URI 보관
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -35,53 +30,68 @@ class CameraFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        imageView = binding.capturedImageIv
-        openCameraButton = binding.openCameraBtn
+        super.onViewCreated(view, savedInstanceState)
 
-        openCameraButton.setOnClickListener {
-            checkCameraPermission()
+        binding.openCameraBtn.setOnClickListener {
+            checkCameraPermissionAndLaunch()
+        }
+
+        binding.nextTv.setOnClickListener {
+            val next = LoadingPageFragment().apply {
+                arguments = Bundle().apply {
+                    putString("image_uri", capturedUriString)
+                }
+            }
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.main_frm, next)
+                .addToBackStack(null)
+                .commit()
         }
     }
 
-    // 카메라 권한 확인 및 요청
-    private fun checkCameraPermission() {
-        val ctx = requireContext()
-        if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.CAMERA)
-            != PackageManager.PERMISSION_GRANTED
-        ) {
-            // 권한 요청 (Fragment의 requestPermissions 사용)
-            requestPermissions(arrayOf(Manifest.permission.CAMERA), CAMERA_PERMISSION_CODE)
-        } else {
-            dispatchTakePictureIntent()
-        }
-    }
-
-    // 카메라로 사진 찍기
-    private fun dispatchTakePictureIntent() {
-        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        @Suppress("DEPRECATION")
-        startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
-    }
-
-    // 권한 요청 결과 처리 (Fragment 버전)
-    override fun onRequestPermissionsResult(
-        requestCode: Int, permissions: Array<out String>, grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == CAMERA_PERMISSION_CODE) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                dispatchTakePictureIntent()
+    // 카메라 권한 런처
+    private val cameraPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+            if (granted) {
+                takePicturePreviewLauncher.launch(null)
+            } else {
+                parentFragmentManager.popBackStack()
             }
         }
-    }
 
-    // 찍은 사진 결과 표시 (Fragment 버전)
-    @Deprecated("구방식 유지")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == android.app.Activity.RESULT_OK) {
-            val imageBitmap = data?.extras?.get("data") as Bitmap
-            imageView.setImageBitmap(imageBitmap)
+    // 카메라 미리보기 촬영 런처 (Bitmap 썸네일 반환)
+    private val takePicturePreviewLauncher =
+        registerForActivityResult(ActivityResultContracts.TakePicturePreview()) { bitmap: Bitmap? ->
+            bitmap ?: return@registerForActivityResult
+
+            binding.capturedImageIv.setImageBitmap(bitmap) // 미리보기 표시
+
+            // 캐시 폴더에 저장
+            val ctx = requireContext()
+            val dir = File(ctx.cacheDir, "images").apply { mkdirs() }
+            val file = File.createTempFile("thumb_", ".jpg", dir)
+            file.outputStream().use { out ->
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 92, out)
+            }
+
+            // FileProvider로 content:// URI 생성
+            val uri = FileProvider.getUriForFile(
+                ctx,
+                "${ctx.packageName}.fileprovider",
+                file
+            )
+            capturedUriString = uri.toString()
+            binding.nextTv.visibility = View.VISIBLE
+        }
+
+    // 카메라 권한 확인 및 요청
+    private fun checkCameraPermissionAndLaunch() {
+        val ctx = requireContext()
+        val granted = ContextCompat.checkSelfPermission(ctx, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
+        if (granted) {
+            takePicturePreviewLauncher.launch(null)
+        } else {
+            cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
         }
     }
 
