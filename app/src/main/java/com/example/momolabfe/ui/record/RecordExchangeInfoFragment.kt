@@ -33,8 +33,11 @@ class RecordExchangeInfoFragment : Fragment() {
         binding.dateTv.text = dateText
 
         binding.searchBtn.setOnClickListener {
+            val args = Bundle().apply { putString("selected_date_text", dateText) }
+            val fragment = RecordExchangeListFragment().apply { arguments = args }
+
             parentFragmentManager.beginTransaction()
-                .replace(R.id.main_frm, RecordExchangeListFragment())
+                .replace(R.id.main_frm, fragment)
                 .addToBackStack(null)
                 .commit()
         }
