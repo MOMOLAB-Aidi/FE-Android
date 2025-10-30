@@ -39,7 +39,7 @@ class OnboardingAgreementFragment : Fragment() {
 
         binding.nextBtn.setOnClickListener {
             parentFragmentManager.beginTransaction()
-                .replace(R.id.main_frm, SelectRecordMethodFragment()) // 추후 OnboardingUserInfoFragment로 변경 필요
+                .replace(R.id.main_frm, SelectRecordMethodFragment())
                 .addToBackStack(null)
                 .commit()
         }
