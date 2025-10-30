@@ -6,6 +6,7 @@
     android:minHeight="150dp"
     android:layout_marginStart="4dp"
     android:layout_marginEnd="4dp"
+    android:layout_marginBottom="4dp"
     app:cardUseCompatPadding="false"
     app:cardElevation="0dp"
     app:cardCornerRadius="10dp"
@@ -40,6 +41,18 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/exchange_no_tv"/>
+
+        <ImageView
+            android:id="@+id/add_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:src="@drawable/ic_add_sv"
+            android:visibility="gone"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>
