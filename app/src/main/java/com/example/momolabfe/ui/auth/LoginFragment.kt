@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.momolabfe.R
 import com.example.momolabfe.databinding.FragmentLoginBinding
-import com.example.momolabfe.ui.onboarding.OnboardingAgreementFragment
+import com.example.momolabfe.ui.record.SelectRecordMethodFragment
 
 class LoginFragment : Fragment() {
 
@@ -25,9 +25,9 @@ class LoginFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.kakaoLoginBtn.setOnClickListener {
+        binding.loginBtn.setOnClickListener {
             parentFragmentManager.beginTransaction()
-                .replace(R.id.main_frm, OnboardingAgreementFragment())
+                .replace(R.id.main_frm, SelectRecordMethodFragment())
                 .addToBackStack(null)
                 .commit()
         }
