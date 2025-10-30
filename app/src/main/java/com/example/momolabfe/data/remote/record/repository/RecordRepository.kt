@@ -13,21 +13,23 @@ import okio.BufferedSink
 import javax.inject.Inject
 import javax.inject.Singleton
 import com.example.momolabfe.utils.handleApiResponse
+import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 
 @Singleton
 class RecordRepository @Inject constructor (
-    private val recordService: RecordService
+    private val recordService: RecordService,
+    @ApplicationContext private val appContext: Context
 ) {
     private val ALLOWED_TYPES = setOf("image/jpeg", "image/png")
 
     // OCR로 기록 생성
-    suspend fun createRecordByOcr(context: Context, imageUri: Uri): Result<RecordResponse> =
+    suspend fun getRecordByOcr(imageUri: Uri): Result<RecordResponse> =
         runCatching {
-            val part = makeFilePartFromUri(context, imageUri, partName = "file")
-            val response = recordService.createRecordByOcr(part)
-            Log.d("CreateRecordByOcr", "response = ${response.body()}")
+            val part = makeFilePartFromUri(appContext, imageUri, partName = "file")
+            val response = recordService.getRecordByOcr(part)
+            Log.d("GetRecordByOcr", "response = ${response.body()}")
             handleApiResponse(response)
         }
 

@@ -12,5 +12,5 @@ interface RecordService {
 
     @Multipart
     @POST("/api/v1/ocr")
-    suspend fun createRecordByOcr(@Part("file") filePart: MultipartBody.Part): Response<ApiResponse<RecordResponse>>
+    suspend fun getRecordByOcr(@Part file: MultipartBody.Part): Response<ApiResponse<RecordResponse>>
 }
