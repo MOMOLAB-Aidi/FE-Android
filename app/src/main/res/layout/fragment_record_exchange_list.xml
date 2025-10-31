@@ -25,7 +25,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/noto_sans_kr_regular"
                 android:includeFontPadding="false"
-                android:text="교환일시 모아보기"
+                android:text="회차정보 모아보기"
                 android:textColor="@color/text_primary"
                 android:textSize="23sp"
                 android:textStyle="bold"

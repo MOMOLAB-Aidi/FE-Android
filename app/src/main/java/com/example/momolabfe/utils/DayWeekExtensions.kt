@@ -24,11 +24,11 @@ fun DayOfWeek.toDayWeek(): DayWeek = when (this) {
 }
 
 fun DayWeek.korean(): String = when (this) {
-    DayWeek.MON -> "월"
-    DayWeek.TUE -> "화"
-    DayWeek.WED -> "수"
-    DayWeek.THU -> "목"
-    DayWeek.FRI -> "금"
-    DayWeek.SAT -> "토"
-    DayWeek.SUN -> "일"
+    DayWeek.MON -> "(월)"
+    DayWeek.TUE -> "(화)"
+    DayWeek.WED -> "(수)"
+    DayWeek.THU -> "(목)"
+    DayWeek.FRI -> "(금)"
+    DayWeek.SAT -> "(토)"
+    DayWeek.SUN -> "(일)"
 }

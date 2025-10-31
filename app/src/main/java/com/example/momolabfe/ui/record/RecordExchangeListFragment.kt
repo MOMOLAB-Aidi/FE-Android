@@ -60,7 +60,10 @@ class RecordExchangeListFragment : Fragment() {
         val dateText = arguments?.getString("selected_date_text")
             ?: LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy년 M월 d일"))
         val dwKorean = arguments?.getString("selected_date_dw")
-            ?: weekdayShortKorean(LocalDate.now().dayOfWeek)
+            ?: "(${weekdayShortKorean(LocalDate.now().dayOfWeek)})"
+
+        binding.dateTv.text = dateText
+        binding.dwTv.text = dwKorean
 
         // 넘겨준 이미지 Uri로 OCR 호출
         val imageUri: Uri? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
