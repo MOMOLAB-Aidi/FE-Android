@@ -9,10 +9,10 @@ inline fun <reified T> handleApiResponse(response: Response<ApiResponse<T>>): T 
     val body = response.body()
 
     if (response.isSuccessful && body?.isSuccess == true) {
-        return body.result ?: throw ApiException("EMPTY_RESULT", "결과가 없습니다.")
+        return body.result ?: throw ApiException(400, "결과가 없습니다.")
     } else {
         val error = parseErrorBody(response)
-        val code = error?.code ?: response.code().toString()
+        val code = error?.code ?: response.code()
         val message = error?.message ?: "알 수 없는 오류"
 
         Log.e("ApiResponse", "API 실패: code=$code, message=$message")
@@ -25,7 +25,7 @@ inline fun handleApiResponseUnit(response: Response<ApiResponse<Unit>>) {
 
     if (!(response.isSuccessful && body?.isSuccess == true)) {
         val error = parseErrorBody(response)
-        val code = error?.code ?: response.code().toString()
+        val code = error?.code ?: response.code()
         val message = error?.message ?: "알 수 없는 오류"
 
         Log.e("ApiResponseUnit", "API 실패: code=$code, message=$message")

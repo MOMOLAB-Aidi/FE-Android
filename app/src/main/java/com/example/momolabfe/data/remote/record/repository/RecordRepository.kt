@@ -6,6 +6,7 @@ import android.provider.OpenableColumns
 import android.util.Log
 import com.example.momolabfe.data.remote.record.model.RecordResponse
 import com.example.momolabfe.data.remote.record.service.RecordService
+import com.example.momolabfe.utils.ApiException
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -13,22 +14,26 @@ import okio.BufferedSink
 import javax.inject.Inject
 import javax.inject.Singleton
 import com.example.momolabfe.utils.handleApiResponse
+import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 
 @Singleton
 class RecordRepository @Inject constructor (
-    private val recordService: RecordService
+    private val recordService: RecordService,
+    @ApplicationContext private val appContext: Context
 ) {
     private val ALLOWED_TYPES = setOf("image/jpeg", "image/png")
 
     // OCR로 기록 생성
-    suspend fun createRecordByOcr(context: Context, imageUri: Uri): Result<RecordResponse> =
+    suspend fun recordByOcr(imageUri: Uri): Result<RecordResponse> =
         runCatching {
-            val part = makeFilePartFromUri(context, imageUri, partName = "file")
-            val response = recordService.createRecordByOcr(part)
-            Log.d("CreateRecordByOcr", "response = ${response.body()}")
-            handleApiResponse(response)
+            val part = makeFilePartFromUri(appContext, imageUri, partName = "file")
+            val response = recordService.recordByOcr(part)
+            if (!response.isSuccessful) {
+                throw ApiException(response.code(), "HTTP ${response.code()}")
+            }
+            response.body() ?: throw ApiException(response.code(), "빈 본문")
         }
 
 

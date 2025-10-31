@@ -3,6 +3,7 @@ package com.example.momolabfe.ui.record
 import android.Manifest
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -20,7 +21,7 @@ class CameraFragment : Fragment() {
     private var _binding: FragmentCameraBinding? = null
     private val binding get() = _binding!!
 
-    private var capturedUriString: String? = null // 촬영한 이미지를 파일로 저장하고 얻은 URI 보관
+    private var capturedUriString: Uri? = null // 촬영한 이미지를 파일로 저장하고 얻은 URI 보관
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -37,9 +38,11 @@ class CameraFragment : Fragment() {
         }
 
         binding.nextTv.setOnClickListener {
-            val next = LoadingPageFragment().apply {
+            val uri = capturedUriString
+
+            val next = RecordExchangeListFragment().apply {
                 arguments = Bundle().apply {
-                    putString("image_uri", capturedUriString)
+                    putParcelable("image_uri", uri)
                 }
             }
             parentFragmentManager.beginTransaction()
@@ -80,7 +83,7 @@ class CameraFragment : Fragment() {
                 "${ctx.packageName}.fileprovider",
                 file
             )
-            capturedUriString = uri.toString()
+            capturedUriString = uri
             binding.nextTv.visibility = View.VISIBLE
         }
 
