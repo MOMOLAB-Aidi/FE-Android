@@ -5,8 +5,7 @@ import java.time.LocalDate
 import java.time.LocalTime
 
 
-data class RecordResponse (
-    @SerializedName("id") val id: Int,
+data class RecordRequest (
     @SerializedName("record_date") val recordDate: LocalDate,
     @SerializedName("record_dw") val recordDw: DayWeek,
     @SerializedName("weight") val weight: Double,
@@ -17,11 +16,10 @@ data class RecordResponse (
     @SerializedName("turbidity") val turbidity: Turbidity,
     @SerializedName("notes") val notes: String?,
     @SerializedName("total_uf") val totalUf: Int,
-    @SerializedName("exchanges") val exchanges: List<RecordExchangeResponse> = emptyList()
+    @SerializedName("exchanges") val exchanges: List<RecordExchangeRequest> = emptyList()
 )
 
-data class RecordExchangeResponse (
-    @SerializedName("id") val id: Int,
+data class RecordExchangeRequest (
     @SerializedName("exchange_no") val exchangeNo: Int,
     @SerializedName("exchange_time") val exchangeTime: LocalTime,
     @SerializedName("drain_volume") val drainVolume: Int,

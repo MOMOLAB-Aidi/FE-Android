@@ -4,6 +4,7 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,8 +12,18 @@ import android.widget.CompoundButton
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.example.momolabfe.R
+import com.example.momolabfe.data.remote.record.model.DayWeek
+import com.example.momolabfe.data.remote.record.model.RecordRequest
 import com.example.momolabfe.databinding.FragmentRecordCommonInfoBinding
+import com.example.momolabfe.ui.record.viewModel.RecordViewModel
+import com.example.momolabfe.utils.korean
+import com.example.momolabfe.utils.toDayWeek
+import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -21,6 +32,8 @@ class CommonRecordInfoFragment : Fragment() {
 
     private var _binding: FragmentRecordCommonInfoBinding? = null
     private val binding get() = _binding!!
+
+    private val viewModel: RecordViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,9 +50,15 @@ class CommonRecordInfoFragment : Fragment() {
         val dateText = arguments?.getString("selected_date_text")
             ?: LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy년 M월 d일"))
 
+        val dwKorean = arguments?.getString("selected_date_dw")
+            ?.let { DayWeek.valueOf(it).korean() }
+            ?: LocalDate.now().dayOfWeek.toDayWeek().korean()
+
         binding.dateTv.text = dateText
+        binding.dwTv.text = dwKorean
 
         setupUI()
+        setupObservers()
     }
 
     private fun setupUI() {
@@ -92,8 +111,7 @@ class CommonRecordInfoFragment : Fragment() {
         val fastingGlucose = binding.fastingGlucoseEt.text?.toString()?.trim().orEmpty()
         val urineCount = binding.urineCountEt.text?.toString()?.trim().orEmpty()
 
-        val turbidityChecked =
-            binding.turbidityNCheckbox.isChecked || binding.turbidityYCheckbox.isChecked
+        val turbidityChecked = binding.turbidityNCheckbox.isChecked || binding.turbidityYCheckbox.isChecked
 
         val enabled = isValidWeight(weight) &&
                 isValidBpSys(systolic) &&
@@ -146,6 +164,46 @@ class CommonRecordInfoFragment : Fragment() {
             requireContext(), if (isChecked) R.color.text_primary else R.color.gray
         )
         checkBox.buttonTintList = ColorStateList.valueOf(color)
+    }
+
+    private fun createRecordRequest(): RecordRequest {
+        val recordDate = binding.dateTv // 캘린더에서 선택한 날짜 가져오기
+        val recordDw = binding.dwTv // 캘린더에서 선택한 요일 가져오기
+        val weight = binding.weightEt
+        val systolic = binding.systolicEt
+        val diastolic = binding.diastolicEt
+        val fastingGlucose = binding.fastingGlucoseEt
+        val urineCount = binding.urineCountEt
+        val turbidity = binding.turbidityNCheckbox.isChecked || binding.turbidityYCheckbox.isChecked
+        val notes = binding.notesEt
+
+        return RecordRequest(
+            recordDate = recordDate,
+            recordDw = recordDw,
+            weight = weight,
+            systolic = systolic,
+            diastolic = diastolic,
+            fastingGlucose = fastingGlucose,
+            urineCount = urineCount,
+            turbidity = turbidity,
+            notes = notes
+        )
+    }
+
+    private fun setupObservers() {
+
+        // 성공 이벤트는 Flow 수집으로 1회성 처리
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.recordSuccess.collect {
+                    Log.d("RECORD_BY_WRITING_FRAGMENT", "공통 정보 작성이 정상적으로 완료되었습니다.")
+                }
+            }
+        }
+
+        viewModel.errorMessage.observe(viewLifecycleOwner) { errorMsg ->
+            Log.e("RECORD_BY_WRITING_FRAGMENT", errorMsg.toString())
+        }
     }
 
     override fun onDestroyView() {

@@ -8,9 +8,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
-import com.example.momolabfe.data.remote.record.model.DayWeek
 import com.example.momolabfe.data.remote.record.model.RecordResponse
 import com.example.momolabfe.data.remote.record.model.Turbidity
 import com.example.momolabfe.databinding.FragmentRecordExchangeListBinding
@@ -20,7 +19,6 @@ import com.example.momolabfe.ui.record.viewModel.RecordViewModel
 import com.example.momolabfe.utils.korean
 import com.example.momolabfe.utils.weekdayShortKorean
 import dagger.hilt.android.AndroidEntryPoint
-import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -32,7 +30,7 @@ class RecordExchangeListFragment : Fragment() {
     private var _binding: FragmentRecordExchangeListBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: RecordViewModel by viewModels()
+    private val viewModel: RecordViewModel by activityViewModels()
 
     private lateinit var exchangeInfoAdapter: ExchangeInfoAdapter
 
@@ -74,7 +72,7 @@ class RecordExchangeListFragment : Fragment() {
         }
 
         if (imageUri != null) {
-            viewModel.getRecordByOcr(imageUri)
+            viewModel.recordByOcr(imageUri)
         }
 
     }
@@ -136,7 +134,7 @@ class RecordExchangeListFragment : Fragment() {
 
     private fun setupObservers() {
         // OCR 결과 관찰 → UI 바인딩
-        viewModel.ocrResult.observe(viewLifecycleOwner) { record ->
+        viewModel.recordResult.observe(viewLifecycleOwner) { record ->
             if (record == null) {
                 // 초기 상태: 빈 값/체크 해제/리스트 비우기
                 binding.weightDataEt.setText("")
