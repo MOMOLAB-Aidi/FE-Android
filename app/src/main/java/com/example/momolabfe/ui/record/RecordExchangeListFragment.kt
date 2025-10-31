@@ -8,7 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.momolabfe.data.remote.record.model.DayWeek
 import com.example.momolabfe.data.remote.record.model.RecordResponse
@@ -29,9 +29,15 @@ class RecordExchangeListFragment : Fragment() {
     private var _binding: FragmentRecordExchangeListBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: RecordViewModel by activityViewModels()
+    private val viewModel: RecordViewModel by viewModels()
 
     private lateinit var exchangeInfoAdapter: ExchangeInfoAdapter
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        viewModel.clearOcr()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -129,6 +135,20 @@ class RecordExchangeListFragment : Fragment() {
     private fun setupObservers() {
         // OCR 결과 관찰 → UI 바인딩
         viewModel.ocrResult.observe(viewLifecycleOwner) { record ->
+            if (record == null) {
+                // 초기 상태: 빈 값/체크 해제/리스트 비우기
+                binding.weightDataEt.setText("")
+                binding.systolicEt.setText("")
+                binding.diastolicEt.setText("")
+                binding.fastingGlucoseEt.setText("")
+                binding.urineCountEt.setText("")
+                binding.totalUfEt.setText("")
+                binding.notesEt.setText("")
+                binding.turbidityNCheckbox.isChecked = false
+                binding.turbidityYCheckbox.isChecked = false
+                setupRecycler()
+                return@observe
+            }
             bindRecordToViews(record)
         }
 
@@ -139,6 +159,7 @@ class RecordExchangeListFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        viewModel.clearOcr()
         _binding = null
     }
 }
