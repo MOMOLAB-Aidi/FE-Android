@@ -17,7 +17,10 @@ import com.example.momolabfe.databinding.FragmentRecordExchangeListBinding
 import com.example.momolabfe.ui.record.adapter.ExchangeInfoAdapter
 import com.example.momolabfe.ui.record.data.RecordExchangeInfo
 import com.example.momolabfe.ui.record.viewModel.RecordViewModel
+import com.example.momolabfe.utils.korean
+import com.example.momolabfe.utils.weekdayShortKorean
 import dagger.hilt.android.AndroidEntryPoint
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -53,6 +56,15 @@ class RecordExchangeListFragment : Fragment() {
         setupRecycler()
         setupObservers()
 
+        // 전달된 날짜 문자열 꺼내기 (기본값: 오늘 날짜 포맷 or 빈 문자열)
+        val dateText = arguments?.getString("selected_date_text")
+            ?: LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy년 M월 d일"))
+        val dwKorean = arguments?.getString("selected_date_dw")
+            ?: "(${weekdayShortKorean(LocalDate.now().dayOfWeek)})"
+
+        binding.dateTv.text = dateText
+        binding.dwTv.text = dwKorean
+
         // 넘겨준 이미지 Uri로 OCR 호출
         val imageUri: Uri? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             arguments?.getParcelable("image_uri", Uri::class.java)
@@ -71,16 +83,6 @@ class RecordExchangeListFragment : Fragment() {
         binding.exchangeRv.layoutManager = GridLayoutManager(requireContext(), 2)
         exchangeInfoAdapter = ExchangeInfoAdapter(mutableListOf())
         binding.exchangeRv.adapter = exchangeInfoAdapter
-    }
-
-    private fun DayWeek.korean(): String = when (this) {
-        DayWeek.MON -> "(월)"
-        DayWeek.TUE -> "(화)"
-        DayWeek.WED -> "(수)"
-        DayWeek.THU -> "(목)"
-        DayWeek.FRI -> "(금)"
-        DayWeek.SAT -> "(토)"
-        DayWeek.SUN -> "(일)"
     }
 
     private fun bindRecordToViews(record: RecordResponse) {

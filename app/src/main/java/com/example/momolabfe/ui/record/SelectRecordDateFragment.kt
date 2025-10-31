@@ -14,6 +14,8 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.momolabfe.R
 import com.example.momolabfe.databinding.FragmentRecordSelectDateBinding
+import com.example.momolabfe.utils.toDayWeek
+import com.example.momolabfe.utils.weekdayShortKorean
 import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.CalendarMonth
 import com.kizitonwose.calendar.core.DayPosition
@@ -148,7 +150,12 @@ class SelectRecordDateFragment : Fragment() {
 
         binding.nextBtn.setOnClickListener {
             val dateText = selectedDate.format(sendFormatter) // 선택한 날짜 값 전달
-            val args = Bundle().apply { putString("selected_date_text", dateText) }
+            val dwKorean = selectedDate.dayOfWeek.toDayWeek().name
+
+            val args = Bundle().apply {
+                putString("selected_date_text", dateText)
+                putString("selected_date_dw", dwKorean)
+            }
             val fragment = RecordExchangeInfoFragment().apply { arguments = args } // 추후에 CommonRecordInfoFragment로 수정 필요
 
             parentFragmentManager.beginTransaction()
@@ -178,16 +185,6 @@ class SelectRecordDateFragment : Fragment() {
             }
             container.addView(tv)
         }
-    }
-
-    private fun weekdayShortKorean(dow: DayOfWeek): String = when (dow) {
-        DayOfWeek.SUNDAY -> "일"
-        DayOfWeek.MONDAY -> "월"
-        DayOfWeek.TUESDAY -> "화"
-        DayOfWeek.WEDNESDAY -> "수"
-        DayOfWeek.THURSDAY -> "목"
-        DayOfWeek.FRIDAY -> "금"
-        DayOfWeek.SATURDAY -> "토"
     }
 
     // 월 범위 요청 함수 (캘린더 조회용)
