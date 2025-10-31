@@ -23,7 +23,9 @@ import com.bumptech.glide.request.transition.Transition
 import com.example.momolabfe.R
 import com.example.momolabfe.databinding.FragmentAlbumBinding
 import com.example.momolabfe.ui.record.adapter.AlbumAdapter
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class AlbumFragment : Fragment() {
 
     private var _binding: FragmentAlbumBinding? = null
@@ -57,9 +59,9 @@ class AlbumFragment : Fragment() {
         binding.nextTv.setOnClickListener {
             val uri = selectedUri
 
-            val next = LoadingPageFragment().apply {
+            val next = RecordExchangeListFragment().apply {
                 arguments = Bundle().apply {
-                    putString("image_uri", uri.toString())
+                    putParcelable("image_uri", uri)
                 }
             }
             parentFragmentManager.beginTransaction()

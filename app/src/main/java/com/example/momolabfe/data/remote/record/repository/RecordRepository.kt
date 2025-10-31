@@ -6,6 +6,7 @@ import android.provider.OpenableColumns
 import android.util.Log
 import com.example.momolabfe.data.remote.record.model.RecordResponse
 import com.example.momolabfe.data.remote.record.service.RecordService
+import com.example.momolabfe.utils.ApiException
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -29,8 +30,10 @@ class RecordRepository @Inject constructor (
         runCatching {
             val part = makeFilePartFromUri(appContext, imageUri, partName = "file")
             val response = recordService.getRecordByOcr(part)
-            Log.d("GetRecordByOcr", "response = ${response.body()}")
-            handleApiResponse(response)
+            if (!response.isSuccessful) {
+                throw ApiException(response.code(), "HTTP ${response.code()}")
+            }
+            response.body() ?: throw ApiException(response.code(), "빈 본문")
         }
 
 
