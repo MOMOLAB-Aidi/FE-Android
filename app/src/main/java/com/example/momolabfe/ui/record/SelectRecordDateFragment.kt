@@ -13,8 +13,9 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.momolabfe.R
-import com.example.momolabfe.data.remote.record.model.DayWeek
 import com.example.momolabfe.databinding.FragmentRecordSelectDateBinding
+import com.example.momolabfe.utils.toDayWeek
+import com.example.momolabfe.utils.weekdayShortKorean
 import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.CalendarMonth
 import com.kizitonwose.calendar.core.DayPosition
@@ -184,26 +185,6 @@ class SelectRecordDateFragment : Fragment() {
             }
             container.addView(tv)
         }
-    }
-
-    private fun weekdayShortKorean(dow: DayOfWeek): String = when (dow) {
-        DayOfWeek.SUNDAY -> "일"
-        DayOfWeek.MONDAY -> "월"
-        DayOfWeek.TUESDAY -> "화"
-        DayOfWeek.WEDNESDAY -> "수"
-        DayOfWeek.THURSDAY -> "목"
-        DayOfWeek.FRIDAY -> "금"
-        DayOfWeek.SATURDAY -> "토"
-    }
-
-    private fun DayOfWeek.toDayWeek(): DayWeek = when (this) {
-        DayOfWeek.MONDAY -> DayWeek.MON
-        DayOfWeek.TUESDAY -> DayWeek.TUE
-        DayOfWeek.WEDNESDAY -> DayWeek.WED
-        DayOfWeek.THURSDAY -> DayWeek.THU
-        DayOfWeek.FRIDAY -> DayWeek.FRI
-        DayOfWeek.SATURDAY -> DayWeek.SAT
-        DayOfWeek.SUNDAY -> DayWeek.SUN
     }
 
     // 월 범위 요청 함수 (캘린더 조회용)

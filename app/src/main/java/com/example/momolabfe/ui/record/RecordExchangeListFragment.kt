@@ -17,6 +17,8 @@ import com.example.momolabfe.databinding.FragmentRecordExchangeListBinding
 import com.example.momolabfe.ui.record.adapter.ExchangeInfoAdapter
 import com.example.momolabfe.ui.record.data.RecordExchangeInfo
 import com.example.momolabfe.ui.record.viewModel.RecordViewModel
+import com.example.momolabfe.utils.korean
+import com.example.momolabfe.utils.weekdayShortKorean
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -78,26 +80,6 @@ class RecordExchangeListFragment : Fragment() {
         binding.exchangeRv.layoutManager = GridLayoutManager(requireContext(), 2)
         exchangeInfoAdapter = ExchangeInfoAdapter(mutableListOf())
         binding.exchangeRv.adapter = exchangeInfoAdapter
-    }
-
-    private fun DayWeek.korean(): String = when (this) {
-        DayWeek.MON -> "(월)"
-        DayWeek.TUE -> "(화)"
-        DayWeek.WED -> "(수)"
-        DayWeek.THU -> "(목)"
-        DayWeek.FRI -> "(금)"
-        DayWeek.SAT -> "(토)"
-        DayWeek.SUN -> "(일)"
-    }
-
-    private fun weekdayShortKorean(dow: DayOfWeek): String = when (dow) {
-        DayOfWeek.SUNDAY -> "일"
-        DayOfWeek.MONDAY -> "월"
-        DayOfWeek.TUESDAY -> "화"
-        DayOfWeek.WEDNESDAY -> "수"
-        DayOfWeek.THURSDAY -> "목"
-        DayOfWeek.FRIDAY -> "금"
-        DayOfWeek.SATURDAY -> "토"
     }
 
     private fun bindRecordToViews(record: RecordResponse) {

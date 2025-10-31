@@ -8,6 +8,8 @@ import androidx.fragment.app.Fragment
 import com.example.momolabfe.R
 import com.example.momolabfe.data.remote.record.model.DayWeek
 import com.example.momolabfe.databinding.FragmentRecordExchangeInfoBinding
+import com.example.momolabfe.utils.korean
+import com.example.momolabfe.utils.toDayWeek
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -50,26 +52,5 @@ class RecordExchangeInfoFragment : Fragment() {
                 .addToBackStack(null)
                 .commit()
         }
-    }
-
-    private fun DayWeek.korean(): String = when (this) {
-        DayWeek.MON -> "(월)"
-        DayWeek.TUE -> "(화)"
-        DayWeek.WED -> "(수)"
-        DayWeek.THU -> "(목)"
-        DayWeek.FRI -> "(금)"
-        DayWeek.SAT -> "(토)"
-        DayWeek.SUN -> "(일)"
-    }
-
-    // DayOfWeek → DayWeek 매핑
-    private fun DayOfWeek.toDayWeek(): DayWeek = when (this) {
-        DayOfWeek.MONDAY    -> DayWeek.MON
-        DayOfWeek.TUESDAY   -> DayWeek.TUE
-        DayOfWeek.WEDNESDAY -> DayWeek.WED
-        DayOfWeek.THURSDAY  -> DayWeek.THU
-        DayOfWeek.FRIDAY    -> DayWeek.FRI
-        DayOfWeek.SATURDAY  -> DayWeek.SAT
-        DayOfWeek.SUNDAY    -> DayWeek.SUN
     }
 }
