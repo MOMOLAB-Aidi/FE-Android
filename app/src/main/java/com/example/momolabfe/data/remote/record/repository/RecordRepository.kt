@@ -26,10 +26,10 @@ class RecordRepository @Inject constructor (
     private val ALLOWED_TYPES = setOf("image/jpeg", "image/png")
 
     // OCR로 기록 생성
-    suspend fun getRecordByOcr(imageUri: Uri): Result<RecordResponse> =
+    suspend fun recordByOcr(imageUri: Uri): Result<RecordResponse> =
         runCatching {
             val part = makeFilePartFromUri(appContext, imageUri, partName = "file")
-            val response = recordService.getRecordByOcr(part)
+            val response = recordService.recordByOcr(part)
             if (!response.isSuccessful) {
                 throw ApiException(response.code(), "HTTP ${response.code()}")
             }

@@ -25,7 +25,7 @@ class RecordViewModel @Inject constructor(
     // ocr 텍스트 추출
     fun getRecordByOcr(imageUri: Uri) {
         viewModelScope.launch {
-            val result = recordRepository.getRecordByOcr(imageUri)
+            val result = recordRepository.recordByOcr(imageUri)
 
             result.onSuccess {
                 _ocrResult.value = it

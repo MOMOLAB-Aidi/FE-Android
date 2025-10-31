@@ -3,10 +3,10 @@ package com.example.momolabfe.ui.record
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
@@ -67,18 +67,6 @@ class RecordExchangeListFragment : Fragment() {
         binding.exchangeRv.adapter = exchangeInfoAdapter
     }
 
-    private fun setupObservers() {
-        // OCR 결과 관찰 → UI 바인딩
-        viewModel.ocrResult.observe(viewLifecycleOwner) { record ->
-            bindRecordToViews(record)
-        }
-
-        // 에러 메시지 처리
-        viewModel.errorMessage.observe(viewLifecycleOwner) { msg ->
-            msg?.let { Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show() }
-        }
-    }
-
     private fun DayWeek.korean(): String = when (this) {
         DayWeek.MON -> "(월)"
         DayWeek.TUE -> "(화)"
@@ -136,6 +124,17 @@ class RecordExchangeListFragment : Fragment() {
         d == null -> ""
         d % 1.0 == 0.0 -> d.toInt().toString()
         else -> d.toString()
+    }
+
+    private fun setupObservers() {
+        // OCR 결과 관찰 → UI 바인딩
+        viewModel.ocrResult.observe(viewLifecycleOwner) { record ->
+            bindRecordToViews(record)
+        }
+
+        viewModel.errorMessage.observe(viewLifecycleOwner) { msg ->
+            msg?.let { Log.d("RECORD_BY_OCR", it) }
+        }
     }
 
     override fun onDestroyView() {
