@@ -170,7 +170,7 @@ class SelectRecordDateFragment : Fragment() {
     }
 
     private fun updateHeaderForCurrentMode() {
-        binding.homeSelectedDateTv.text = visibleMonth.format(headerFormatter)
+        binding.selectedDateTv.text = visibleMonth.format(headerFormatter)
     }
 
     // 요일 텍스트 설정 (일~토)
