@@ -16,6 +16,7 @@ import com.example.momolabfe.R
 import com.example.momolabfe.databinding.FragmentRecordSelectDateBinding
 import com.example.momolabfe.utils.toDayWeek
 import com.example.momolabfe.utils.weekdayShortKorean
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.CalendarMonth
 import com.kizitonwose.calendar.core.DayPosition
@@ -70,6 +71,9 @@ class SelectRecordDateFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // 바텀 내비게이션 숨기기
+        activity?.findViewById<BottomNavigationView>(R.id.main_bnv)?.visibility = View.GONE
 
         monthCalendar = binding.calenderView
 
@@ -166,7 +170,7 @@ class SelectRecordDateFragment : Fragment() {
     }
 
     private fun updateHeaderForCurrentMode() {
-        binding.homeSelectedDateTv.text = visibleMonth.format(headerFormatter)
+        binding.selectedDateTv.text = visibleMonth.format(headerFormatter)
     }
 
     // 요일 텍스트 설정 (일~토)

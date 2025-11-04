@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
+import com.example.momolabfe.R
 import com.example.momolabfe.data.remote.record.model.DayWeek
 import com.example.momolabfe.data.remote.record.model.RecordResponse
 import com.example.momolabfe.data.remote.record.model.Turbidity
@@ -19,6 +20,7 @@ import com.example.momolabfe.ui.record.data.RecordExchangeInfo
 import com.example.momolabfe.ui.record.viewModel.RecordViewModel
 import com.example.momolabfe.utils.korean
 import com.example.momolabfe.utils.weekdayShortKorean
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -52,6 +54,9 @@ class RecordExchangeListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // 바텀 내비게이션 숨기기
+        activity?.findViewById<BottomNavigationView>(R.id.main_bnv)?.visibility = View.GONE
 
         setupRecycler()
         setupObservers()

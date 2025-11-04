@@ -17,4 +17,5 @@
     <color name="deactive">#B1B2B3</color>
     <color name="edit_card">#F6F6F6</color>
     <color name="line">#EAEAEA</color>
+    <color name="dot">#5989F3</color>
 </resources>

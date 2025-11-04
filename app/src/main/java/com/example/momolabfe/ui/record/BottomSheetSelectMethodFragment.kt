@@ -4,41 +4,38 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import com.example.momolabfe.R
-import com.example.momolabfe.databinding.FragmentRecordSelectMethodBinding
+import com.example.momolabfe.databinding.BottomSheetSelectMethodBinding
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
-class SelectRecordMethodFragment : Fragment() {
+class BottomSheetSelectMethodFragment : BottomSheetDialogFragment() {
 
-    private var _binding: FragmentRecordSelectMethodBinding? = null
+    private var _binding: BottomSheetSelectMethodBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentRecordSelectMethodBinding.inflate(inflater, container, false)
+        _binding = BottomSheetSelectMethodBinding.inflate(inflater, container, false)
+
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.manualEntryCv.setOnClickListener {
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.main_frm, SelectRecordDateFragment())
-                .addToBackStack(null)
-                .commit()
-        }
-
-        binding.cameraScanCv.setOnClickListener {
+        binding.cameraBtn.setOnClickListener {
+            dismiss()
             parentFragmentManager.beginTransaction()
                 .replace(R.id.main_frm, CameraFragment())
                 .addToBackStack(null)
                 .commit()
         }
 
-        binding.imageAlbumCv.setOnClickListener {
+        binding.albumBtn.setOnClickListener {
+            dismiss()
             parentFragmentManager.beginTransaction()
                 .replace(R.id.main_frm, AlbumFragment())
                 .addToBackStack(null)
