@@ -5,7 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.example.momolabfe.R
 import com.example.momolabfe.databinding.FragmentMypageBinding
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MypageFragment : Fragment() {
 
@@ -22,5 +24,11 @@ class MypageFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val bottomNav = activity?.findViewById<BottomNavigationView>(R.id.main_bnv)
+        bottomNav?.visibility = View.VISIBLE
     }
 }

@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.momolabfe.R
 import com.example.momolabfe.databinding.FragmentRecordBinding
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class RecordFragment : Fragment() {
 
@@ -24,11 +25,22 @@ class RecordFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.recordBtn.setOnClickListener {
+            BottomSheetSelectMethodFragment()
+                .show(parentFragmentManager, "BottomSheetSelectMethod")
+        }
+
         binding.manualEntryTv.setOnClickListener {
             parentFragmentManager.beginTransaction()
                 .replace(R.id.main_frm, SelectRecordDateFragment())
                 .addToBackStack(null)
                 .commit()
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val bottomNav = activity?.findViewById<BottomNavigationView>(R.id.main_bnv)
+        bottomNav?.visibility = View.VISIBLE
     }
 }
