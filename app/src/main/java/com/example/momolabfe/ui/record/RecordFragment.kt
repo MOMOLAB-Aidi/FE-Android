@@ -13,8 +13,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.momolabfe.R
-import com.example.momolabfe.databinding.FragmentRecordSelectDateBinding
-import com.example.momolabfe.utils.toDayWeek
+import com.example.momolabfe.databinding.FragmentRecordBinding
 import com.example.momolabfe.utils.weekdayShortKorean
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.kizitonwose.calendar.core.CalendarDay
@@ -28,9 +27,9 @@ import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 
-class SelectRecordDateFragment : Fragment() {
+class RecordFragment : Fragment() {
 
-    private var _binding: FragmentRecordSelectDateBinding? = null
+    private var _binding: FragmentRecordBinding? = null
     private val binding get() = _binding!!
 
     private lateinit var monthCalendar: CalendarView
@@ -49,7 +48,7 @@ class SelectRecordDateFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentRecordSelectDateBinding.inflate(inflater, container, false)
+        _binding = FragmentRecordBinding.inflate(inflater, container, false)
 
         selectedDate = today
         updateHeaderForCurrentMode()
@@ -72,8 +71,17 @@ class SelectRecordDateFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // 바텀 내비게이션 숨기기
-        activity?.findViewById<BottomNavigationView>(R.id.main_bnv)?.visibility = View.GONE
+        binding.recordBtn.setOnClickListener {
+            BottomSheetSelectMethodFragment()
+                .show(parentFragmentManager, "BottomSheetSelectMethod")
+        }
+
+        binding.manualEntryTv.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.main_frm, SelectRecordDateFragment())
+                .addToBackStack(null)
+                .commit()
+        }
 
         monthCalendar = binding.calenderView
 
@@ -129,7 +137,7 @@ class SelectRecordDateFragment : Fragment() {
                 // 날짜 선택
                 if (day.date == selectedDate && isThisMonth) {
                     tv.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.white))
-                    tv.background = circleFill(ContextCompat.getColor(requireContext(), R.color.main_1))
+                    tv.background = circleFill(ContextCompat.getColor(requireContext(), R.color.dot))
                 }
 
                 // 클릭으로 선택 처리
@@ -151,22 +159,12 @@ class SelectRecordDateFragment : Fragment() {
         view.post {
             monthCalendar.findFirstVisibleMonth()?.let { requestForMonth(it) }
         }
+    }
 
-        binding.nextBtn.setOnClickListener {
-            val dateText = selectedDate.format(sendFormatter) // 선택한 날짜 값 전달
-            val dwKorean = selectedDate.dayOfWeek.toDayWeek().name
-
-            val args = Bundle().apply {
-                putString("selected_date_text", dateText)
-                putString("selected_date_dw", dwKorean)
-            }
-            val fragment = RecordExchangeInfoFragment().apply { arguments = args } // 추후에 CommonRecordInfoFragment로 수정 필요
-
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.main_frm, fragment)
-                .addToBackStack(null)
-                .commit()
-        }
+    override fun onResume() {
+        super.onResume()
+        val bottomNav = activity?.findViewById<BottomNavigationView>(R.id.main_bnv)
+        bottomNav?.visibility = View.VISIBLE
     }
 
     private fun updateHeaderForCurrentMode() {

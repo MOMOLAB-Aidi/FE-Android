@@ -11,7 +11,6 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.momolabfe.R
 import com.example.momolabfe.databinding.FragmentOnboardingAgreementBinding
-import com.example.momolabfe.ui.record.SelectRecordMethodFragment
 
 class OnboardingAgreementFragment : Fragment() {
 
@@ -37,12 +36,12 @@ class OnboardingAgreementFragment : Fragment() {
         setupSelectAllCheckbox()
         updateNextButtonState()
 
-        binding.nextBtn.setOnClickListener {
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.main_frm, SelectRecordMethodFragment())
-                .addToBackStack(null)
-                .commit()
-        }
+//        binding.nextBtn.setOnClickListener {
+//            parentFragmentManager.beginTransaction()
+//                .replace(R.id.main_frm, SelectRecordMethodFragment())
+//                .addToBackStack(null)
+//                .commit()
+//        }
 
         listOf(
             binding.term1Checkbox,

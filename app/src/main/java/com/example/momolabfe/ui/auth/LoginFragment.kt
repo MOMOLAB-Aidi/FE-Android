@@ -7,7 +7,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.momolabfe.R
 import com.example.momolabfe.databinding.FragmentLoginBinding
-import com.example.momolabfe.ui.record.SelectRecordMethodFragment
+import com.example.momolabfe.ui.main.HomeFragment
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class LoginFragment : Fragment() {
 
@@ -25,10 +26,12 @@ class LoginFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // 바텀 내비게이션 숨기기
+        activity?.findViewById<BottomNavigationView>(R.id.main_bnv)?.visibility = View.GONE
+
         binding.loginBtn.setOnClickListener {
             parentFragmentManager.beginTransaction()
-                .replace(R.id.main_frm, SelectRecordMethodFragment())
-                .addToBackStack(null)
+                .replace(R.id.main_frm, HomeFragment())
                 .commit()
         }
     }

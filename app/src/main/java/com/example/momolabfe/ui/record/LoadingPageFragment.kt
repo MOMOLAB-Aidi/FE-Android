@@ -1,6 +1,5 @@
 package com.example.momolabfe.ui.record
 
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +8,8 @@ import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.example.momolabfe.databinding.FragmentLoadingPageBinding
 import androidx.core.net.toUri
+import com.example.momolabfe.R
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class LoadingPageFragment : Fragment() {
 
@@ -25,6 +26,9 @@ class LoadingPageFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // 바텀 내비게이션 숨기기
+        activity?.findViewById<BottomNavigationView>(R.id.main_bnv)?.visibility = View.GONE
 
         val uriStr = arguments?.getString("image_uri")
         val uri = uriStr?.toUri()

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/fragment_home"
+        android:icon="@drawable/ic_home_sv"
+        android:title="홈"/>
+
+    <item
+        android:id="@+id/fragment_record"
+        android:icon="@drawable/ic_record_sv"
+        android:title="기록"/>
+
+    <item
+        android:id="@+id/fragment_consult"
+        android:icon="@drawable/ic_consult_sv"
+        android:title="상담"/>
+
+    <item
+        android:id="@+id/fragment_mypage"
+        android:icon="@drawable/ic_mypage_sv"
+        android:title="마이페이지"/>
+
+</menu>

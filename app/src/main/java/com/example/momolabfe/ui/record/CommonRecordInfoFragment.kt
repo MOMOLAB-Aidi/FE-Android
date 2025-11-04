@@ -24,6 +24,7 @@ import com.example.momolabfe.ui.record.viewModel.RecordViewModel
 import com.example.momolabfe.utils.korean
 import com.example.momolabfe.utils.toDayWeek
 import kotlinx.coroutines.launch
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -45,6 +46,9 @@ class CommonRecordInfoFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // 바텀 내비게이션 숨기기
+        activity?.findViewById<BottomNavigationView>(R.id.main_bnv)?.visibility = View.GONE
 
         // 전달된 날짜 문자열 꺼내기 (기본값: 오늘 날짜 포맷 or 빈 문자열)
         val dateText = arguments?.getString("selected_date_text")
@@ -166,29 +170,29 @@ class CommonRecordInfoFragment : Fragment() {
         checkBox.buttonTintList = ColorStateList.valueOf(color)
     }
 
-    private fun createRecordRequest(): RecordRequest {
-        val recordDate = binding.dateTv // 캘린더에서 선택한 날짜 가져오기
-        val recordDw = binding.dwTv // 캘린더에서 선택한 요일 가져오기
-        val weight = binding.weightEt
-        val systolic = binding.systolicEt
-        val diastolic = binding.diastolicEt
-        val fastingGlucose = binding.fastingGlucoseEt
-        val urineCount = binding.urineCountEt
-        val turbidity = binding.turbidityNCheckbox.isChecked || binding.turbidityYCheckbox.isChecked
-        val notes = binding.notesEt
-
-        return RecordRequest(
-            recordDate = recordDate,
-            recordDw = recordDw,
-            weight = weight,
-            systolic = systolic,
-            diastolic = diastolic,
-            fastingGlucose = fastingGlucose,
-            urineCount = urineCount,
-            turbidity = turbidity,
-            notes = notes
-        )
-    }
+//    private fun createRecordRequest(): RecordRequest {
+//        val recordDate = binding.dateTv // 캘린더에서 선택한 날짜 가져오기
+//        val recordDw = binding.dwTv // 캘린더에서 선택한 요일 가져오기
+//        val weight = binding.weightEt
+//        val systolic = binding.systolicEt
+//        val diastolic = binding.diastolicEt
+//        val fastingGlucose = binding.fastingGlucoseEt
+//        val urineCount = binding.urineCountEt
+//        val turbidity = binding.turbidityNCheckbox.isChecked || binding.turbidityYCheckbox.isChecked
+//        val notes = binding.notesEt
+//
+//        return RecordRequest(
+//            recordDate = recordDate,
+//            recordDw = recordDw,
+//            weight = weight,
+//            systolic = systolic,
+//            diastolic = diastolic,
+//            fastingGlucose = fastingGlucose,
+//            urineCount = urineCount,
+//            turbidity = turbidity,
+//            notes = notes
+//        )
+//    }
 
     private fun setupObservers() {
 
