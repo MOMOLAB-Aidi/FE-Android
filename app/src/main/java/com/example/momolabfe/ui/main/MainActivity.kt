@@ -10,6 +10,7 @@ import com.example.momolabfe.R
 import com.example.momolabfe.databinding.ActivityMainBinding
 import com.example.momolabfe.ui.auth.LoginFragment
 import com.example.momolabfe.ui.consult.ConsultFragment
+import com.example.momolabfe.ui.mypage.MypageFragment
 import com.example.momolabfe.ui.record.RecordFragment
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -68,6 +69,13 @@ class MainActivity : AppCompatActivity() {
                 R.id.fragment_consult -> {
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.main_frm, ConsultFragment())
+                        .commitAllowingStateLoss()
+                    return@setOnItemSelectedListener true
+                }
+
+                R.id.fragment_mypage -> {
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.main_frm, MypageFragment())
                         .commitAllowingStateLoss()
                     return@setOnItemSelectedListener true
                 }
