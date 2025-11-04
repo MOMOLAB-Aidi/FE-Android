@@ -14,6 +14,7 @@ import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import com.example.momolabfe.R
 import com.example.momolabfe.databinding.FragmentCameraBinding
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import java.io.File
 
 class CameraFragment : Fragment() {
@@ -32,6 +33,9 @@ class CameraFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // 바텀 내비게이션 숨기기
+        activity?.findViewById<BottomNavigationView>(R.id.main_bnv)?.visibility = View.GONE
 
         binding.openCameraBtn.setOnClickListener {
             checkCameraPermissionAndLaunch()

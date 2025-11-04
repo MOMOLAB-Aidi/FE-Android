@@ -23,6 +23,7 @@ import com.bumptech.glide.request.transition.Transition
 import com.example.momolabfe.R
 import com.example.momolabfe.databinding.FragmentAlbumBinding
 import com.example.momolabfe.ui.record.adapter.AlbumAdapter
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -43,6 +44,11 @@ class AlbumFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // 바텀 내비게이션 숨기기
+        activity?.findViewById<BottomNavigationView>(R.id.main_bnv)?.visibility = View.GONE
+
         adapter = AlbumAdapter { uri ->
             selectedUri = uri
             showPreview(uri)

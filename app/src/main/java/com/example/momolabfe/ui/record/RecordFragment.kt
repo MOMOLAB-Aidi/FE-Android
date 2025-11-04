@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.example.momolabfe.R
 import com.example.momolabfe.databinding.FragmentRecordBinding
 
 class RecordFragment : Fragment() {
@@ -22,5 +23,12 @@ class RecordFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        binding.manualEntryTv.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.main_frm, SelectRecordDateFragment())
+                .addToBackStack(null)
+                .commit()
+        }
     }
 }
