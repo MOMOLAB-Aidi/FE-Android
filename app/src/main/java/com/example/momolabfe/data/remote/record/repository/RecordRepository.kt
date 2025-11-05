@@ -3,8 +3,8 @@ package com.example.momolabfe.data.remote.record.repository
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
-import com.example.momolabfe.data.remote.record.model.RecordRequest
-import com.example.momolabfe.data.remote.record.model.RecordResponse
+import com.example.momolabfe.data.remote.record.model.RecordCreateRequest
+import com.example.momolabfe.data.remote.record.model.RecordOcrResponse
 import com.example.momolabfe.data.remote.record.service.RecordService
 import com.example.momolabfe.utils.ApiException
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -24,17 +24,17 @@ class RecordRepository @Inject constructor (
 ) {
     private val ALLOWED_TYPES = setOf("image/jpeg", "image/png")
 
-    // 수기 작성으로 기록 생성
-    suspend fun recordByWriting(request: RecordRequest): Result<RecordResponse> = kotlin.runCatching {
-        val response = recordService.recordByWriting(request)
+    // 수기 작성 - 공통 기록 생성
+    suspend fun recordCommonByWriting(request: RecordCreateRequest): Result<Unit> = runCatching {
+        val response = recordService.recordCommonByWriting(request)
         if (!response.isSuccessful) {
             throw ApiException(response.code(), "HTTP ${response.code()}")
         }
-        response.body() ?: throw ApiException(response.code(), "빈 본문")
+        Unit
     }
 
     // OCR로 기록 생성
-    suspend fun recordByOcr(imageUri: Uri): Result<RecordResponse> = runCatching {
+    suspend fun recordByOcr(imageUri: Uri): Result<RecordOcrResponse> = runCatching {
             val part = makeFilePartFromUri(appContext, imageUri, partName = "file")
             val response = recordService.recordByOcr(part)
             if (!response.isSuccessful) {
@@ -44,7 +44,7 @@ class RecordRepository @Inject constructor (
         }
 
 
-    /** 헬퍼 메소드 **/
+    // 헬퍼 메소드
     private fun makeFilePartFromUri(
         context: Context,
         uri: Uri,

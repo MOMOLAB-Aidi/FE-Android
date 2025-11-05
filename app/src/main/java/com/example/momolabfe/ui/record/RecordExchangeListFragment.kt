@@ -11,7 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.momolabfe.R
-import com.example.momolabfe.data.remote.record.model.RecordResponse
+import com.example.momolabfe.data.remote.record.model.RecordOcrResponse
 import com.example.momolabfe.data.remote.record.model.Turbidity
 import com.example.momolabfe.databinding.FragmentRecordExchangeListBinding
 import com.example.momolabfe.ui.record.adapter.ExchangeInfoAdapter
@@ -88,7 +88,7 @@ class RecordExchangeListFragment : Fragment() {
         binding.exchangeRv.adapter = exchangeInfoAdapter
     }
 
-    private fun bindRecordToViews(record: RecordResponse) {
+    private fun bindRecordToViews(record: RecordOcrResponse) {
         binding.dateTv.text = record.recordDate.toKoreanDate()
         binding.dwTv.text = record.recordDw.korean()
 
@@ -139,7 +139,7 @@ class RecordExchangeListFragment : Fragment() {
 
     private fun setupObservers() {
         // OCR 결과 관찰 → UI 바인딩
-        viewModel.recordResult.observe(viewLifecycleOwner) { record ->
+        viewModel.ocrRecordResult.observe(viewLifecycleOwner) { record ->
             if (record == null) {
                 // 초기 상태: 빈 값/체크 해제/리스트 비우기
                 binding.weightDataEt.setText("")
