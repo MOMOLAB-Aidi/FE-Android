@@ -227,8 +227,21 @@ class CommonRecordInfoFragment : Fragment() {
                 viewModel.recordSuccess.collect {
                     Log.d("RECORD_COMMON_BY_WRITING_FRAGMENT", "공통 정보 작성이 정상적으로 완료되었습니다.")
 
+                    val dateStr = binding.dateTv.text?.toString()?.trim().orEmpty()
+                    val formatter = DateTimeFormatter.ofPattern("yyyy년 M월 d일")
+                    val recordDate = LocalDate.parse(dateStr, formatter)
+                    val recordDw = recordDate.dayOfWeek.toDayWeek()
+
+                    val args = Bundle().apply {
+                        putString("record_date", recordDate.toString())
+                        putString("record_dw", recordDw.name)
+                        putString("record_date_text", dateStr)
+                        putString("record_dw_korean", binding.dwTv.text?.toString().orEmpty())
+                    }
+                    val fragment = RecordExchangeInfoFragment().apply { arguments = args }
+
                     parentFragmentManager.beginTransaction()
-                        .replace(R.id.main_frm, RecordExchangeInfoFragment())
+                        .replace(R.id.main_frm, fragment)
                         .addToBackStack(null)
                         .commit()
                 }

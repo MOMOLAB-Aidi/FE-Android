@@ -34,12 +34,9 @@ class RecordExchangeInfoFragment : Fragment() {
         // 바텀 내비게이션 숨기기
         activity?.findViewById<BottomNavigationView>(R.id.main_bnv)?.visibility = View.GONE
 
-        // 전달된 날짜 문자열 꺼내기 (기본값: 오늘 날짜 포맷 or 빈 문자열)
-        val dateText = arguments?.getString("selected_date_text")
-            ?: LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy년 M월 d일"))
-        val dwKorean = arguments?.getString("selected_date_dw")
-            ?.let { DayWeek.valueOf(it).korean() }
-            ?: LocalDate.now().dayOfWeek.toDayWeek().korean()
+        // 전달된 날짜 문자열 꺼내기
+        val dateText = arguments?.getString("record_date_text").orEmpty()
+        val dwKorean = arguments?.getString("record_dw_korean").orEmpty()
 
         binding.dateTv.text = dateText
         binding.dwTv.text = dwKorean
