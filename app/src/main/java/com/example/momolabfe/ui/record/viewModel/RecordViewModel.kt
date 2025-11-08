@@ -59,7 +59,7 @@ class RecordViewModel @Inject constructor(
     }
 
     fun clearOcr() {
-        _recordResult.value = null
+        _ocrRecordResult.value = null
         _errorMessage.value = null
     }
 }
