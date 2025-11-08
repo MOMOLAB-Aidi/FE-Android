@@ -224,7 +224,7 @@ class CommonRecordInfoFragment : Fragment() {
         // 성공 이벤트는 Flow 수집으로 1회성 처리
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.recordSuccess.collect {
+                viewModel.recordCreated.collect { recId ->
                     Log.d("RECORD_COMMON_BY_WRITING_FRAGMENT", "공통 정보 작성이 정상적으로 완료되었습니다.")
 
                     val dateStr = binding.dateTv.text?.toString()?.trim().orEmpty()
@@ -233,6 +233,7 @@ class CommonRecordInfoFragment : Fragment() {
                     val recordDw = recordDate.dayOfWeek.toDayWeek()
 
                     val args = Bundle().apply {
+                        putLong("rec_id", recId)
                         putString("record_date", recordDate.toString())
                         putString("record_dw", recordDw.name)
                         putString("record_date_text", dateStr)

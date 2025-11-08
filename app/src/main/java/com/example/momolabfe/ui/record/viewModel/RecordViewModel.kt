@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.momolabfe.data.remote.record.model.RecordCreateRequest
+import com.example.momolabfe.data.remote.record.model.RecordExchangeCreateRequest
 import com.example.momolabfe.data.remote.record.model.RecordOcrResponse
 import com.example.momolabfe.data.remote.record.repository.RecordRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -32,14 +33,29 @@ class RecordViewModel @Inject constructor(
     private val _ocrRecordResult = MutableLiveData<RecordOcrResponse?>()
     val ocrRecordResult: LiveData<RecordOcrResponse?> get() = _ocrRecordResult
 
+    private val _recordCreated = MutableSharedFlow<Long>(extraBufferCapacity = 1)
+    val recordCreated: SharedFlow<Long> = _recordCreated
+
     // 수기 작성 - 공통 정보
     fun recordCommonByWriting(request: RecordCreateRequest) {
         viewModelScope.launch {
             val result = recordRepository.recordCommonByWriting(request)
+            result.onSuccess { id ->
+                _recordCreated.emit(id)
+            }.onFailure { e ->
+                _errorMessage.value = e.localizedMessage ?: "공통 정보 저장에 실패했습니다."
+            }
+        }
+    }
+
+    // 수기 작성 - 회차별 정보
+    fun recordExchangeByWriting(recId: Long, request: RecordExchangeCreateRequest) {
+        viewModelScope.launch {
+            val result = recordRepository.recordExchangeByWriting(recId, request)
             result.onSuccess {
                 _recordSuccess.tryEmit(Unit)
             }.onFailure { e ->
-                _errorMessage.value = e.localizedMessage ?: "공통 정보 저장에 실패했습니다."
+                _errorMessage.value = e.localizedMessage ?: "회차별 정보 저장에 실패했습니다."
             }
         }
     }

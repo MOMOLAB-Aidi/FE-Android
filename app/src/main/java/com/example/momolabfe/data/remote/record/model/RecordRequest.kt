@@ -2,6 +2,7 @@ package com.example.momolabfe.data.remote.record.model
 
 import com.google.gson.annotations.SerializedName
 import java.time.LocalDate
+import java.time.LocalTime
 
 
 data class RecordCreateRequest (
@@ -15,4 +16,13 @@ data class RecordCreateRequest (
     @SerializedName("turbidity") val turbidity: Turbidity,
     @SerializedName("notes") val notes: String? = null,
     @SerializedName("total_uf") val totalUf: Int,
+)
+
+data class RecordExchangeCreateRequest (
+    @SerializedName("exchange_time") val exchangeTime: LocalTime,
+    @SerializedName("drain_volume") val drainVolume: Int,
+    @SerializedName("fill_volume") val fillVolume: Int,
+    @SerializedName("fill_concentration") val fillConcentration: Float,
+    @SerializedName("uf") val uf: Int
+
 )
