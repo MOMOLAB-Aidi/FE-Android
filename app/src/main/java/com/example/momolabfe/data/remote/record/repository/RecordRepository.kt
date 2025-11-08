@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
 import com.example.momolabfe.data.remote.record.model.RecordCreateRequest
+import com.example.momolabfe.data.remote.record.model.RecordExchangeCreateRequest
 import com.example.momolabfe.data.remote.record.model.RecordOcrResponse
 import com.example.momolabfe.data.remote.record.service.RecordService
 import com.example.momolabfe.utils.ApiException
@@ -24,9 +25,18 @@ class RecordRepository @Inject constructor (
 ) {
     private val ALLOWED_TYPES = setOf("image/jpeg", "image/png")
 
-    // 수기 작성 - 공통 기록 생성
+    // 수기 작성 - 공통 정보 생성
     suspend fun recordCommonByWriting(request: RecordCreateRequest): Result<Unit> = runCatching {
         val response = recordService.recordCommonByWriting(request)
+        if (!response.isSuccessful) {
+            throw ApiException(response.code(), "HTTP ${response.code()}")
+        }
+        Unit
+    }
+
+    // 수기 작성 - 회차별 정보 생성
+    suspend fun recordExchangeByWriting(recId: Long, request: RecordExchangeCreateRequest): Result<Unit> = runCatching {
+        val response = recordService.recordExchangeByWriting(recId, request)
         if (!response.isSuccessful) {
             throw ApiException(response.code(), "HTTP ${response.code()}")
         }
