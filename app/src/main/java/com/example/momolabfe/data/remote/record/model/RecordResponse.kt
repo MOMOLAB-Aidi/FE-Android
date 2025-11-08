@@ -25,7 +25,7 @@ data class RecordExchangeOcrResponse (
     @SerializedName("exchange_time") val exchangeTime: LocalTime,
     @SerializedName("drain_volume") val drainVolume: Int,
     @SerializedName("fill_volume") val fillVolume: Int,
-    @SerializedName("fill_concentration") val fillConcentration: Double,
+    @SerializedName("fill_concentration") val fillConcentration: Float,
     @SerializedName("uf") val uf: Int
 )
 

@@ -122,13 +122,7 @@ class RecordExchangeInfoFragment : Fragment() {
     }
 
     // 파싱 성공이면 유효
-    fun isValidExchangeTime(s: String): Boolean = parseExchangeTime(s) != null
-
-    // LocalTime → "HH:mm:ss"
-    fun toDbTimeString(t: LocalTime): String = t.format(fmtHH_MM_SS)
-
-    // LocalTime → "HH:mm"
-    fun toDisplayTimeString(t: LocalTime): String = t.format(fmtHH_MM)
+    private fun isValidExchangeTime(s: String): Boolean = parseExchangeTime(s) != null
 
     // 배액량: 0 ~ 6000
     private fun isValidDrainVolume(s: String): Boolean =
