@@ -4,6 +4,7 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,8 +12,19 @@ import android.widget.CompoundButton
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.example.momolabfe.R
+import com.example.momolabfe.data.remote.record.model.DayWeek
+import com.example.momolabfe.data.remote.record.model.RecordCreateRequest
+import com.example.momolabfe.data.remote.record.model.Turbidity
 import com.example.momolabfe.databinding.FragmentRecordCommonInfoBinding
+import com.example.momolabfe.ui.record.viewModel.RecordViewModel
+import com.example.momolabfe.utils.korean
+import com.example.momolabfe.utils.toDayWeek
+import kotlinx.coroutines.launch
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -22,6 +34,8 @@ class CommonRecordInfoFragment : Fragment() {
 
     private var _binding: FragmentRecordCommonInfoBinding? = null
     private val binding get() = _binding!!
+
+    private val viewModel: RecordViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,9 +55,15 @@ class CommonRecordInfoFragment : Fragment() {
         val dateText = arguments?.getString("selected_date_text")
             ?: LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy년 M월 d일"))
 
+        val dwKorean = arguments?.getString("selected_date_dw")
+            ?.let { DayWeek.valueOf(it).korean() }
+            ?: LocalDate.now().dayOfWeek.toDayWeek().korean()
+
         binding.dateTv.text = dateText
+        binding.dwTv.text = dwKorean
 
         setupUI()
+        setupObservers()
     }
 
     private fun setupUI() {
@@ -55,6 +75,7 @@ class CommonRecordInfoFragment : Fragment() {
         binding.diastolicEt.addTextChangedListener(afterTextChanged = watcher)
         binding.fastingGlucoseEt.addTextChangedListener(afterTextChanged = watcher)
         binding.urineCountEt.addTextChangedListener(afterTextChanged = watcher)
+        binding.totalUfEt.addTextChangedListener(afterTextChanged = watcher)
 
         // 체크박스 변경 감지
         binding.turbidityNCheckbox.setOnCheckedChangeListener { button, isChecked ->
@@ -82,10 +103,8 @@ class CommonRecordInfoFragment : Fragment() {
         updateNextButtonState()
 
         binding.nextBtn.setOnClickListener {
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.main_frm, RecordExchangeInfoFragment())
-                .addToBackStack(null)
-                .commit()
+            val request = createRecordCommonRequest()
+            viewModel.recordCommonByWriting(request)
         }
     }
 
@@ -95,9 +114,9 @@ class CommonRecordInfoFragment : Fragment() {
         val diastolic = binding.diastolicEt.text?.toString()?.trim().orEmpty()
         val fastingGlucose = binding.fastingGlucoseEt.text?.toString()?.trim().orEmpty()
         val urineCount = binding.urineCountEt.text?.toString()?.trim().orEmpty()
+        val totalUf = binding.totalUfEt.text?.toString()?.trim().orEmpty()
 
-        val turbidityChecked =
-            binding.turbidityNCheckbox.isChecked || binding.turbidityYCheckbox.isChecked
+        val turbidityChecked = binding.turbidityNCheckbox.isChecked || binding.turbidityYCheckbox.isChecked
 
         val enabled = isValidWeight(weight) &&
                 isValidBpSys(systolic) &&
@@ -105,6 +124,7 @@ class CommonRecordInfoFragment : Fragment() {
                 isValidBpRelation(systolic, diastolic) &&
                 isValidGlucose(fastingGlucose) &&
                 isValidUrineFreq(urineCount) &&
+                isValidTotalUf(totalUf) &&
                 turbidityChecked
 
         binding.nextBtn.isEnabled = enabled
@@ -145,11 +165,92 @@ class CommonRecordInfoFragment : Fragment() {
     private fun isValidUrineFreq(s: String): Boolean =
         s.toIntOrNull()?.let { it in 0..50 } == true
 
+    // 제수량 합계: -5000 ~ 5000
+    private fun isValidTotalUf(s: String): Boolean =
+        s.toIntOrNull()?.let { it in -5000..5000 } == true
+
+
     private fun setCheckBoxTint(checkBox: CompoundButton, isChecked: Boolean) {
         val color = ContextCompat.getColor(
             requireContext(), if (isChecked) R.color.text_primary else R.color.gray
         )
         checkBox.buttonTintList = ColorStateList.valueOf(color)
+    }
+
+    private fun createRecordCommonRequest(): RecordCreateRequest {
+        val dateStr = binding.dateTv.text?.toString()?.trim().orEmpty()
+        val formatter = DateTimeFormatter.ofPattern("yyyy년 M월 d일")
+        val recordDate = LocalDate.parse(dateStr, formatter)
+
+        val recordDw: DayWeek = recordDate.dayOfWeek.toDayWeek()
+
+        val weight = binding.weightEt.text?.toString()?.trim()?.toDoubleOrNull()
+            ?: error("체중 파싱 에러")
+        val systolic = binding.systolicEt.text?.toString()?.trim()?.toIntOrNull()
+            ?: error("최고 혈압 파싱 에러")
+        val diastolic = binding.diastolicEt.text?.toString()?.trim()?.toIntOrNull()
+            ?: error("최저 혈압 파싱 에러")
+        val fastingGlucose = binding.fastingGlucoseEt.text?.toString()?.trim()?.toIntOrNull()
+            ?: error("공복 혈당 파싱 에러")
+        val urineCount = binding.urineCountEt.text?.toString()?.trim()?.toIntOrNull()
+            ?: error("소변 횟수 파싱 에러")
+        val totalUf = binding.totalUfEt.text?.toString()?.trim()?.toIntOrNull()
+            ?: error("제수량 합계 파싱 에러")
+
+        val turbidity: Turbidity = when {
+            binding.turbidityNCheckbox.isChecked -> Turbidity.NONE
+            binding.turbidityYCheckbox.isChecked -> Turbidity.PRESENT
+            else -> error("혼탁도가 선택되지 않았습니다.")
+        }
+
+        val notes = binding.notesEt.text?.toString()?.trim().takeUnless { it.isNullOrEmpty() }
+
+        return RecordCreateRequest(
+            recordDate = recordDate,
+            recordDw = recordDw,
+            weight = weight,
+            systolic = systolic,
+            diastolic = diastolic,
+            fastingGlucose = fastingGlucose,
+            urineCount = urineCount,
+            turbidity = turbidity,
+            totalUf = totalUf,
+            notes = notes,
+        )
+    }
+
+    private fun setupObservers() {
+
+        // 성공 이벤트는 Flow 수집으로 1회성 처리
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.recordSuccess.collect {
+                    Log.d("RECORD_COMMON_BY_WRITING_FRAGMENT", "공통 정보 작성이 정상적으로 완료되었습니다.")
+
+                    val dateStr = binding.dateTv.text?.toString()?.trim().orEmpty()
+                    val formatter = DateTimeFormatter.ofPattern("yyyy년 M월 d일")
+                    val recordDate = LocalDate.parse(dateStr, formatter)
+                    val recordDw = recordDate.dayOfWeek.toDayWeek()
+
+                    val args = Bundle().apply {
+                        putString("record_date", recordDate.toString())
+                        putString("record_dw", recordDw.name)
+                        putString("record_date_text", dateStr)
+                        putString("record_dw_korean", binding.dwTv.text?.toString().orEmpty())
+                    }
+                    val fragment = RecordExchangeInfoFragment().apply { arguments = args }
+
+                    parentFragmentManager.beginTransaction()
+                        .replace(R.id.main_frm, fragment)
+                        .addToBackStack(null)
+                        .commit()
+                }
+            }
+        }
+
+        viewModel.errorMessage.observe(viewLifecycleOwner) { errorMsg ->
+            Log.e("RECORD_COMMON_BY_WRITING_FRAGMENT", errorMsg.toString())
+        }
     }
 
     override fun onDestroyView() {

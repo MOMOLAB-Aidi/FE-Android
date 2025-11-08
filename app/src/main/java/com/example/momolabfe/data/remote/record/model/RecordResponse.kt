@@ -4,8 +4,7 @@ import com.google.gson.annotations.SerializedName
 import java.time.LocalDate
 import java.time.LocalTime
 
-
-data class RecordResponse (
+data class RecordOcrResponse (
     @SerializedName("id") val id: Int,
     @SerializedName("record_date") val recordDate: LocalDate,
     @SerializedName("record_dw") val recordDw: DayWeek,
@@ -17,10 +16,10 @@ data class RecordResponse (
     @SerializedName("turbidity") val turbidity: Turbidity,
     @SerializedName("notes") val notes: String?,
     @SerializedName("total_uf") val totalUf: Int,
-    @SerializedName("exchanges") val exchanges: List<RecordExchangeResponse> = emptyList()
+    @SerializedName("exchanges") val exchanges: List<RecordExchangeOcrResponse> = emptyList()
 )
 
-data class RecordExchangeResponse (
+data class RecordExchangeOcrResponse (
     @SerializedName("id") val id: Int,
     @SerializedName("exchange_no") val exchangeNo: Int,
     @SerializedName("exchange_time") val exchangeTime: LocalTime,
@@ -29,18 +28,3 @@ data class RecordExchangeResponse (
     @SerializedName("fill_concentration") val fillConcentration: Double,
     @SerializedName("uf") val uf: Int
 )
-
-enum class DayWeek {
-    @SerializedName("월") MON,
-    @SerializedName("화") TUE,
-    @SerializedName("수") WED,
-    @SerializedName("목") THU,
-    @SerializedName("금") FRI,
-    @SerializedName("토") SAT,
-    @SerializedName("일") SUN
-}
-
-enum class Turbidity {
-    @SerializedName("없음") NONE,
-    @SerializedName("있음") PRESENT
-}
