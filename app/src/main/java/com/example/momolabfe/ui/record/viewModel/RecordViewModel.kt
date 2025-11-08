@@ -39,7 +39,7 @@ class RecordViewModel @Inject constructor(
             result.onSuccess {
                 _recordSuccess.tryEmit(Unit)
             }.onFailure { e ->
-                _errorMessage.value = e.localizedMessage ?: "OCR 텍스트 추출에 실패했습니다."
+                _errorMessage.value = e.localizedMessage ?: "공통 정보 저장에 실패했습니다."
             }
         }
     }
