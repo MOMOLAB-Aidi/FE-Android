@@ -33,12 +33,15 @@ class RecordViewModel @Inject constructor(
     private val _ocrRecordResult = MutableLiveData<RecordOcrResponse?>()
     val ocrRecordResult: LiveData<RecordOcrResponse?> get() = _ocrRecordResult
 
+    private val _recordCreated = MutableSharedFlow<Long>(extraBufferCapacity = 1)
+    val recordCreated: SharedFlow<Long> = _recordCreated
+
     // 수기 작성 - 공통 정보
     fun recordCommonByWriting(request: RecordCreateRequest) {
         viewModelScope.launch {
             val result = recordRepository.recordCommonByWriting(request)
-            result.onSuccess {
-                _recordSuccess.tryEmit(Unit)
+            result.onSuccess { id ->
+                _recordCreated.emit(id)
             }.onFailure { e ->
                 _errorMessage.value = e.localizedMessage ?: "공통 정보 저장에 실패했습니다."
             }

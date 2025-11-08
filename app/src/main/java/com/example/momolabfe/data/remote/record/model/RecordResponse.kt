@@ -28,3 +28,7 @@ data class RecordExchangeOcrResponse (
     @SerializedName("fill_concentration") val fillConcentration: Double,
     @SerializedName("uf") val uf: Int
 )
+
+data class RecordIdResponse (
+    @SerializedName("id") val id: Long
+)

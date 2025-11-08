@@ -160,7 +160,7 @@ class SelectRecordDateFragment : Fragment() {
                 putString("selected_date_text", dateText)
                 putString("selected_date_dw", dwKorean)
             }
-            val fragment = RecordExchangeInfoFragment().apply { arguments = args } // 추후에 CommonRecordInfoFragment로 수정 필요
+            val fragment = CommonRecordInfoFragment().apply { arguments = args } // 추후에 CommonRecordInfoFragment로 수정 필요
 
             parentFragmentManager.beginTransaction()
                 .replace(R.id.main_frm, fragment)

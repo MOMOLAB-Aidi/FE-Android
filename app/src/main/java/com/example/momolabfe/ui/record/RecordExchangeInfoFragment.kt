@@ -14,19 +14,12 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.momolabfe.R
-import com.example.momolabfe.data.remote.record.model.DayWeek
-import com.example.momolabfe.data.remote.record.model.RecordCreateRequest
 import com.example.momolabfe.data.remote.record.model.RecordExchangeCreateRequest
-import com.example.momolabfe.data.remote.record.model.Turbidity
 import com.example.momolabfe.databinding.FragmentRecordExchangeInfoBinding
 import com.example.momolabfe.ui.record.viewModel.RecordViewModel
-import com.example.momolabfe.utils.korean
-import com.example.momolabfe.utils.toDayWeek
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
-import java.time.DayOfWeek
-import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
@@ -37,7 +30,7 @@ class RecordExchangeInfoFragment : Fragment() {
     private var _binding: FragmentRecordExchangeInfoBinding? = null
     private val binding get() = _binding!!
 
-    private var recId: Long = -1
+    private var recId: Long = -1L
 
     private val viewModel: RecordViewModel by activityViewModels()
 
@@ -109,10 +102,10 @@ class RecordExchangeInfoFragment : Fragment() {
 
         binding.searchBtn.isEnabled = enabled
         binding.searchBtn.setBackgroundColor(
-            if (enabled) requireContext().getColor(R.color.text_primary) else Color.parseColor("#F6F6F6")
+            if (enabled) requireContext().getColor(R.color.main_2) else Color.parseColor("#F6F6F6")
         )
         binding.searchBtn.setTextColor(
-            if (enabled) requireContext().getColor(R.color.white) else requireContext().getColor(R.color.main_2)
+            if (enabled) requireContext().getColor(R.color.white) else requireContext().getColor(R.color.text_primary)
         )
     }
 
