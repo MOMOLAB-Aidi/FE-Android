@@ -113,6 +113,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:background="@color/transparent"
+                        android:hint="체중을 입력하세요 (예: 56)"
                         android:inputType="numberDecimal"
                         android:textSize="16sp" />
 
@@ -124,7 +125,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="7dp"
                 android:fontFamily="@font/noto_sans_kr_regular"
                 android:textColor="@color/text_primary"
                 android:includeFontPadding="false"
@@ -171,6 +172,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:background="@color/transparent"
+                        android:hint="최고 (예: 150)"
                         android:inputType="number"
                         android:textSize="16sp" />
 
@@ -182,7 +184,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="7dp"
                 android:fontFamily="@font/noto_sans_kr_regular"
                 android:textColor="@color/text_primary"
                 android:includeFontPadding="false"
@@ -203,7 +205,6 @@
                 app:cardElevation="0dp"
                 app:layout_constraintStart_toEndOf="@id/blood_pressure_divider"
                 app:layout_constraintTop_toBottomOf="@id/blood_pressure_tv">
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -216,6 +217,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:background="@color/transparent"
+                        android:hint="최저 (예: 90)"
                         android:inputType="number"
                         android:textSize="16sp" />
 
@@ -226,7 +228,7 @@
                 android:id="@+id/blood_pressure_unit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="7dp"
                 android:fontFamily="@font/noto_sans_kr_regular"
                 android:textColor="@color/text_primary"
                 android:includeFontPadding="false"
@@ -275,6 +277,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:background="@color/transparent"
+                        android:hint="공복 혈당을 입력하세요 (예: 134)"
                         android:inputType="number"
                         android:textSize="16sp" />
 
@@ -286,7 +289,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="7dp"
                 android:fontFamily="@font/noto_sans_kr_regular"
                 android:textColor="@color/text_primary"
                 android:includeFontPadding="false"
@@ -335,6 +338,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:background="@color/transparent"
+                        android:hint="소변 횟수를 입력하세요 (예: 4)"
                         android:inputType="number"
                         android:textSize="16sp" />
 
@@ -346,7 +350,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="7dp"
                 android:fontFamily="@font/noto_sans_kr_regular"
                 android:textColor="@color/text_primary"
                 android:includeFontPadding="false"
@@ -453,6 +457,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:background="@color/transparent"
+                        android:hint="제수량 합계를 입력하세요 (예: 600)"
                         android:inputType="number|numberSigned"
                         android:textSize="16sp" />
 
@@ -464,7 +469,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="7dp"
                 android:fontFamily="@font/noto_sans_kr_regular"
                 android:textColor="@color/text_primary"
                 android:includeFontPadding="false"
