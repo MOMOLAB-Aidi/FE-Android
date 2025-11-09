@@ -7,6 +7,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.NumberPicker
+import android.widget.TextView
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -18,6 +20,7 @@ import com.example.momolabfe.data.remote.record.model.RecordExchangeCreateReques
 import com.example.momolabfe.databinding.FragmentRecordExchangeInfoBinding
 import com.example.momolabfe.ui.record.viewModel.RecordViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.time.LocalTime
@@ -63,15 +66,81 @@ class RecordExchangeInfoFragment : Fragment() {
         binding.dateTv.text = dateText
         binding.dwTv.text = dwKorean
 
+        binding.exchangeTimeDataTv.setOnClickListener {
+            showCustomTimePicker(binding.exchangeTimeDataTv)
+        }
+
         setupUI()
         setupObservers()
+    }
+
+    private fun showCustomTimePicker(targetView: TextView) {
+        val dialogView = layoutInflater.inflate(R.layout.bottom_sheet_time_picker, null, false)
+
+        val ampmPicker = dialogView.findViewById<NumberPicker>(R.id.ampm_picker)
+        val hourPicker = dialogView.findViewById<NumberPicker>(R.id.hour_picker)
+        val minutePicker = dialogView.findViewById<NumberPicker>(R.id.minute_picker)
+
+        val minuteValues = arrayOf("00", "10", "20", "30", "40", "50")
+
+        // Picker 초기화
+        ampmPicker.minValue = 0
+        ampmPicker.maxValue = 1
+        ampmPicker.displayedValues = arrayOf("오전", "오후")
+
+        hourPicker.minValue = 1
+        hourPicker.maxValue = 12
+        hourPicker.wrapSelectorWheel = true
+
+        minutePicker.minValue = 0
+        minutePicker.maxValue = minuteValues.size - 1
+        minutePicker.displayedValues = minuteValues
+        minutePicker.wrapSelectorWheel = true
+
+        val dialog = BottomSheetDialog(requireContext())
+        dialog.setContentView(dialogView)
+
+        // 배경 적용
+        dialog.setOnShowListener { dialogInterface ->
+            val bottomSheet = (dialogInterface as BottomSheetDialog)
+                .findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
+            bottomSheet?.setBackgroundResource(R.drawable.calendar_background)
+        }
+
+        // 취소 버튼
+        dialogView.findViewById<TextView>(R.id.cancel_btn).setOnClickListener {
+            dialog.dismiss()
+        }
+
+        // 확인 버튼
+        dialogView.findViewById<TextView>(R.id.confirm_btn).setOnClickListener {
+            val isAm = ampmPicker.value == 0
+            var hour = hourPicker.value % 12
+            if (!isAm) hour += 12
+            if (hour == 0) hour = 0 // 12AM → 0시로
+
+            val minuteStr = minuteValues[minutePicker.value]
+            val minuteInt = minuteStr.toInt()
+
+            val selected = LocalTime.of(hour, minuteInt)
+
+            // 화면 표시는 HH:mm
+            targetView.text = selected.format(fmtHH_MM)
+            // 내부 저장은 LocalTime (서버 전송 시 HH:mm:ss로 쉽게 변환)
+            targetView.tag  = selected
+
+            updateNextButtonState()
+
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
 
     private fun setupUI() {
 
         // 텍스트 변경 감지 → 버튼 상태 갱신
         val watcher: (Editable?) -> Unit = { updateNextButtonState() }
-        binding.exchangeTimeEt.addTextChangedListener(afterTextChanged = watcher)
         binding.drainVolumeEt.addTextChangedListener(afterTextChanged = watcher)
         binding.fillVolumeEt.addTextChangedListener(afterTextChanged = watcher)
         binding.fillConcentrationEt.addTextChangedListener(afterTextChanged = watcher)
@@ -88,7 +157,7 @@ class RecordExchangeInfoFragment : Fragment() {
     }
 
     private fun updateNextButtonState() {
-        val exchangeTime = binding.exchangeTimeEt.text?.toString()?.trim().orEmpty()
+        val exchangeTime = binding.exchangeTimeDataTv.text?.toString()?.trim().orEmpty()
         val drainVolume = binding.drainVolumeEt.text?.toString()?.trim().orEmpty()
         val fillVolume = binding.fillVolumeEt.text?.toString()?.trim().orEmpty()
         val fillConcentration = binding.fillConcentrationEt.text?.toString()?.trim().orEmpty()
@@ -144,7 +213,7 @@ class RecordExchangeInfoFragment : Fragment() {
 
 
     private fun createRecordExchangeRequest(): RecordExchangeCreateRequest {
-        val exchangeTimeInput = binding.exchangeTimeEt.text?.toString()?.trim().orEmpty()
+        val exchangeTimeInput = binding.exchangeTimeDataTv.text?.toString()?.trim().orEmpty()
         val time = parseExchangeTime(exchangeTimeInput)
             ?: error("교환시각 형식 오류 (예: 09:00 또는 09:00:00)")
 

@@ -125,17 +125,19 @@
             android:orientation="horizontal"
             android:padding="7dp">
 
-            <EditText
-                android:id="@+id/exchange_time_et"
+            <TextView
+                android:id="@+id/exchange_time_data_tv"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_weight="1"
                 android:background="@color/transparent"
                 android:fontFamily="@font/noto_sans_kr_regular"
+                android:text="선택"
+                android:clickable="true"
+                android:focusable="true"
                 android:includeFontPadding="false"
-                android:textColor="@color/text_primary"
-                android:inputType="text"
+                android:textColor="@color/main_2"
                 android:textSize="16sp" />
 
         </LinearLayout>
