@@ -86,7 +86,7 @@ class RecordExchangeInfoFragment : Fragment() {
         // Picker 초기화
         ampmPicker.minValue = 0
         ampmPicker.maxValue = 1
-        ampmPicker.displayedValues = arrayOf("AM", "PM")
+        ampmPicker.displayedValues = arrayOf("오전", "오후")
 
         hourPicker.minValue = 1
         hourPicker.maxValue = 12
@@ -119,10 +119,16 @@ class RecordExchangeInfoFragment : Fragment() {
             if (!isAm) hour += 12
             if (hour == 0) hour = 0 // 12AM → 0시로
 
-            val minute = minuteValues[minutePicker.value]
+            val minuteStr = minuteValues[minutePicker.value]
+            val minuteInt = minuteStr.toInt()
 
-            // "HH:mm"으로 표기 (내부 검증/전송 로직과 호환)
-            targetView.text = String.format("%02d:%02d", hour, minute)
+            val selected = LocalTime.of(hour, minuteInt)
+
+            // 화면 표시는 HH:mm
+            targetView.text = selected.format(fmtHH_MM)
+            // 내부 저장은 LocalTime (서버 전송 시 HH:mm:ss로 쉽게 변환)
+            targetView.tag  = selected
+
             updateNextButtonState()
 
             dialog.dismiss()
