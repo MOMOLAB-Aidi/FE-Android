@@ -1,4 +1,4 @@
-package com.example.momolabfe.ui.auth
+package com.example.momolabfe.ui.login
 
 import android.os.Bundle
 import android.view.LayoutInflater
