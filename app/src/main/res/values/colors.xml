@@ -10,8 +10,12 @@
     <color name="transparent">#00000000</color>
 
     <color name="main_1">#0098F9</color>
-    <color name="main_2">#306CF0</color>
+    <color name="main_2">#6366f1</color>
     <color name="text_primary">#0F0F0F</color>
+    <color name="main_bg">#EFF4FF</color>
+    <color name="main_text">#645C9F</color>
+    <color name="secondary_text">#595865</color>
+    <color name="bg_light_blue">#eff6ff</color>
 
     <color name="gray">#C2C4C6</color>
     <color name="deactive">#B1B2B3</color>

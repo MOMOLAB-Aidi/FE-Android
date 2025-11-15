@@ -12,13 +12,18 @@
         android:title="기록"/>
 
     <item
+        android:id="@+id/fragment_record_list"
+        android:icon="@drawable/ic_record_list_sv"
+        android:title="목록"/>
+
+    <item
         android:id="@+id/fragment_consult"
         android:icon="@drawable/ic_consult_sv"
         android:title="상담"/>
 
     <item
-        android:id="@+id/fragment_mypage"
-        android:icon="@drawable/ic_mypage_sv"
-        android:title="마이페이지"/>
+        android:id="@+id/fragment_statistics"
+        android:icon="@drawable/ic_statistics_sv"
+        android:title="통계"/>
 
 </menu>
