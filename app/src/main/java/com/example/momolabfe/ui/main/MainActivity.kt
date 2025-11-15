@@ -10,7 +10,6 @@ import com.example.momolabfe.databinding.ActivityMainBinding
 import com.example.momolabfe.ui.auth.LoginFragment
 import com.example.momolabfe.ui.consult.ConsultFragment
 import com.example.momolabfe.ui.record.RecordFragment
-import com.example.momolabfe.ui.record.RecordListFragment
 import com.example.momolabfe.ui.statistics.StatisticsFragment
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -62,13 +61,6 @@ class MainActivity : AppCompatActivity() {
                 R.id.fragment_record -> {
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.main_frm, RecordFragment())
-                        .commitAllowingStateLoss()
-                    return@setOnItemSelectedListener true
-                }
-
-                R.id.fragment_record_list -> {
-                    supportFragmentManager.beginTransaction()
-                        .replace(R.id.main_frm, RecordListFragment())
                         .commitAllowingStateLoss()
                     return@setOnItemSelectedListener true
                 }

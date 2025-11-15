@@ -1,4 +1,4 @@
-package com.example.momolabfe.ui.main
+package com.example.momolabfe.ui.record
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -6,22 +6,19 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.momolabfe.R
-import com.example.momolabfe.databinding.FragmentHomeBinding
-import com.example.momolabfe.ui.record.RecordFragment
-import com.example.momolabfe.ui.record.RecordListFragment
-import com.example.momolabfe.ui.statistics.StatisticsFragment
+import com.example.momolabfe.databinding.FragmentRecordBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
-class HomeFragment : Fragment() {
+class RecordFragment : Fragment() {
 
-    private var _binding: FragmentHomeBinding? = null
+    private var _binding: FragmentRecordBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentHomeBinding.inflate(inflater, container, false)
+        _binding = FragmentRecordBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -34,23 +31,16 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.recordCv.setOnClickListener {
+        binding.manualEntryCv.setOnClickListener {
             parentFragmentManager.beginTransaction()
-                .replace(R.id.main_frm, RecordFragment())
+                .replace(R.id.main_frm, RecordWrite01Fragment())
                 .addToBackStack(null)
                 .commit()
         }
 
-        binding.detailStatisticsBtn.setOnClickListener {
+        binding.cameraCv.setOnClickListener {
             parentFragmentManager.beginTransaction()
-                .replace(R.id.main_frm, StatisticsFragment())
-                .addToBackStack(null)
-                .commit()
-        }
-
-        binding.totalTv.setOnClickListener {
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.main_frm, RecordListFragment())
+                .replace(R.id.main_frm, RecordOcrFragment())
                 .addToBackStack(null)
                 .commit()
         }

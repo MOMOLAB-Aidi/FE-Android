@@ -61,7 +61,7 @@
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/weekly_avg_weight_cv"
-                android:layout_width="180dp"
+                android:layout_width="165dp"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="10dp"
                 android:layout_marginStart="20dp"
@@ -71,7 +71,7 @@
                 app:cardElevation="0dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/title_container"
-                app:strokeWidth="1dp">
+                app:strokeWidth="0dp">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
@@ -111,7 +111,7 @@
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/weekly_avg_uf_cv"
-                android:layout_width="180dp"
+                android:layout_width="165dp"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="10dp"
                 android:layout_marginStart="10dp"
@@ -121,7 +121,7 @@
                 app:cardElevation="0dp"
                 app:layout_constraintStart_toEndOf="@id/weekly_avg_weight_cv"
                 app:layout_constraintTop_toBottomOf="@id/title_container"
-                app:strokeWidth="1dp">
+                app:strokeWidth="0dp">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
