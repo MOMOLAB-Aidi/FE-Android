@@ -11,6 +11,9 @@ import com.example.momolabfe.ui.record.RecordFragment
 import com.example.momolabfe.ui.record.RecordListFragment
 import com.example.momolabfe.ui.statistics.StatisticsFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class HomeFragment : Fragment() {
 
@@ -33,6 +36,19 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        try {
+            // 날짜 포맷
+            val now = Date()
+            val format = SimpleDateFormat("yyyy년 MM월 dd일 EEEE", Locale.KOREA)
+
+            val formattedDate = format.format(now)
+            binding.contentTv.text = formattedDate
+
+        } catch (e: Exception) {
+            // 날짜 포맷팅 중 오류 발생 시 로그 출력
+            e.printStackTrace()
+        }
 
         binding.recordCv.setOnClickListener {
             parentFragmentManager.beginTransaction()

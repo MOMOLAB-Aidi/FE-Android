@@ -41,7 +41,7 @@
                     android:id="@+id/content_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="2025년 11월 14일 금요일"
+                    tools:text="2025년 11월 14일 금요일"
                     android:fontFamily="@font/noto_sans_kr_medium"
                     android:gravity="center"
                     android:includeFontPadding="false"
