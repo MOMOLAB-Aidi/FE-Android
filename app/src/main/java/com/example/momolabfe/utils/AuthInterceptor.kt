@@ -1,7 +1,6 @@
 package com.example.momolabfe.utils
 
 import android.util.Log
-import com.example.momolabfe.BuildConfig
 import com.example.momolabfe.data.remote.auth.data.TokenRequest
 import com.example.momolabfe.data.remote.auth.service.AuthService
 import com.example.momolabfe.data.remote.auth.LogoutManager
@@ -9,8 +8,6 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import okhttp3.Interceptor
 import okhttp3.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Inject
 
 // 요청 단위 1회 재시도 가드용 마커
@@ -18,7 +15,8 @@ private object RetryOnceTag
 
 class AuthInterceptor @Inject constructor(
     private val tokenManager: TokenManager,
-    private val logoutManager: LogoutManager
+    private val logoutManager: LogoutManager,
+    @NoAuthRetrofit private val noAuthService: AuthService
 ) : Interceptor {
 
     companion object {
@@ -29,15 +27,10 @@ class AuthInterceptor @Inject constructor(
 
         // 재발급 대상 제외, 즉시 로그아웃할 코드들
         private val FORCE_LOGOUT_CODES = setOf(
-            "AUTH4101", // 잘못된 형식
-            "AUTH4102", // 미지원 형식
-            "AUTH4103", // 비어있는 클레임
-            "AUTH4112", // 잘못된 서명
-            "AUTH4114", // AT 대신 RT 사용
-            "AUTH4115", // 블랙리스트 AT
-            "AUTH4131", // 비활성 사용자(탈퇴 등)
-            "USER4001", // 유저 없음
-            "COMMON401" // 기타 인증 필요
+            "AUTH_401_03", // TOKEN_INVALID
+            "AUTH_401_04", // TOKEN_GENERAL_ERROR
+            "AUTH_401_06", // REFRESH_TOKEN_NOT_FOUND
+            "USER_403_01"  // USER_STATUS_INACTIVE
         )
 
         private val NO_AUTH_PATHS = listOf(
@@ -49,7 +42,7 @@ class AuthInterceptor @Inject constructor(
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
 
-        // 이미 재발급 재시도를 했는지(tag) 확인
+        // 이미 재발급 재시도를 했는지 확인
         val hasRetried = originalRequest.tag(RetryOnceTag::class.java) != null
         if (isNoAuthRequired(originalRequest.url.encodedPath)) {
             return chain.proceed(originalRequest)
@@ -83,7 +76,7 @@ class AuthInterceptor @Inject constructor(
             }
         }
 
-        // 401이면 RT 만료/무효로 간주하고 즉시 로그아웃 (만료 코드 제외 + 강제 로그아웃 코드만)
+        // 401이면 RT 만료/무효로 간주하고 즉시 로그아웃
         if (response.code == HTTP_UNAUTHORIZED) {
             val code = extractErrorCode(response)
             if (code != null && code != JWT_EXPIRED_CODE && FORCE_LOGOUT_CODES.contains(code)) {
@@ -98,7 +91,7 @@ class AuthInterceptor @Inject constructor(
         return NO_AUTH_PATHS.any { path.contains(it) }
     }
 
-    // 401 + 본문코드가 AUTH4113(또는 바디 없음/파싱실패) → 만료로 간주
+    // 토큰 만료 처리
     private fun isTokenExpired(response: Response): Boolean {
         if (response.code != HTTP_UNAUTHORIZED) return false
         return try {
@@ -152,13 +145,8 @@ class AuthInterceptor @Inject constructor(
     // 네트워크 호출만 담당 (싱글플라이트 블록 안에서 호출)
     private suspend fun reissueOnce(refreshToken: String): String? {
         return try {
-            val retrofit = Retrofit.Builder()
-                .baseUrl(BuildConfig.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
 
-            val tempAuthService = retrofit.create(AuthService::class.java)
-            val reissueResponse = tempAuthService.reissue(TokenRequest(refreshToken))
+            val reissueResponse = noAuthService.reissue(TokenRequest(refreshToken))
 
             if (reissueResponse.isSuccessful) {
                 val newToken = reissueResponse.body()?.result

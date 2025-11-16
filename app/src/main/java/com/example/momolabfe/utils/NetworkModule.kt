@@ -10,6 +10,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -32,6 +33,10 @@ annotation class NoAuthRetrofit
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
 annotation class NoAuthClient
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class AuthClient
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -89,6 +94,44 @@ object NetworkModule {
     fun provideNoAuthRetrofit(
         gson: Gson,
         @NoAuthClient client: OkHttpClient
+    ): Retrofit =
+        Retrofit.Builder()
+            .baseUrl(BuildConfig.BASE_URL)
+            .client(client)
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .build()
+
+    // 토큰 인터셉터를 주입받아 인증이 필요한 일반 OkHttpClient를 제공
+    @Provides @Singleton @AuthClient
+    fun provideAuthOkHttp(
+        logging: HttpLoggingInterceptor,
+        tokenInterceptor: Interceptor
+    ): OkHttpClient =
+        OkHttpClient.Builder()
+            .addInterceptor(tokenInterceptor) // 토큰 추가
+            .addInterceptor(logging)
+            .connectTimeout(15, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
+            .build()
+
+    // LogoutManager가 요청한 @AuthRetrofit Retrofit을 제공
+    @Provides @Singleton @AuthRetrofit
+    fun provideAuthRetrofit(
+        gson: Gson,
+        @AuthClient client: OkHttpClient // 토큰이 필요 없는 클라이언트를 사용
+    ): Retrofit =
+        Retrofit.Builder()
+            .baseUrl(BuildConfig.BASE_URL)
+            .client(client)
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .build()
+
+    // 일반 인증용 Retrofit
+    @Provides @Singleton
+    fun provideDefaultRetrofit(
+        gson: Gson,
+        @AuthClient client: OkHttpClient
     ): Retrofit =
         Retrofit.Builder()
             .baseUrl(BuildConfig.BASE_URL)
