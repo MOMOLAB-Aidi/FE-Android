@@ -10,7 +10,7 @@
 
     <ImageView
         android:id="@+id/logo_iv"
-        android:src="@drawable/logo_lighten"
+        android:src="@drawable/aidi_logo_bg_blue"
         android:layout_width="200dp"
         android:layout_height="200dp"
         app:layout_constraintStart_toStartOf="parent"

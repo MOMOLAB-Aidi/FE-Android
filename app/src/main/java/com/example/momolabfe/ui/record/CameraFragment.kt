@@ -44,7 +44,7 @@ class CameraFragment : Fragment() {
         binding.nextTv.setOnClickListener {
             val uri = capturedUriString
 
-            val next = RecordExchangeListFragment().apply {
+            val next = RecordWrite02Fragment().apply {
                 arguments = Bundle().apply {
                     putParcelable("image_uri", uri)
                 }

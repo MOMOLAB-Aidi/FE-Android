@@ -1,7 +1,6 @@
 package com.example.momolabfe.ui.main
 
 import android.os.Bundle
-import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -10,8 +9,8 @@ import com.example.momolabfe.R
 import com.example.momolabfe.databinding.ActivityMainBinding
 import com.example.momolabfe.ui.auth.LoginFragment
 import com.example.momolabfe.ui.consult.ConsultFragment
-import com.example.momolabfe.ui.mypage.MypageFragment
 import com.example.momolabfe.ui.record.RecordFragment
+import com.example.momolabfe.ui.statistics.StatisticsFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -73,9 +72,9 @@ class MainActivity : AppCompatActivity() {
                     return@setOnItemSelectedListener true
                 }
 
-                R.id.fragment_mypage -> {
+                R.id.fragment_statistics -> {
                     supportFragmentManager.beginTransaction()
-                        .replace(R.id.main_frm, MypageFragment())
+                        .replace(R.id.main_frm, StatisticsFragment())
                         .commitAllowingStateLoss()
                     return@setOnItemSelectedListener true
                 }

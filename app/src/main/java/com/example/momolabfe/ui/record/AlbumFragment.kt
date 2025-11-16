@@ -65,7 +65,7 @@ class AlbumFragment : Fragment() {
         binding.nextTv.setOnClickListener {
             val uri = selectedUri
 
-            val next = RecordExchangeListFragment().apply {
+            val next = RecordWrite02Fragment().apply {
                 arguments = Bundle().apply {
                     putParcelable("image_uri", uri)
                 }
@@ -115,10 +115,8 @@ class AlbumFragment : Fragment() {
         adapter.submitList(imageUris)
 
         if (imageUris.isEmpty()) {
-            binding.imageNotExistsCv.isVisible = true
             binding.nextTv.isVisible = false
         } else {
-            binding.imageNotExistsCv.isVisible = false
             selectedUri = imageUris.first()
             showPreview(selectedUri!!)
             binding.nextTv.isVisible = true
