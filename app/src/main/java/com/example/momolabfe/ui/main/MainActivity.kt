@@ -7,7 +7,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.momolabfe.R
 import com.example.momolabfe.databinding.ActivityMainBinding
-import com.example.momolabfe.ui.login.LoginFragment
+import com.example.momolabfe.ui.auth.LoginFragment
 import com.example.momolabfe.ui.consult.ConsultFragment
 import com.example.momolabfe.ui.record.RecordFragment
 import com.example.momolabfe.ui.statistics.StatisticsFragment
