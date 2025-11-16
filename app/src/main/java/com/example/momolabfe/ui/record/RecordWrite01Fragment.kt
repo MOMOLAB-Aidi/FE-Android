@@ -36,4 +36,9 @@ class RecordWrite01Fragment : Fragment() {
                 .commit()
         }
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 }

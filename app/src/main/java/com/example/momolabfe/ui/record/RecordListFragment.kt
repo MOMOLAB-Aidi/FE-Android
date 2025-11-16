@@ -29,4 +29,8 @@ class RecordListFragment : Fragment() {
         activity?.findViewById<BottomNavigationView>(R.id.main_bnv)?.visibility = View.GONE
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 }

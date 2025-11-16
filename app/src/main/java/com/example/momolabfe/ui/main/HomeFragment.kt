@@ -71,4 +71,9 @@ class HomeFragment : Fragment() {
                 .commit()
         }
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 }

@@ -45,4 +45,9 @@ class RecordFragment : Fragment() {
                 .commit()
         }
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 }
