@@ -64,9 +64,26 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="20dp"
-                android:text="환자 ID"
+                tools:text="P1234"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/title_container"/>
+
+            <TextView
+                android:id="@+id/record_start_date_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="2025.11.16"
+                app:layout_constraintStart_toStartOf="@id/login_id_tv"
+                app:layout_constraintTop_toBottomOf="@id/login_id_tv"/>
+
+            <TextView
+                android:id="@+id/record_period_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                tools:text="(D+3)"
+                app:layout_constraintStart_toEndOf="@id/record_start_date_tv"
+                app:layout_constraintTop_toTopOf="@id/record_start_date_tv"/>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/logout_btn"

@@ -2,6 +2,7 @@ package com.example.momolabfe.utils
 
 import com.example.momolabfe.data.remote.auth.service.AuthService
 import com.example.momolabfe.data.remote.record.service.RecordService
+import com.example.momolabfe.data.remote.user.service.UserService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,6 +24,12 @@ class ApiModule {
     @Singleton
     fun provideRecordApi(@AuthRetrofit retrofit: Retrofit): RecordService {
         return retrofit.create(RecordService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideUserApi(@AuthRetrofit retrofit: Retrofit): UserService {
+        return retrofit.create(UserService::class.java)
     }
 
     @Provides

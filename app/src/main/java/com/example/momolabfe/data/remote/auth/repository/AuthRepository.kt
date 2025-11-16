@@ -21,10 +21,4 @@ class AuthRepository @Inject constructor (
         Log.d("Login", "response = ${response.body()}")
         handleApiResponse(response)
     }
-
-    suspend fun reissueToken(request: TokenRequest): Result<TokenResponse> = runCatching {
-        val response = authService.reissue(request)
-        Log.d("Reissue", "response = ${response.body()}")
-        handleApiResponse(response)
-    }
 }
