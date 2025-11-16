@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="130dp"
+    android:layout_marginVertical="6dp"
+    android:layout_marginHorizontal="2dp"
+    android:foreground="?attr/selectableItemBackground"
+    app:cardElevation="0dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="130dp">
+
+        <ImageView
+            android:id="@+id/calendar_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:src="@drawable/ic_calendar_color_sv"
+            android:layout_marginStart="30dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/date_tv"/>
+
+        <TextView
+            android:id="@+id/date_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"
+            android:text="2025.11.14 (금)"
+            android:textSize="15sp"
+            android:fontFamily="@font/noto_sans_kr_medium"
+            android:textColor="@color/secondary_text"
+            android:textStyle="bold"
+            android:includeFontPadding="false"
+            app:layout_constraintStart_toEndOf="@id/calendar_iv"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <TextView
+            android:id="@+id/complete_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="4회차 완료"
+            android:textSize="15sp"
+            android:textColor="@color/secondary_text"
+            android:fontFamily="@font/noto_sans_kr_regular"
+            android:includeFontPadding="false"
+            app:layout_constraintTop_toBottomOf="@id/date_tv"
+            app:layout_constraintStart_toStartOf="@id/date_tv"/>
+
+        <ImageView
+            android:id="@+id/next_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:src="@drawable/ic_next_sv"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/date_tv"/>
+
+        <TextView
+            android:id="@+id/weight_title_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="체중"
+            android:textSize="15sp"
+            android:textColor="@color/secondary_text"
+            android:fontFamily="@font/noto_sans_kr_regular"
+            android:includeFontPadding="false"
+            app:layout_constraintStart_toStartOf="@id/calendar_iv"
+            app:layout_constraintTop_toBottomOf="@id/calendar_iv"/>
+
+        <TextView
+            android:id="@+id/weight_content_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="56.2kg"
+            android:textSize="15sp"
+            android:textColor="@color/text_primary"
+            android:fontFamily="@font/noto_sans_kr_regular"
+            android:includeFontPadding="false"
+            app:layout_constraintTop_toBottomOf="@id/weight_title_tv"
+            app:layout_constraintStart_toStartOf="@id/weight_title_tv"/>
+
+        <TextView
+            android:id="@+id/blood_pressure_title_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="혈압"
+            android:textSize="15sp"
+            android:textColor="@color/secondary_text"
+            android:fontFamily="@font/noto_sans_kr_regular"
+            android:includeFontPadding="false"
+            app:layout_constraintStart_toEndOf="@id/complete_tv"
+            app:layout_constraintTop_toTopOf="@id/weight_title_tv"/>
+
+        <TextView
+            android:id="@+id/blood_pressure_content_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="125/78"
+            android:textSize="15sp"
+            android:textColor="@color/text_primary"
+            android:fontFamily="@font/noto_sans_kr_regular"
+            android:includeFontPadding="false"
+            app:layout_constraintStart_toStartOf="@id/blood_pressure_title_tv"
+            app:layout_constraintTop_toBottomOf="@id/blood_pressure_title_tv"/>
+
+        <TextView
+            android:id="@+id/total_uf_title_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="70dp"
+            android:text="제수량"
+            android:textSize="15sp"
+            android:textColor="@color/secondary_text"
+            android:fontFamily="@font/noto_sans_kr_regular"
+            android:includeFontPadding="false"
+            app:layout_constraintStart_toEndOf="@id/blood_pressure_content_tv"
+            app:layout_constraintTop_toTopOf="@id/blood_pressure_title_tv"/>
+
+        <TextView
+            android:id="@+id/total_uf_content_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="520g"
+            android:textSize="15sp"
+            android:textColor="@color/text_primary"
+            android:fontFamily="@font/noto_sans_kr_regular"
+            android:includeFontPadding="false"
+            app:layout_constraintStart_toStartOf="@id/total_uf_title_tv"
+            app:layout_constraintTop_toBottomOf="@id/total_uf_title_tv"/>
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>

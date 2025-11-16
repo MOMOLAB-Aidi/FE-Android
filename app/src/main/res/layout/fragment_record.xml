@@ -4,192 +4,324 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.record.RecordFragment">
+    android:background="@color/main_bg">
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/scroll_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false"
-        android:paddingBottom="40dp">
+        android:paddingBottom="50dp">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="60dp"
             android:orientation="vertical">
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/panel_info"
+                android:id="@+id/title_container"
                 android:layout_width="match_parent"
-                android:layout_height="430dp"
-                android:background="@drawable/bg_center_gradient">
-
-                <ImageView
-                    android:id="@+id/calendar_iv"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_marginStart="25dp"
-                    android:layout_marginTop="30dp"
-                    android:src="@drawable/ic_calendar_sv"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_gradient"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
                 <TextView
                     android:id="@+id/title_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="50dp"
-                    android:fontFamily="@font/noto_sans_kr_medium"
-                    android:gravity="center"
-                    android:includeFontPadding="false"
-                    android:text="오늘의 건강 기록하기"
-                    android:textColor="@color/white"
-                    android:textSize="20sp"
-                    app:layout_constraintStart_toStartOf="@id/calendar_iv"
-                    app:layout_constraintTop_toBottomOf="@id/calendar_iv" />
-
-                <TextView
-                    android:id="@+id/content_tv"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="20dp"
                     android:fontFamily="@font/noto_sans_kr_medium"
                     android:includeFontPadding="false"
-                    android:text="이미지 스캔을 통해 간편하게 기록해요."
+                    android:text="투석 기록 작성"
                     android:textColor="@color/white"
-                    android:textSize="17sp"
-                    app:layout_constraintStart_toStartOf="@id/title_tv"
-                    app:layout_constraintTop_toBottomOf="@id/title_tv" />
-
-                <ImageView
-                    android:id="@+id/record_iv"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:src="@drawable/record_camera_sv"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/content_tv" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/record_btn"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="19dp"
-                    android:layout_marginTop="15dp"
-                    android:layout_marginEnd="19dp"
-                    android:backgroundTint="@color/text_primary"
-                    android:fontFamily="@font/noto_sans_kr_regular"
-                    android:text="오늘의 건강 기록하기"
-                    android:textColor="@color/white"
-                    android:textSize="15sp"
-                    app:cornerRadius="12dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/record_iv" />
-
-                <TextView
-                    android:id="@+id/manual_entry_tv"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:fontFamily="@font/noto_sans_kr_regular"
-                    android:includeFontPadding="false"
-                    android:text="오늘은 직접 기록할게요"
-                    android:textColor="@color/text_primary"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/record_btn" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
-                android:layout_marginTop="25dp"
-                android:layout_marginEnd="15dp">
-
-                <TextView
-                    android:id="@+id/calendar_title_tv"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:fontFamily="@font/noto_sans_kr_medium"
-                    android:includeFontPadding="false"
-                    android:text="나의 건강 기록"
                     android:textSize="18sp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
-                    android:id="@+id/calendar_content_tv"
+                    android:id="@+id/content_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="날짜별로 쉽게 조회할 수 있어요"
+                    android:layout_marginBottom="20dp"
                     android:fontFamily="@font/noto_sans_kr_regular"
-                    android:textSize="16sp"
                     android:includeFontPadding="false"
-                    app:layout_constraintStart_toStartOf="@id/calendar_title_tv"
-                    app:layout_constraintTop_toBottomOf="@id/calendar_title_tv" />
-
-                <TextView
-                    android:id="@+id/selected_date_tv"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:fontFamily="@font/noto_sans_kr_regular"
-                    android:gravity="center"
-                    tools:text="2025년 10월"
-                    android:textColor="@color/text_primary"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    app:layout_constraintStart_toStartOf="@id/calendar_title_tv"
-                    app:layout_constraintTop_toBottomOf="@id/calendar_content_tv" />
-
-                <ImageView
-                    android:id="@+id/calendar_previous_date_iv"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="20dp"
-                    android:src="@drawable/ic_calendar_previous_sv"
-                    app:layout_constraintEnd_toStartOf="@id/calendar_next_date_iv"
-                    app:layout_constraintTop_toTopOf="@id/selected_date_tv" />
-
-                <ImageView
-                    android:id="@+id/calendar_next_date_iv"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_marginEnd="15dp"
-                    android:src="@drawable/ic_calendar_next_sv"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/calendar_previous_date_iv" />
-
-                <LinearLayout
-                    android:id="@+id/calendar_weekdays_row"
-                    android:layout_marginTop="20dp"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="5dp"
-                    android:orientation="horizontal"
-                    android:paddingBottom="8dp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/selected_date_tv"/>
-
-                <com.kizitonwose.calendar.view.CalendarView
-                    android:id="@+id/calender_view"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="5dp"
-                    app:cv_dayViewResource="@layout/calendar_day_layout"
-                    app:cv_orientation="horizontal"
-                    app:cv_outDateStyle="endOfRow"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/calendar_weekdays_row" />
+                    android:text="작성 방법을 선택해주세요"
+                    android:textColor="@color/white"
+                    android:textSize="17sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="@id/title_tv"
+                    app:layout_constraintTop_toBottomOf="@id/title_tv" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
-        </LinearLayout>
+
+            <TextView
+                android:id="@+id/description_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:text="편한 방법으로 복막투석 기록을 작성하세요"
+                android:textColor="@color/secondary_text"
+                android:textSize="17sp"
+                android:fontFamily="@font/noto_sans_kr_regular"
+                android:includeFontPadding="false"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/title_container" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/manual_entry_cv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginTop="20dp"
+                android:backgroundTint="@color/white"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="1dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/description_tv"
+                app:strokeWidth="0dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp">
+
+                    <ImageView
+                        android:id="@+id/write_iv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:src="@drawable/ic_write_sv"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"/>
+
+                    <TextView
+                        android:id="@+id/manual_entry_title_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginStart="20dp"
+                        android:fontFamily="@font/noto_sans_kr_regular"
+                        android:text="수기로 작성하기"
+                        android:textColor="@color/text_primary"
+                        android:includeFontPadding="false"
+                        android:textSize="15sp"
+                        app:layout_constraintStart_toEndOf="@id/write_iv"
+                        app:layout_constraintTop_toTopOf="parent"/>
+
+                    <ImageView
+                        android:id="@+id/next_write_iv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="10dp"
+                        android:src="@drawable/ic_right_arrow_sv"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"/>
+
+                    <TextView
+                        android:id="@+id/manual_entry_content_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:fontFamily="@font/noto_sans_kr_regular"
+                        android:text="항목을 직접 입력하여 작성합니다"
+                        android:textColor="#646668"
+                        android:textSize="14sp"
+                        android:includeFontPadding="false"
+                        app:layout_constraintStart_toStartOf="@id/manual_entry_title_tv"
+                        app:layout_constraintTop_toBottomOf="@id/manual_entry_title_tv"
+                        app:layout_constraintBottom_toBottomOf="parent"/>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/camera_cv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginTop="15dp"
+                android:backgroundTint="@color/white"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="1dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/manual_entry_cv"
+                app:strokeWidth="0dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp">
+
+                    <ImageView
+                        android:id="@+id/camera_iv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:src="@drawable/ic_camera_sv"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"/>
+
+                    <TextView
+                        android:id="@+id/camera_title_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginStart="20dp"
+                        android:fontFamily="@font/noto_sans_kr_regular"
+                        android:text="사진으로 작성하기"
+                        android:textColor="@color/text_primary"
+                        android:includeFontPadding="false"
+                        android:textSize="15sp"
+                        app:layout_constraintStart_toEndOf="@id/camera_iv"
+                        app:layout_constraintTop_toTopOf="parent"/>
+
+                    <ImageView
+                        android:id="@+id/next_camera_iv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="10dp"
+                        android:src="@drawable/ic_right_arrow_sv"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"/>
+
+                    <TextView
+                        android:id="@+id/camera_content_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:fontFamily="@font/noto_sans_kr_regular"
+                        android:text="종이 기록지를 촬영하거나\n앨범에서 선택하세요"
+                        android:textColor="#646668"
+                        android:textSize="14sp"
+                        android:includeFontPadding="false"
+                        app:layout_constraintStart_toStartOf="@id/camera_title_tv"
+                        app:layout_constraintTop_toBottomOf="@id/camera_title_tv"/>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/ai_title_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:backgroundTint="@color/white"
+                        app:cardCornerRadius="15dp"
+                        app:cardElevation="0dp"
+                        app:layout_constraintStart_toStartOf="@id/camera_content_tv"
+                        app:layout_constraintTop_toBottomOf="@id/camera_content_tv"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:strokeWidth="0dp">
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="5dp"
+                            android:background="#F3E8FF">
+
+                            <ImageView
+                                android:id="@+id/dot_iv"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/ic_purple_dot_sv"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="AI 자동 인식"
+                                android:paddingStart="0dp"
+                                android:paddingEnd="10dp"
+                                android:fontFamily="@font/noto_sans_kr_regular"
+                                android:textColor="#8200DB"
+                                android:textSize="14sp"
+                                android:includeFontPadding="false"
+                                app:layout_constraintStart_toEndOf="@id/dot_iv"
+                                app:layout_constraintTop_toTopOf="@id/dot_iv"/>
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+                    </com.google.android.material.card.MaterialCardView>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/camera_description_cv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginTop="20dp"
+                android:backgroundTint="@color/white"
+                app:cardCornerRadius="15dp"
+                app:cardElevation="0dp"
+                app:layout_constraintStart_toStartOf="@id/camera_cv"
+                app:layout_constraintTop_toBottomOf="@id/camera_cv"
+                app:strokeWidth="0.5dp"
+                app:strokeColor="#3E399D">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:background="#EFF6FF">
+
+                    <ImageView
+                        android:id="@+id/bulb_iv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:src="@drawable/ic_bulb_sv"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"/>
+
+                    <TextView
+                        android:id="@+id/camera_description_title_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:text="사진 인식 기능이란?"
+                        android:fontFamily="@font/noto_sans_kr_regular"
+                        android:textColor="#3E399D"
+                        android:textSize="14sp"
+                        android:includeFontPadding="false"
+                        app:layout_constraintStart_toEndOf="@id/bulb_iv"
+                        app:layout_constraintTop_toTopOf="parent"/>
+
+                    <TextView
+                        android:id="@+id/camera_description_content_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:text="종이에 적힌 투석 기록을 카메라로 촬영하면 \nAI가 자동으로 숫자와 내용을 인식하여 입력해드립니다."
+                        android:fontFamily="@font/noto_sans_kr_regular"
+                        android:textColor="#3E399D"
+                        android:textSize="13sp"
+                        android:includeFontPadding="false"
+                        app:layout_constraintStart_toStartOf="@id/bulb_iv"
+                        app:layout_constraintTop_toBottomOf="@id/camera_description_title_tv"
+                        app:layout_constraintBottom_toBottomOf="parent"/>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
     </androidx.core.widget.NestedScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

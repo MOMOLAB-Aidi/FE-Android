@@ -42,4 +42,9 @@ class BottomSheetSelectMethodFragment : BottomSheetDialogFragment() {
                 .commit()
         }
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 }
