@@ -70,7 +70,7 @@
                     android:id="@+id/id_et"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="number"
+                    android:inputType="text"
                     android:textSize="14sp"
                     android:paddingTop="10dp"
                     android:paddingBottom="10dp"

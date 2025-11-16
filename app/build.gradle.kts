@@ -91,4 +91,7 @@ dependencies {
     // glide
     implementation ("com.github.bumptech.glide:glide:4.15.1")
     ksp("com.github.bumptech.glide:ksp:4.15.1")
+
+    // EncryptedSharedPreferences
+    implementation ("androidx.security:security-crypto:1.1.0")
 }

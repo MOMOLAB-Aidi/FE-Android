@@ -44,10 +44,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun initBottomNavigation() {
 
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.main_frm, HomeFragment())
-            .commitAllowingStateLoss()
-
         binding.mainBnv.setOnItemSelectedListener { item ->
             when (item.itemId) {
 
