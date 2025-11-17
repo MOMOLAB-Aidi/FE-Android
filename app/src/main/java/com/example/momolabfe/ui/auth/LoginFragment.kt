@@ -2,6 +2,7 @@ package com.example.momolabfe.ui.auth
 
 import android.content.res.ColorStateList
 import android.os.Bundle
+import android.text.InputType
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -33,9 +34,7 @@ class LoginFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: AuthViewModel by viewModels()
-
-    @Inject
-    lateinit var tokenManager: TokenManager
+    private var isPasswordVisible = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -58,6 +57,7 @@ class LoginFragment : Fragment() {
             setCheckBoxTint(checkBox, isChecked)
         }
 
+        setupPasswordToggle()
         observeLoginResult()
 
         viewModel.getSavedPatientId().observe(viewLifecycleOwner) { savedId ->
@@ -86,6 +86,23 @@ class LoginFragment : Fragment() {
 
             val request = LoginRequest(loginId, password)
             viewModel.login(request)
+        }
+    }
+
+    private fun setupPasswordToggle() {
+        binding.passwordTil.setEndIconOnClickListener {
+            isPasswordVisible = !isPasswordVisible
+
+            if (isPasswordVisible) { // 비밀번호 보이기
+                binding.passwordEt.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+                binding.passwordTil.setEndIconDrawable(R.drawable.ic_eye_opened_sv)
+            } else { // 비밀번호 숨기기
+                binding.passwordEt.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+                binding.passwordTil.setEndIconDrawable(R.drawable.ic_eye_closed_sv)
+            }
+
+            // 커서를 텍스트 끝으로 이동
+            binding.passwordEt.setSelection(binding.passwordEt.text?.length ?: 0)
         }
     }
 
