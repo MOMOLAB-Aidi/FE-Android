@@ -6,6 +6,7 @@ import com.example.momolabfe.data.remote.auth.service.AuthService
 import com.example.momolabfe.data.remote.auth.LogoutManager
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.Response
 import javax.inject.Inject
@@ -16,13 +17,14 @@ private object RetryOnceTag
 class AuthInterceptor @Inject constructor(
     private val tokenManager: TokenManager,
     private val logoutManager: LogoutManager,
-    @NoAuthRetrofit private val noAuthService: AuthService
+    @NoAuthRetrofit private val noAuthService: AuthService,
+    private val gson: Gson
 ) : Interceptor {
 
     companion object {
         private const val AUTH_HEADER = "Authorization"
         private const val BEARER_PREFIX = "Bearer "
-        private const val JWT_EXPIRED_CODE = "AUTH4113"
+        private const val JWT_EXPIRED_CODE = "AUTH_401_02"
         private const val HTTP_UNAUTHORIZED = 401
 
         // 재발급 대상 제외, 즉시 로그아웃할 코드들
@@ -61,7 +63,6 @@ class AuthInterceptor @Inject constructor(
 
         // 이미 재시도한 요청은 더 이상 재발급을 시도하지 않음
         if (!hasRetried && isTokenExpired(response) && !refreshToken.isNullOrEmpty()) {
-            response.close()
 
             val newAccessToken = refreshAccessToken(refreshToken)
             if (!newAccessToken.isNullOrEmpty()) {
@@ -69,6 +70,7 @@ class AuthInterceptor @Inject constructor(
                     .header(AUTH_HEADER, "$BEARER_PREFIX$newAccessToken")
                     .tag(RetryOnceTag::class.java, RetryOnceTag)
                     .build()
+                response.close()
                 return chain.proceed(newRequest)
             } else {
                 // 재발급 실패 시에는 기존 응답을 그대로 반환
@@ -87,9 +89,8 @@ class AuthInterceptor @Inject constructor(
         return response
     }
 
-    private fun isNoAuthRequired(path: String): Boolean {
-        return NO_AUTH_PATHS.any { path.contains(it) }
-    }
+    private fun isNoAuthRequired(path: String): Boolean =
+        NO_AUTH_PATHS.any { path == it }
 
     // 토큰 만료 처리
     private fun isTokenExpired(response: Response): Boolean {
@@ -103,7 +104,7 @@ class AuthInterceptor @Inject constructor(
                 true
             }
         } catch (e: Exception) {
-            Log.e("AuthInterceptor", "Error parsing response body", e)
+            Log.e("AuthInterceptor", "응답 본문 파싱 실패", e)
             true
         }
     }
@@ -113,7 +114,7 @@ class AuthInterceptor @Inject constructor(
         val bodyString = readBodyString(response)
         if (bodyString.isNotEmpty()) parseApiErrorBody(bodyString)?.code else null
     } catch (e: Exception) {
-        Log.e("AuthInterceptor", "Error parsing code", e)
+        Log.e("AuthInterceptor", "코드 파싱 실패", e)
         null
     }
 
@@ -122,7 +123,7 @@ class AuthInterceptor @Inject constructor(
         return try {
             response.peekBody(1024 * 1024).string() // 1MB
         } catch (e: Exception) {
-            Log.e("AuthInterceptor", "Error peeking body", e)
+            Log.e("AuthInterceptor", "본문 미리보기 실패", e)
             ""
         }
     }
@@ -137,8 +138,10 @@ class AuthInterceptor @Inject constructor(
 
     private fun refreshAccessToken(refreshToken: String): String? {
         // 동시 재발급을 1회로 합쳐줌
-        return RefreshSingleFlight.refreshBlocking {
-            reissueOnce(refreshToken)
+        return runBlocking {
+            RefreshSingleFlight.refresh {
+                reissueOnce(refreshToken)
+            }
         }
     }
 
@@ -152,9 +155,9 @@ class AuthInterceptor @Inject constructor(
                 val newToken = reissueResponse.body()?.result
                 fun String.mask() = if (length > 10) take(4) + "..." + takeLast(6) else "***"
 
-                Log.d("AuthInterceptor", "Token refreshed successfully")
-                Log.d("AuthInterceptor", "NewAccessToken: ${newToken?.accessToken?.mask()}")
-                Log.d("AuthInterceptor", "NewRefreshToken: ${newToken?.refreshToken?.mask()}")
+                Log.d("AuthInterceptor", "토큰이 성공적으로 재발급되었습니다.")
+                Log.d("AuthInterceptor", "새로운 accessToken: ${newToken?.accessToken?.mask()}")
+                Log.d("AuthInterceptor", "새로운 refreshToken: ${newToken?.refreshToken?.mask()}")
 
                 tokenManager.saveTokens(
                     accessToken = newToken?.accessToken ?: "",
@@ -169,16 +172,16 @@ class AuthInterceptor @Inject constructor(
 
                     Log.e(
                         "AuthInterceptor",
-                        "Token refresh failed: 401${if (errCode != null) " (code=$errCode)" else ""} Forcing logout"
+                        "토큰 재발급 실패: 401${if (errCode != null) " (code=$errCode)" else ""} 강제 로그아웃"
                     )
                     logoutManager.forceLogout()
                 } else {
-                    Log.e("AuthInterceptor", "Token refresh failed: ${reissueResponse.code()}")
+                    Log.e("AuthInterceptor", "토큰 재발급 실패: ${reissueResponse.code()}")
                 }
                 null
             }
         } catch (e: Exception) {
-            Log.e("AuthInterceptor", "Token refresh error", e)
+            Log.e("AuthInterceptor", "토큰 재발급 실패", e)
             null
         }
     }

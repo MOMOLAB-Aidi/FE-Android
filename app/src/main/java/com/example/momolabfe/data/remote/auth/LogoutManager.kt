@@ -23,9 +23,9 @@ class LogoutManager @Inject constructor(
     private val tokenManager: TokenManager,
     @AuthRetrofit private val retrofitProvider: Provider<Retrofit>, // AuthRetrofit Qualifier가 있다고 가정
 ) {
-    // 💡 로그아웃 성공 이벤트를 발행하는 SharedFlow
-    private val _logoutEvent = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
-    val logoutEvent: SharedFlow<Unit> = _logoutEvent.asSharedFlow()
+    // 로그아웃 성공 이벤트를 발행하는 SharedFlow
+    private val _logoutSuccess = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+    val logoutSuccess: SharedFlow<Unit> = _logoutSuccess.asSharedFlow()
 
     private val loggingOut = AtomicBoolean(false)
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
@@ -42,7 +42,7 @@ class LogoutManager @Inject constructor(
     }
 
     /**
-     * 전체 로그아웃 플로우를 실행합니다.
+     * 전체 로그아웃 플로우를 실행
      * 서버 로그아웃 -> 로컬 정리 -> 이벤트 발행
      */
     suspend fun logout() {
@@ -64,6 +64,8 @@ class LogoutManager @Inject constructor(
                     Log.e("LogoutManager", "서버 로그아웃 실패 또는 오류: ${body?.message ?: resp.code()}")
                     // 서버 로그아웃이 실패해도 로컬 정리는 진행
                 }
+            }.onFailure { e ->
+                Log.e("LogoutManager", "서버 로그아웃 호출 중 예외 발생", e)
             }
 
             // 2) 로컬 정리 (토큰 삭제)
@@ -73,7 +75,7 @@ class LogoutManager @Inject constructor(
             }
 
             // 3) UI에 로그아웃 이벤트 발행 (MainActivity가 이를 수신)
-            _logoutEvent.tryEmit(Unit)
+            _logoutSuccess.tryEmit(Unit)
 
         } catch (e: Exception) {
             Log.e("LogoutManager", "로그아웃 중 예외 발생", e)

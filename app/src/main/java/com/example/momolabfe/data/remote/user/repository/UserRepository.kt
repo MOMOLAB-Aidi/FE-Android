@@ -14,7 +14,7 @@ class UserRepository @Inject constructor (
 
     suspend fun getMyPage(): Result<MyPageResponse> = runCatching {
         val response = userService.getMyPage()
-        Log.d("GetMyPage", "response = ${response.body()}")
+        Log.d("GetMyPage", "MyPage API call completed with code: ${response.code()}")
         handleApiResponse(response)
     }
 }

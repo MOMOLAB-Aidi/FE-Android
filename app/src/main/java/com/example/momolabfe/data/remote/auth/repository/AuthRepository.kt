@@ -18,7 +18,7 @@ class AuthRepository @Inject constructor (
 
     suspend fun login(request: LoginRequest): Result<LoginResponse> = runCatching {
         val response = authService.login(request)
-        Log.d("Login", "response = ${response.body()}")
+        Log.d("Login", "Login API call completed with code: ${response.code()}")
         handleApiResponse(response)
     }
 }

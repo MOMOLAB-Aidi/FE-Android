@@ -57,13 +57,11 @@ class SettingFragment : Fragment() {
     }
 
     private fun observeMyPageResult() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.getPageResult.observe(viewLifecycleOwner) { result ->
-                result?.let {
-                    binding.loginIdTv.text = it.loginId
-                    binding.recordStartDateTv.text = it.recordStartDate.format(DATE_FORMATTER)
-                    binding.recordPeriodTv.text = "(${it.recordPeriod})"
-                }
+        viewModel.getPageResult.observe(viewLifecycleOwner) { result ->
+            result?.let {
+                binding.loginIdTv.text = it.loginId
+                binding.recordStartDateTv.text = it.recordStartDate.format(DATE_FORMATTER)
+                binding.recordPeriodTv.text = "(${it.recordPeriod})"
             }
         }
 

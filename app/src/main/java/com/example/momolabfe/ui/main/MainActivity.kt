@@ -6,7 +6,10 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.example.momolabfe.R
 import com.example.momolabfe.databinding.ActivityMainBinding
 import com.example.momolabfe.ui.auth.LoginFragment
@@ -90,23 +93,21 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun observeLogoutEvent() {
-        // LifecycleScope를 사용하여 액티비티 라이프사이클에 맞춰 관찰
         lifecycleScope.launch {
-            logoutManager.logoutEvent.collect {
-                // 로그아웃 이벤트 발생 시 LoginFragment로 이동
-                navigateToLoginFragment()
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                logoutManager.logoutSuccess.collect {
+                    navigateToLoginFragment()
+                }
             }
         }
     }
 
     private fun navigateToLoginFragment() {
-        // 바텀 네비게이션 숨김 처리 (LoginFragment에서 할 수도 있지만 여기서 명확히 처리)
-        binding.mainBnv.visibility = View.GONE
-
-        // LoginFragment로 교체
         supportFragmentManager.beginTransaction()
             .replace(R.id.main_frm, LoginFragment())
-            // Back Stack의 모든 내용을 제거하여 뒤로가기 버튼으로 홈 화면에 돌아가지 못하게 함
-            .commitNow()
+            .commitAllowingStateLoss()
+
+        // 백스택 완전히 제거
+        supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
     }
 }

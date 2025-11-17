@@ -44,20 +44,12 @@ object NetworkModule {
 
     @Provides @Singleton
     fun provideGson(): Gson {
-        val dateFmt = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         // 서버가 "07:30"이면 HH:mm, "07:30:00"이면 HH:mm:ss. 섞여오면 커스텀 파서로 유연 처리.
         val timeFmt = DateTimeFormatter.ofPattern("HH:mm")
 
         return GsonBuilder()
-            .registerTypeAdapter(
-                LocalDate::class.java,
-                JsonDeserializer { json, _, _ ->
-                    LocalDate.parse(json.asString, dateFmt)
-                })
-            .registerTypeAdapter(LocalDate::class.java,
-                JsonSerializer<LocalDate> { src, _, _ ->
-                    JsonPrimitive(src.format(dateFmt))
-                })
+            .registerTypeAdapter(LocalDate::class.java, LocalDateAdapter())
+
             .registerTypeAdapter(
                 LocalTime::class.java,
                 JsonDeserializer { json, _, _ ->
@@ -119,7 +111,7 @@ object NetworkModule {
     @Provides @Singleton @AuthRetrofit
     fun provideAuthRetrofit(
         gson: Gson,
-        @AuthClient client: OkHttpClient // 토큰이 필요 없는 클라이언트를 사용
+        @AuthClient client: OkHttpClient
     ): Retrofit =
         Retrofit.Builder()
             .baseUrl(BuildConfig.BASE_URL)

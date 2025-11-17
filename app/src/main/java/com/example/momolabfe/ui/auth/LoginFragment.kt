@@ -8,7 +8,9 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.example.momolabfe.R
 import com.example.momolabfe.data.remote.auth.data.LoginRequest
 import com.example.momolabfe.databinding.FragmentLoginBinding
@@ -52,7 +54,7 @@ class LoginFragment : Fragment() {
             val loginId = binding.idEt.text.toString()
             val password = binding.passwordEt.text.toString()
 
-            if (loginId.isEmpty() || password.isEmpty()) {
+            if (loginId.isBlank() || password.isBlank()) {
                 Toast.makeText(requireContext(), "아이디와 비밀번호를 모두 입력해주세요.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
@@ -64,18 +66,20 @@ class LoginFragment : Fragment() {
 
     private fun observeLoginResult() {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.loginSuccess.collectLatest { authResponse ->
-                Log.d("Login", "로그인 성공!")
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.loginSuccess.collectLatest { authResponse ->
+                    Log.d("Login", "로그인 성공!")
 
-                // Fragment에서 직접 토큰 저장
-                tokenManager.saveTokens(
-                    accessToken = authResponse.tokens.accessToken,
-                    refreshToken = authResponse.tokens.refreshToken
-                )
+                    // Fragment에서 직접 토큰 저장
+                    tokenManager.saveTokens(
+                        accessToken = authResponse.tokens.accessToken,
+                        refreshToken = authResponse.tokens.refreshToken
+                    )
 
-                parentFragmentManager.beginTransaction()
-                    .replace(R.id.main_frm, HomeFragment())
-                    .commit()
+                    parentFragmentManager.beginTransaction()
+                        .replace(R.id.main_frm, HomeFragment())
+                        .commit()
+                }
             }
         }
 
