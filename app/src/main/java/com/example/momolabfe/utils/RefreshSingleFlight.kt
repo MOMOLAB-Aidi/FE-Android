@@ -17,7 +17,7 @@ object RefreshSingleFlight {
      * 동시 재발급 요청을 단 1회로 합쳐주는 유틸
      * - 이미 재발급이 진행 중이면 그 결과를 기다렸다가 그대로 반환
      * - 새로운 재발급이 필요하면 직접 실행
-     * - runBlocking 환경에서도 호출 가능
+     * - suspend 함수이므로 코루틴 컨텍스트에서 호출 필요
      */
     suspend fun refresh(block: suspend () -> String?): String? {
         val job = mutex.withLock {
