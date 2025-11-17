@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -178,6 +179,15 @@ class RecordWrite01Fragment : Fragment() {
                 container.view.setOnClickListener {
                     if (!isThisMonth) return@setOnClickListener
 
+                    // 이미 기록이 존재하는 날짜인지 확인
+                    val hasRecord = eventDates.contains(day.date)
+
+                    if (hasRecord) {
+                        Toast.makeText(requireContext(), "해당 날짜에 이미 기록이 존재합니다.", Toast.LENGTH_SHORT).show()
+                        // 기록이 있는 날짜는 선택 상태를 변경하지 않고 종료
+                        return@setOnClickListener
+                    }
+
                     val old = dialogSelectedDate
                     dialogSelectedDate = day.date
 
@@ -275,7 +285,7 @@ class RecordWrite01Fragment : Fragment() {
         dialog.setOnShowListener {
             dialog.window?.let { window ->
                 val layoutParams = window.attributes
-                layoutParams.width = (resources.displayMetrics.widthPixels * 0.85).toInt()
+                layoutParams.width = (resources.displayMetrics.widthPixels * 0.9).toInt()
                 layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
                 layoutParams.gravity = Gravity.CENTER
                 layoutParams.dimAmount = 0.5f
