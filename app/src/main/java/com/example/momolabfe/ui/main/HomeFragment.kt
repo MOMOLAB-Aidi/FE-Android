@@ -9,6 +9,7 @@ import com.example.momolabfe.R
 import com.example.momolabfe.databinding.FragmentHomeBinding
 import com.example.momolabfe.ui.record.RecordFragment
 import com.example.momolabfe.ui.record.RecordListFragment
+import com.example.momolabfe.ui.setting.SettingFragment
 import com.example.momolabfe.ui.statistics.StatisticsFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import java.text.SimpleDateFormat
@@ -48,6 +49,13 @@ class HomeFragment : Fragment() {
         } catch (e: Exception) {
             // 날짜 포맷팅 중 오류 발생 시 로그 출력
             e.printStackTrace()
+        }
+
+        binding.settingIv.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.main_frm, SettingFragment())
+                .addToBackStack(null)
+                .commit()
         }
 
         binding.recordCv.setOnClickListener {

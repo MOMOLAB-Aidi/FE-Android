@@ -1,23 +1,34 @@
 package com.example.momolabfe.ui.main
 
 import android.os.Bundle
+import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.example.momolabfe.R
 import com.example.momolabfe.databinding.ActivityMainBinding
 import com.example.momolabfe.ui.auth.LoginFragment
+import com.example.momolabfe.data.remote.auth.LogoutManager
 import com.example.momolabfe.ui.consult.ConsultFragment
 import com.example.momolabfe.ui.record.RecordFragment
 import com.example.momolabfe.ui.statistics.StatisticsFragment
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private var _binding: ActivityMainBinding? = null
     private val binding get() = _binding!!
+
+    @Inject
+    lateinit var logoutManager: LogoutManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,13 +51,11 @@ class MainActivity : AppCompatActivity() {
                 .replace(R.id.main_frm, LoginFragment())
                 .commit()
         }
+
+        observeLogoutEvent()
     }
 
     private fun initBottomNavigation() {
-
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.main_frm, HomeFragment())
-            .commitAllowingStateLoss()
 
         binding.mainBnv.setOnItemSelectedListener { item ->
             when (item.itemId) {
@@ -81,5 +90,24 @@ class MainActivity : AppCompatActivity() {
             }
             false
         }
+    }
+
+    private fun observeLogoutEvent() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                logoutManager.logoutSuccess.collect {
+                    navigateToLoginFragment()
+                }
+            }
+        }
+    }
+
+    private fun navigateToLoginFragment() {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.main_frm, LoginFragment())
+            .commitAllowingStateLoss()
+
+        // 백스택 완전히 제거
+        supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
     }
 }

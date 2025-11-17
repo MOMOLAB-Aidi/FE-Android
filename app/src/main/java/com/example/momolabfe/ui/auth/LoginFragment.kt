@@ -1,19 +1,41 @@
 package com.example.momolabfe.ui.auth
 
+import android.content.res.ColorStateList
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CompoundButton
+import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.example.momolabfe.R
+import com.example.momolabfe.data.remote.auth.data.LoginRequest
 import com.example.momolabfe.databinding.FragmentLoginBinding
+import com.example.momolabfe.ui.auth.viewModel.AuthViewModel
 import com.example.momolabfe.ui.main.HomeFragment
+import com.example.momolabfe.utils.TokenManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class LoginFragment : Fragment() {
 
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
+
+    private val viewModel: AuthViewModel by viewModels()
+
+    @Inject
+    lateinit var tokenManager: TokenManager
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -29,11 +51,70 @@ class LoginFragment : Fragment() {
         // 바텀 내비게이션 숨기기
         activity?.findViewById<BottomNavigationView>(R.id.main_bnv)?.visibility = View.GONE
 
-        binding.loginBtn.setOnClickListener {
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.main_frm, HomeFragment())
-                .commit()
+        val initialChecked = binding.idSaveCheckbox.isChecked
+        setCheckBoxTint(binding.idSaveCheckbox, initialChecked)
+
+        binding.idSaveCheckbox.setOnCheckedChangeListener { checkBox, isChecked ->
+            setCheckBoxTint(checkBox, isChecked)
         }
+
+        observeLoginResult()
+
+        viewModel.getSavedPatientId().observe(viewLifecycleOwner) { savedId ->
+            if (!savedId.isNullOrEmpty()) {
+                binding.idEt.setText(savedId)
+                binding.idSaveCheckbox.isChecked = true
+                setCheckBoxTint(binding.idSaveCheckbox, true)
+            }
+        }
+
+        binding.loginBtn.setOnClickListener {
+            val loginId = binding.idEt.text.toString()
+            val password = binding.passwordEt.text.toString()
+
+            if (loginId.isBlank() || password.isBlank()) {
+                Toast.makeText(requireContext(), "아이디와 비밀번호를 모두 입력해주세요.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            // ID 저장 상태 처리
+            if (binding.idSaveCheckbox.isChecked) {
+                viewModel.savePatientId(loginId)
+            } else {
+                viewModel.clearSavedPatientId()
+            }
+
+            val request = LoginRequest(loginId, password)
+            viewModel.login(request)
+        }
+    }
+
+    private fun observeLoginResult() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.loginSuccess.collectLatest {
+                    Log.d("Login", "로그인 성공!")
+
+                    parentFragmentManager.beginTransaction()
+                        .replace(R.id.main_frm, HomeFragment())
+                        .commit()
+                }
+            }
+        }
+
+        viewModel.errorMessage.observe(viewLifecycleOwner) { message ->
+            message?.let {
+                Log.e("Login", "로그인 실패: $it")
+                Toast.makeText(requireContext(), "아이디 또는 비밀번호가 일치하지 않습니다.", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun setCheckBoxTint(checkBox: CompoundButton, isChecked: Boolean) {
+        val color = ContextCompat.getColor(
+            requireContext(), if (isChecked) R.color.black else R.color.gray
+        )
+        checkBox.buttonTintList = ColorStateList.valueOf(color)
     }
 
     override fun onDestroyView() {
