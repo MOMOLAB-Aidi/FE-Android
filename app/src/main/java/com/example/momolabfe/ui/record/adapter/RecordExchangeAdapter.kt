@@ -2,6 +2,8 @@ package com.example.momolabfe.ui.record.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.momolabfe.data.remote.record.model.RecordExchangeOcrResponse
 import com.example.momolabfe.databinding.ItemRecordExchangeBinding
@@ -9,9 +11,8 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
-class RecordExchangeAdapter(
-    private var items: List<RecordExchangeOcrResponse> = emptyList()
-) : RecyclerView.Adapter<RecordExchangeAdapter.ExchangeViewHolder>() {
+class RecordExchangeAdapter :
+    ListAdapter<RecordExchangeOcrResponse, RecordExchangeAdapter.ExchangeViewHolder>(DIFF_CALLBACK) {
 
     inner class ExchangeViewHolder(
         private val binding: ItemRecordExchangeBinding
@@ -42,13 +43,16 @@ class RecordExchangeAdapter(
     }
 
     override fun onBindViewHolder(holder: ExchangeViewHolder, position: Int) {
-        holder.bind(items[position])
+        holder.bind(getItem(position))
     }
 
-    override fun getItemCount(): Int = items.size
+    companion object {
+        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<RecordExchangeOcrResponse>() {
+            override fun areItemsTheSame(oldItem: RecordExchangeOcrResponse, newItem: RecordExchangeOcrResponse) =
+                oldItem.exchangeNo == newItem.exchangeNo
 
-    fun submitList(newItems: List<RecordExchangeOcrResponse>) {
-        items = newItems
-        notifyDataSetChanged()
+            override fun areContentsTheSame(oldItem: RecordExchangeOcrResponse, newItem: RecordExchangeOcrResponse) =
+                oldItem == newItem
+        }
     }
 }

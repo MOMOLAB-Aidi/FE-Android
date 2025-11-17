@@ -20,8 +20,8 @@ class RecordOcrPreviewFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            imageUri = Uri.parse(it.getString(ARG_IMAGE_URI))
+        arguments?.getString(ARG_IMAGE_URI)?.let { uriString ->
+            imageUri = Uri.parse(uriString)
         }
     }
 

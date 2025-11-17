@@ -221,12 +221,6 @@ class RecordOcrLoadingFragment : Fragment() {
             .commit()
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        scope.cancel()
-        _binding = null
-    }
-
     companion object {
         private const val ARG_IMAGE_URI = "imageUri"
 
@@ -235,5 +229,11 @@ class RecordOcrLoadingFragment : Fragment() {
                 putString(ARG_IMAGE_URI, imageUri)
             }
         }
+    }
+
+    override fun onDestroyView() {
+        activity?.findViewById<BottomNavigationView>(R.id.main_bnv)?.visibility = View.VISIBLE
+        super.onDestroyView()
+        _binding = null
     }
 }
