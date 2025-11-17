@@ -37,6 +37,7 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 class RecordWrite01Fragment : Fragment() {
 
@@ -48,7 +49,8 @@ class RecordWrite01Fragment : Fragment() {
 
     private var visibleMonth: YearMonth = YearMonth.now()
     private val headerFormatter = DateTimeFormatter.ofPattern(DATE_PATTERN)
-    private val displayFormatter = DateTimeFormatter.ofPattern(DATE_DISPLAY_PATTERN)
+    private val displayFormatter : DateTimeFormatter =
+        DateTimeFormatter.ofPattern(DATE_DISPLAY_PATTERN, Locale.KOREA)
 
     // 중복 호출 방지용 캐시: 마지막으로 서버에 요청했던 [시작일, 종료일]
     private var lastRequestedRange: Pair<Int, Int>? = null
@@ -351,7 +353,7 @@ class RecordWrite01Fragment : Fragment() {
 
     companion object {
         private const val DATE_PATTERN = "yyyy년 M월"
-        private const val DATE_DISPLAY_PATTERN = "yyyy-MM-dd"
+        private const val DATE_DISPLAY_PATTERN = "yyyy-MM-dd(E)"
     }
 
     private fun dpToPx(dp: Int): Int {
