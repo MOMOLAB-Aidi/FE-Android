@@ -116,9 +116,10 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:background="@color/transparent"
-                                android:hint="날짜.."
+                                android:hint="날짜 선택"
                                 android:inputType="numberDecimal"
-                                android:textSize="16sp" />
+                                android:textSize="16sp"
+                                android:focusable="false"/>
 
                         </LinearLayout>
                     </androidx.cardview.widget.CardView>

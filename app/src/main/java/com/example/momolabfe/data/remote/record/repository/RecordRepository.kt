@@ -3,12 +3,15 @@ package com.example.momolabfe.data.remote.record.repository
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
+import android.util.Log
+import com.example.momolabfe.data.remote.record.model.GetCalendarResponse
 import com.example.momolabfe.data.remote.record.model.RecordCreateRequest
 import com.example.momolabfe.data.remote.record.model.RecordExchangeCreateRequest
 import com.example.momolabfe.data.remote.record.model.RecordIdResponse
 import com.example.momolabfe.data.remote.record.model.RecordOcrResponse
 import com.example.momolabfe.data.remote.record.service.RecordService
 import com.example.momolabfe.utils.ApiException
+import com.example.momolabfe.utils.handleApiResponse
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -25,6 +28,13 @@ class RecordRepository @Inject constructor (
     @ApplicationContext private val appContext: Context
 ) {
     private val ALLOWED_TYPES = setOf("image/jpeg", "image/png")
+
+    // 캘린더 조회
+    suspend fun getCalendar(year: Int, month: Int): Result<List<GetCalendarResponse>> = runCatching {
+        val response = recordService.getCalendar(year, month)
+        Log.d("Calendar", "response = ${response.body()}")
+        handleApiResponse(response)
+    }
 
     // 수기 작성 - 공통 정보 생성
     suspend fun recordCommonByWriting(request: RecordCreateRequest): Result<Long> = runCatching {

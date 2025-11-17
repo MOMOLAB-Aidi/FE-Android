@@ -128,7 +128,9 @@
                 app:boxCornerRadiusTopStart="12dp"
                 app:boxCornerRadiusTopEnd="12dp"
                 app:boxCornerRadiusBottomStart="12dp"
-                app:boxCornerRadiusBottomEnd="12dp">
+                app:boxCornerRadiusBottomEnd="12dp"
+                app:endIconMode="custom"
+                app:endIconDrawable="@drawable/ic_eye_closed_sv">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/password_et"
