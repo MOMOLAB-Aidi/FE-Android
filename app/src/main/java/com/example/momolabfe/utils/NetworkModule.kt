@@ -38,6 +38,10 @@ annotation class NoAuthClient
 @Retention(AnnotationRetention.BINARY)
 annotation class AuthClient
 
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class PythonRetrofit
+
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
@@ -82,13 +86,14 @@ object NetworkModule {
             .writeTimeout(30, TimeUnit.SECONDS)
             .build()
 
+    // --- Spring(인증 불필요) Retrofit ---
     @Provides @Singleton @NoAuthRetrofit
     fun provideNoAuthRetrofit(
         gson: Gson,
         @NoAuthClient client: OkHttpClient
     ): Retrofit =
         Retrofit.Builder()
-            .baseUrl(BuildConfig.BASE_URL)
+            .baseUrl(BuildConfig.BASE_URL_SPRING)
             .client(client)
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
@@ -107,26 +112,38 @@ object NetworkModule {
             .writeTimeout(30, TimeUnit.SECONDS)
             .build()
 
-    // LogoutManager가 요청한 @AuthRetrofit Retrofit을 제공
+    // --- Spring(인증 필요) Retrofit: LogoutManager 등에서 사용 ---
     @Provides @Singleton @AuthRetrofit
     fun provideAuthRetrofit(
         gson: Gson,
         @AuthClient client: OkHttpClient
     ): Retrofit =
         Retrofit.Builder()
-            .baseUrl(BuildConfig.BASE_URL)
+            .baseUrl(BuildConfig.BASE_URL_SPRING)
             .client(client)
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
 
-    // 일반 인증용 Retrofit
+    // --- Spring(인증 필요) Retrofit: 일반 서비스에서 사용 ---
     @Provides @Singleton
     fun provideDefaultRetrofit(
         gson: Gson,
         @AuthClient client: OkHttpClient
     ): Retrofit =
         Retrofit.Builder()
-            .baseUrl(BuildConfig.BASE_URL)
+            .baseUrl(BuildConfig.BASE_URL_SPRING)
+            .client(client)
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .build()
+
+    // --- Python(OCR용, 인증 필요) Retrofit 추가 ---
+    @Provides @Singleton @PythonRetrofit
+    fun providePythonRetrofit(
+        gson: Gson,
+        @AuthClient client: OkHttpClient
+    ): Retrofit =
+        Retrofit.Builder()
+            .baseUrl(BuildConfig.BASE_URL_PYTHON)
             .client(client)
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()

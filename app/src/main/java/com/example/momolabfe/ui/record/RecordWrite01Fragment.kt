@@ -1,6 +1,7 @@
 package com.example.momolabfe.ui.record
 
 import android.app.AlertDialog
+import android.content.res.ColorStateList
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
@@ -10,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.CompoundButton
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
@@ -19,6 +21,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import com.example.momolabfe.R
 import com.example.momolabfe.data.remote.record.model.GetCalendarResponse
+import com.example.momolabfe.data.remote.record.model.Turbidity
 import com.example.momolabfe.databinding.DialogCalendarBinding
 import com.example.momolabfe.databinding.FragmentRecordWrite01Binding
 import com.example.momolabfe.ui.record.viewModel.RecordViewModel
@@ -55,6 +58,9 @@ class RecordWrite01Fragment : Fragment() {
 
     private val viewModel: RecordViewModel by activityViewModels()
 
+    // OCR 값으로 한 번만 채우기 위한 플래그
+    private var isOcrApplied = false
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -88,6 +94,38 @@ class RecordWrite01Fragment : Fragment() {
                 .addToBackStack(null)
                 .commit()
         }
+
+        setupTurbidityCheckboxes()
+        observeOcrAndFillFields()
+    }
+
+    private fun setupTurbidityCheckboxes() {
+        val initialNChecked = binding.turbidityNCheckbox.isChecked
+        setCheckBoxTint(binding.turbidityNCheckbox, initialNChecked)
+
+        val initialYChecked = binding.turbidityYCheckbox.isChecked
+        setCheckBoxTint(binding.turbidityYCheckbox, initialYChecked)
+
+        binding.turbidityNCheckbox.setOnCheckedChangeListener { checkBox, isChecked ->
+            setCheckBoxTint(checkBox, isChecked)
+            if (isChecked) {
+                binding.turbidityYCheckbox.isChecked = false
+            }
+        }
+
+        binding.turbidityYCheckbox.setOnCheckedChangeListener { checkBox, isChecked ->
+            setCheckBoxTint(checkBox, isChecked)
+            if (isChecked) {
+                binding.turbidityNCheckbox.isChecked = false
+            }
+        }
+    }
+
+    private fun setCheckBoxTint(checkBox: CompoundButton, isChecked: Boolean) {
+        val color = ContextCompat.getColor(
+            requireContext(), if (isChecked) R.color.text_primary else R.color.gray
+        )
+        checkBox.buttonTintList = ColorStateList.valueOf(color)
     }
 
     private fun showCalendarDialog() {
@@ -318,6 +356,34 @@ class RecordWrite01Fragment : Fragment() {
 
     private fun dpToPx(dp: Int): Int {
         return (dp * resources.displayMetrics.density).toInt()
+    }
+
+    private fun observeOcrAndFillFields() {
+        viewModel.ocrRecordResult.observe(viewLifecycleOwner) { ocr ->
+            // null 이거나 이미 한 번 반영했다면 스킵
+            if (ocr == null || isOcrApplied) return@observe
+
+            isOcrApplied = true  // 다시 덮어쓰지 않도록 플래그 ON
+
+            selectedDate = ocr.recordDate
+            binding.dateEt.setText(ocr.recordDate.format(displayFormatter))
+            binding.weightEt.setText(ocr.weight.toString())
+            binding.systolicEt.setText(ocr.systolic.toString())
+            binding.diastolicEt.setText(ocr.diastolic.toString())
+            binding.fastingGlucoseEt.setText(ocr.fastingGlucose.toString())
+            binding.urineCountEt.setText(ocr.urineCount.toString())
+
+            binding.turbidityNCheckbox.isChecked = false
+            binding.turbidityYCheckbox.isChecked = false
+
+            when (ocr.turbidity) {
+                Turbidity.NONE -> binding.turbidityNCheckbox.isChecked = true
+                Turbidity.PRESENT -> binding.turbidityYCheckbox.isChecked = true
+            }
+
+            binding.totalUfEt.setText(ocr.totalUf.toString())
+            binding.notesEt.setText(ocr.notes ?: "")
+        }
     }
 
     override fun onDestroyView() {
