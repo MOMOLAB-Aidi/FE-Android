@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <paths>
-    <!-- 내부 캐시 하위 폴더 공유 -->
-    <cache-path name="images" path="images/" />
+    <external-files-path
+        name="my_images"
+        path="/" />
 </paths>
