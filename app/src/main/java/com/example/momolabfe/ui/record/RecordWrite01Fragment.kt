@@ -16,7 +16,9 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import com.example.momolabfe.R
+import com.example.momolabfe.data.remote.record.model.GetCalendarResponse
 import com.example.momolabfe.databinding.DialogCalendarBinding
 import com.example.momolabfe.databinding.FragmentRecordWrite01Binding
 import com.example.momolabfe.ui.record.viewModel.RecordViewModel
@@ -124,6 +126,15 @@ class RecordWrite01Fragment : Fragment() {
             dialogBinding.selectedDateTv.text = dialogVisibleMonth.format(headerFormatter)
         }
 
+        val initialYear = dialogVisibleMonth.year
+        val initialMonthValue = dialogVisibleMonth.monthValue
+        val initialPair = initialYear to initialMonthValue
+
+        if (lastRequestedRange != initialPair) {
+            lastRequestedRange = initialPair
+            viewModel.getCalendar(initialYear, initialMonthValue)
+        }
+
         // 월 스크롤 리스너 (헤더 갱신용)
         monthCalendar.monthScrollListener = { month ->
             dialogVisibleMonth = month.yearMonth
@@ -197,16 +208,20 @@ class RecordWrite01Fragment : Fragment() {
             }
         }
 
-        viewModel.calendarData.observe(viewLifecycleOwner) { items ->
+        val observer = Observer<List<GetCalendarResponse>> { items ->
             eventDates.clear()
             items.forEach { ev ->
                 if (ev.hasSchedule) {
-                    runCatching { LocalDate.parse(ev.date) }
-                        .getOrNull()
-                        ?.let { d -> eventDates += d }
+                    eventDates += ev.date
                 }
             }
             monthCalendar.notifyCalendarChanged()
+        }
+
+        viewModel.calendarData.observe(viewLifecycleOwner, observer)
+
+        dialog.setOnDismissListener {
+            viewModel.calendarData.removeObserver(observer)
         }
 
         dialogBinding.applyTv.setOnClickListener {

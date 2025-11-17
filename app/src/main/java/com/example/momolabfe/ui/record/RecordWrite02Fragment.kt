@@ -20,6 +20,7 @@ import com.example.momolabfe.databinding.FragmentRecordWrite02Binding
 import com.example.momolabfe.ui.record.viewModel.RecordViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.Locale
 
 @AndroidEntryPoint
 class RecordWrite02Fragment : Fragment() {
@@ -122,7 +123,7 @@ class RecordWrite02Fragment : Fragment() {
 
         // 서버 전송용 24시간 형식으로 변환
         val hour24 = convertTo24Hour(ampm, hour12)
-        val serverTimeText = String.format("%02d:%s", hour24, minute)
+        val serverTimeText = String.format(Locale.KOREA, "%02d:%s", hour24, minute)
 
         // ViewModel에 24시간 형식 저장 (서버 전송용)
         viewModel.setExchangeTime(serverTimeText)
