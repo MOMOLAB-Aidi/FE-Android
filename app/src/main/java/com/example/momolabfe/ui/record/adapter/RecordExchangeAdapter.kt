@@ -31,8 +31,7 @@ class RecordExchangeAdapter :
         }
 
         private fun formatTime(time: LocalTime): String {
-            val formatter = DateTimeFormatter.ofPattern("HH:mm", Locale.KOREA)
-            return time.format(formatter)
+            return time.format(TIME_FORMATTER)
         }
     }
 
@@ -54,5 +53,8 @@ class RecordExchangeAdapter :
             override fun areContentsTheSame(oldItem: RecordExchangeOcrResponse, newItem: RecordExchangeOcrResponse) =
                 oldItem == newItem
         }
+
+        private val TIME_FORMATTER: DateTimeFormatter =
+            DateTimeFormatter.ofPattern("HH:mm", Locale.KOREA)
     }
 }

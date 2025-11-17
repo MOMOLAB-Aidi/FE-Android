@@ -15,7 +15,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import androidx.core.net.toUri
@@ -31,7 +30,6 @@ class RecordOcrLoadingFragment : Fragment() {
     private val binding get() = _binding!!
 
     private var imageUri: String? = null
-    private val scope = CoroutineScope(Dispatchers.Main + Job())
 
     private val loadingSteps = listOf(
         LoadingStep(0, "AI가 기록을 읽고 있어요", "이미지 분석 중.."),
