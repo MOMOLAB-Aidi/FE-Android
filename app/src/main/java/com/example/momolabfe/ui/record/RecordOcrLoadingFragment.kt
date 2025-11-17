@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.example.momolabfe.R
@@ -17,9 +18,12 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import androidx.core.net.toUri
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import com.example.momolabfe.ui.record.data.LoadingStep
+import com.example.momolabfe.ui.record.viewModel.RecordViewModel
+import kotlinx.coroutines.isActive
 
 class RecordOcrLoadingFragment : Fragment() {
 
@@ -37,6 +41,14 @@ class RecordOcrLoadingFragment : Fragment() {
         LoadingStep(80, "AI가 기록을 읽고 있어요", "데이터 정리 중.."),
         LoadingStep(100, "인식 완료!", "데이터를 불러오는 중..")
     )
+
+    private val viewModel: RecordViewModel by activityViewModels()
+
+    private var loadingJob: Job? = null
+    private var navigated = false
+
+    private var startTime: Long = 0L
+    @Volatile private var isOcrFinished: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,33 +83,70 @@ class RecordOcrLoadingFragment : Fragment() {
             }
         }
 
+        // 로딩 시작 시각 기록
+        startTime = System.currentTimeMillis()
+        isOcrFinished = false
+        navigated = false
+
         startLoadingAnimation()
-        performOcrProcess()
+        startOcrRequest()
+        observeOcrResult()
     }
 
     private fun startLoadingAnimation() {
-        scope.launch {
-            for ((index, step) in loadingSteps.withIndex()) {
+        loadingJob?.cancel()
+        loadingJob = viewLifecycleOwner.lifecycleScope.launch {
+            val maxIdxBeforeDone = loadingSteps.size - 3
+
+            var idx = 0
+
+            // api 호출 끝날때까지 대기
+            while (isActive && !isOcrFinished) {
+                val step = loadingSteps[idx]
                 updateLoadingUI(step)
 
-                // 각 단계별 대기 시간 (총 8초)
-                val delayTime = if (index < loadingSteps.size - 1) {
-                    1600L // 0->20->40->60->80% 각각 1.6초
-                } else {
-                    800L // 80->100% 0.8초
-                }
+                delay(900L)
 
-                delay(delayTime)
+                if (idx < maxIdxBeforeDone) {
+                    idx++
+                } else {
+                    idx = maxIdxBeforeDone
+                }
             }
 
-            // 로딩 완료 후 다음 화면으로 이동
-            delay(500)
-            navigateToNextScreen()
+            if (!isActive) return@launch
+
+            val elapsed = System.currentTimeMillis() - startTime
+
+            // 전체 최소 노출 시간
+            val minTotalDisplay = 5000L
+
+            // 현재 progress 기준으로 아직 안 보여준 단계들 계산
+            val currentProgress = binding.progressBar.progress
+            val currentIdx = loadingSteps.indexOfFirst { it.progress == currentProgress }
+
+            val startIdx = if (currentIdx == -1) 0 else currentIdx + 1
+            val remainingSteps = if (startIdx < loadingSteps.size) {
+                loadingSteps.subList(startIdx, loadingSteps.size)
+            } else {
+                emptyList()
+            }
+
+            if (remainingSteps.isEmpty()) return@launch
+
+            // elapsed를 고려하여 남은 시간 계산
+            val remainingDuration = maxOf(minTotalDisplay - elapsed, 800L)
+            val perStepDelay = remainingDuration / remainingSteps.size
+
+            for (step in remainingSteps) {
+                if (!isActive) return@launch
+                updateLoadingUI(step)
+                delay(perStepDelay)
+            }
         }
     }
 
     private fun updateLoadingUI(step: LoadingStep) {
-        // 텍스트 업데이트
         binding.loadingTitleTv.text = step.title
         binding.loadingSubtitleTv.text = step.subtitle
         binding.progressPercentTv.text = "${step.progress}%"
@@ -120,22 +169,41 @@ class RecordOcrLoadingFragment : Fragment() {
         }
     }
 
-    private fun performOcrProcess() {
-        // 실제 OCR API 호출은 여기서 수행
-        scope.launch {
-            try {
-                // TODO: 실제 OCR API 호출
-                // val result = ocrRepository.processImage(imageUri)
+    private fun startOcrRequest() {
+        val uriStr = imageUri
+        if (uriStr == null) {
+            Toast.makeText(requireContext(), "이미지 경로가 없습니다.", Toast.LENGTH_SHORT).show()
+            parentFragmentManager.popBackStack()
+            return
+        }
 
-                // 8초 후 완료 (실제로는 API 응답을 받으면 완료)
-                delay(8500)
+        viewModel.recordByOcr(uriStr.toUri())
+    }
 
-            } catch (e: Exception) {
-                // 에러 처리
-                withContext(Dispatchers.Main) {
-                    // Toast 또는 에러 화면 표시
-                    parentFragmentManager.popBackStack()
+    private fun observeOcrResult() {
+        viewModel.ocrRecordResult.observe(viewLifecycleOwner) { result ->
+            if (result != null && !navigated) {
+                isOcrFinished = true  // ← 로딩 코루틴에 "끝났다" 신호
+
+                viewLifecycleOwner.lifecycleScope.launch {
+                    loadingJob?.join()
+
+                    if (!navigated) {
+                        navigated = true
+                        navigateToNextScreen()
+                    }
                 }
+            }
+        }
+
+        viewModel.errorMessage.observe(viewLifecycleOwner) { msg ->
+            if (!msg.isNullOrBlank() && !navigated) {
+                isOcrFinished = true
+                navigated = true
+                loadingJob?.cancel()
+
+                Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+                parentFragmentManager.popBackStack()
             }
         }
     }
@@ -143,7 +211,6 @@ class RecordOcrLoadingFragment : Fragment() {
     private fun navigateToNextScreen() {
         val bundle = Bundle().apply {
             putString("imageUri", imageUri)
-            // TODO: OCR 결과 데이터도 함께 전달
         }
 
         val fragment = RecordWrite01Fragment()

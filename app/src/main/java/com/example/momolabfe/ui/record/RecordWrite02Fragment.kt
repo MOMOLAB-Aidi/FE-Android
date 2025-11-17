@@ -17,6 +17,7 @@ import androidx.fragment.app.activityViewModels
 import com.example.momolabfe.R
 import com.example.momolabfe.databinding.DialogTimePickerBinding
 import com.example.momolabfe.databinding.FragmentRecordWrite02Binding
+import com.example.momolabfe.ui.record.adapter.RecordExchangeAdapter
 import com.example.momolabfe.ui.record.viewModel.RecordViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
@@ -29,12 +30,7 @@ class RecordWrite02Fragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: RecordViewModel by activityViewModels()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        viewModel.clearOcr()
-    }
+    private lateinit var exchangeAdapter: RecordExchangeAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -49,6 +45,9 @@ class RecordWrite02Fragment : Fragment() {
 
         // 바텀 내비게이션 숨기기
         activity?.findViewById<BottomNavigationView>(R.id.main_bnv)?.visibility = View.GONE
+
+        setupRecyclerView()
+        fillExchangesFromOcr()
 
         binding.exchangeTimeCv.setOnClickListener {
             showTimePickerDialog()
@@ -66,7 +65,6 @@ class RecordWrite02Fragment : Fragment() {
             .setView(dialogBinding.root)
             .create()
 
-        // NumberPicker 초기화
         setupPickersInDialog(dialogBinding)
 
         dialogBinding.applyTv.setOnClickListener {
@@ -95,7 +93,7 @@ class RecordWrite02Fragment : Fragment() {
             minValue = 1
             maxValue = 12
             wrapSelectorWheel = true
-            value = 12 // 기본값 설정
+            value = 12
             post { applyTextStyleToNumberPicker(this, requireContext()) }
         }
 
@@ -169,6 +167,34 @@ class RecordWrite02Fragment : Fragment() {
         } catch (e: Exception) {
             e.printStackTrace()
         }
+    }
+
+    private fun setupRecyclerView() {
+        exchangeAdapter = RecordExchangeAdapter()
+        binding.exchangeRv.apply {
+            adapter = exchangeAdapter
+        }
+    }
+
+    private fun fillExchangesFromOcr() {
+        val ocr = viewModel.ocrRecordResult.value ?: return
+
+        val exchanges = ocr.exchanges
+        if (exchanges.isEmpty()) return
+
+        // 1회차 → contentCv 내 EditText에 반영
+        val first = exchanges.first()
+        binding.apply {
+            exchangeTimeEt.setText(first.exchangeTime.toString())
+            drainVolumeEt.setText(first.drainVolume.toString())
+            fillConcentrationEt.setText(first.fillConcentration.toString())
+            fillVolumeEt.setText(first.fillVolume.toString())
+            ufEt.setText(first.uf.toString())
+        }
+
+        // 2회차 이후 → RecyclerView에 반영
+        val rest = exchanges.drop(1)
+        exchangeAdapter.submitList(rest)
     }
 
     override fun onDestroyView() {

@@ -129,7 +129,7 @@ class LoginFragment : Fragment() {
 
     private fun setCheckBoxTint(checkBox: CompoundButton, isChecked: Boolean) {
         val color = ContextCompat.getColor(
-            requireContext(), if (isChecked) R.color.black else R.color.gray
+            requireContext(), if (isChecked) R.color.text_primary else R.color.gray
         )
         checkBox.buttonTintList = ColorStateList.valueOf(color)
     }

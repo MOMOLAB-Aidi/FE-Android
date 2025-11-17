@@ -29,8 +29,8 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "BASE_URL", "\"${properties["BASE_URL"]}\"")
-        manifestPlaceholders["BASE_URL"] = properties["BASE_URL"] ?: ""
+        buildConfigField("String", "BASE_URL_SPRING", "\"${properties["BASE_URL_SPRING"]}\"")
+        buildConfigField("String", "BASE_URL_PYTHON", "\"${properties["BASE_URL_PYTHON"]}\"")
     }
 
     buildTypes {
