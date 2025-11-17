@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.momolabfe.data.remote.record.model.GetCalendarResponse
 import com.example.momolabfe.data.remote.record.model.RecordCreateRequest
 import com.example.momolabfe.data.remote.record.model.RecordExchangeCreateRequest
 import com.example.momolabfe.data.remote.record.model.RecordOcrResponse
@@ -35,6 +36,22 @@ class RecordViewModel @Inject constructor(
 
     private val _recordCreated = MutableSharedFlow<Long>(extraBufferCapacity = 1)
     val recordCreated: SharedFlow<Long> = _recordCreated
+
+    private val _calendarData = MutableLiveData<List<GetCalendarResponse>>()
+    val calendarData: LiveData<List<GetCalendarResponse>> = _calendarData
+
+    // 캘린더 일정 조회
+    fun getCalendar(year: Int, month: Int) {
+        viewModelScope.launch {
+            val result = recordRepository.getCalendar(year, month)
+
+            result.onSuccess { calendarList ->
+                _calendarData.value = calendarList
+            }.onFailure { e ->
+                _errorMessage.value = e.localizedMessage ?: "캘린더 조회에 실패했습니다."
+            }
+        }
+    }
 
     // 수기 작성 - 공통 정보
     fun recordCommonByWriting(request: RecordCreateRequest) {

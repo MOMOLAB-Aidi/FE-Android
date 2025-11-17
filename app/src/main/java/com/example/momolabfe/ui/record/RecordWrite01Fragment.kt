@@ -14,9 +14,11 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import com.example.momolabfe.R
 import com.example.momolabfe.databinding.DialogCalendarBinding
 import com.example.momolabfe.databinding.FragmentRecordWrite01Binding
+import com.example.momolabfe.ui.record.viewModel.RecordViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.CalendarMonth
@@ -43,7 +45,12 @@ class RecordWrite01Fragment : Fragment() {
     private val displayFormatter = DateTimeFormatter.ofPattern(DATE_DISPLAY_PATTERN)
 
     // 중복 호출 방지용 캐시: 마지막으로 서버에 요청했던 [시작일, 종료일]
-    private var lastRequestedRange: Pair<LocalDate, LocalDate>? = null
+    private var lastRequestedRange: Pair<Int, Int>? = null
+
+    // 일정 있는 날짜들 캐시
+    private val eventDates = hashSetOf<LocalDate>()
+
+    private val viewModel: RecordViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -129,6 +136,14 @@ class RecordWrite01Fragment : Fragment() {
 
             override fun bind(container: DayViewContainer, day: CalendarDay) {
                 val tv = container.textView
+                val dot = container.dotView
+
+                // dot 간격 설정
+                (dot.layoutParams as? ViewGroup.MarginLayoutParams)?.let { params ->
+                    params.topMargin = dpToPx(3)
+                    dot.layoutParams = params
+                }
+
                 tv.text = day.date.dayOfMonth.toString()
                 tv.typeface = Typeface.DEFAULT
                 tv.background = null
@@ -141,6 +156,10 @@ class RecordWrite01Fragment : Fragment() {
                     )
                 )
 
+                // 일정 점 표시
+                dot.visibility =
+                    if (eventDates.contains(day.date) && isThisMonth) View.VISIBLE else View.GONE
+
                 // 오늘 표시
                 if (day.date == today) {
                     tv.background = circleFill(
@@ -151,7 +170,8 @@ class RecordWrite01Fragment : Fragment() {
                 // 날짜 선택
                 if (day.date == dialogSelectedDate && isThisMonth) {
                     tv.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.white))
-                    tv.background = circleFill(ContextCompat.getColor(requireContext(), R.color.main_1))
+                    tv.background =
+                        circleFill(ContextCompat.getColor(requireContext(), R.color.main_1))
                 }
 
                 // 클릭으로 선택 처리
@@ -165,6 +185,18 @@ class RecordWrite01Fragment : Fragment() {
                     monthCalendar.notifyDateChanged(dialogSelectedDate)
                 }
             }
+        }
+
+        viewModel.calendarData.observe(viewLifecycleOwner) { items ->
+            eventDates.clear()
+            items.forEach { ev ->
+                if (ev.hasSchedule) {
+                    runCatching { LocalDate.parse(ev.date) }
+                        .getOrNull()
+                        ?.let { d -> eventDates += d }
+                }
+            }
+            monthCalendar.notifyCalendarChanged()
         }
 
         dialogBinding.applyTv.setOnClickListener {
@@ -209,17 +241,25 @@ class RecordWrite01Fragment : Fragment() {
 
     // 월 범위 요청 함수 (캘린더 조회용)
     private fun requestForMonth(month: CalendarMonth) {
-        val start = month.weekDays.first().first().date
-        val end = month.weekDays.last().last().date
-        val range = start to end
-        if (lastRequestedRange == range) return
-        lastRequestedRange = range
-        // TODO: 서버에 해당 범위의 데이터를 요청하는 실제 API 호출 로직 추가
+        val year = month.yearMonth.year
+        val monthValue = month.yearMonth.monthValue
+
+        val requestedYearMonth = month.yearMonth.year to month.yearMonth.monthValue
+
+        if (lastRequestedRange?.first == requestedYearMonth.first &&
+            lastRequestedRange?.second == requestedYearMonth.second
+        ) {
+            return
+        }
+
+        lastRequestedRange = requestedYearMonth
+        viewModel.getCalendar(year, monthValue)
     }
 
     // DayView의 뷰 홀더
     private inner class DayViewContainer(view: View) : ViewContainer(view) {
         val textView: TextView = view.findViewById(R.id.calendar_day_tv)
+        val dotView: View = view.findViewById(R.id.dot_view)
     }
 
     // 채운 동그라미 배경
@@ -235,7 +275,7 @@ class RecordWrite01Fragment : Fragment() {
         dialog.setOnShowListener {
             dialog.window?.let { window ->
                 val layoutParams = window.attributes
-                layoutParams.width  = (resources.displayMetrics.widthPixels * 0.85).toInt()
+                layoutParams.width = (resources.displayMetrics.widthPixels * 0.85).toInt()
                 layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
                 layoutParams.gravity = Gravity.CENTER
                 layoutParams.dimAmount = 0.5f
@@ -248,7 +288,11 @@ class RecordWrite01Fragment : Fragment() {
 
     companion object {
         private const val DATE_PATTERN = "yyyy년 M월"
-        private const val DATE_DISPLAY_PATTERN = "yyyy.MM.dd"
+        private const val DATE_DISPLAY_PATTERN = "yyyy-MM-dd"
+    }
+
+    private fun dpToPx(dp: Int): Int {
+        return (dp * resources.displayMetrics.density).toInt()
     }
 
     override fun onDestroyView() {
