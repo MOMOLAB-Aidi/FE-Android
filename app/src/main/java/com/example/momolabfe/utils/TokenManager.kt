@@ -4,6 +4,7 @@ import android.content.Context
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.util.Base64
+import android.util.Log
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.security.KeyStore
 import javax.crypto.Cipher
@@ -76,6 +77,8 @@ class TokenManager @Inject constructor(@ApplicationContext private val context: 
             val plaintext = cipher.doFinal(ciphertext)
             String(plaintext, Charsets.UTF_8)
         } catch (e: Exception) {
+            Log.e("TokenManager", "토큰 복호화에 실패했습니다.", e)
+            clearTokens()
             null
         }
     }
