@@ -20,22 +20,22 @@ object RefreshSingleFlight {
      * - runBlocking 환경에서도 호출 가능
      */
     suspend fun refresh(block: suspend () -> String?): String? {
-        mutex.withLock {
-            inFlight?.let { return it.await() }
+        val job = mutex.withLock {
+            inFlight?.let { return@withLock it }
 
-            val job = scope.async {
+            scope.async {
                 try {
                     block()
                 } finally {
                     mutex.withLock {
-                        if (inFlight?.isCompleted == true) {
+                        if (inFlight === this@async) {
                             inFlight = null
                         }
                     }
                 }
-            }
-            inFlight = job
-            return job.await()
+            }.also { inFlight = it }
         }
+
+        return job.await()
     }
 }

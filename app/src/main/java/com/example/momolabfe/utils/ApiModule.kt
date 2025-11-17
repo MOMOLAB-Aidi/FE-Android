@@ -1,11 +1,16 @@
 package com.example.momolabfe.utils
 
+import android.content.Context
+import android.content.SharedPreferences
+import com.example.momolabfe.data.remote.auth.repository.PreferenceRepository
+import com.example.momolabfe.data.remote.auth.repository.SharedPreferencesRepository
 import com.example.momolabfe.data.remote.auth.service.AuthService
 import com.example.momolabfe.data.remote.record.service.RecordService
 import com.example.momolabfe.data.remote.user.service.UserService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import javax.inject.Qualifier
@@ -52,4 +57,14 @@ class ApiModule {
     fun provideAuthApiForLogout(@AuthRetrofit retrofit: Retrofit): AuthService {
         return retrofit.create(AuthService::class.java)
     }
+
+    @Provides
+    @Singleton
+    fun provideSharedPreferences(@ApplicationContext context: Context): SharedPreferences {
+        return context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+    }
+
+    @Provides
+    @Singleton
+    fun providePreferenceRepository(repo: SharedPreferencesRepository): PreferenceRepository = repo
 }
