@@ -25,6 +25,10 @@ class RecordViewModel @Inject constructor(
     private val _errorMessage = MutableLiveData<String?>()
     val errorMessage: LiveData<String?> get() = _errorMessage
 
+    // 교환 시간 (24시간 형식, 서버 전송용)
+    private val _exchangeTime = MutableLiveData<String>()
+    val exchangeTime: LiveData<String> = _exchangeTime
+
     private val _recordSuccess = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
     val recordSuccess: SharedFlow<Unit> = _recordSuccess.asSharedFlow()
 
@@ -52,6 +56,8 @@ class RecordViewModel @Inject constructor(
             }
         }
     }
+
+
 
     // 수기 작성 - 공통 정보
     fun recordCommonByWriting(request: RecordCreateRequest) {
@@ -89,6 +95,14 @@ class RecordViewModel @Inject constructor(
                 _errorMessage.value = e.localizedMessage ?: "OCR 텍스트 추출에 실패했습니다."
             }
         }
+    }
+
+    fun setExchangeTime(time: String) {
+        _exchangeTime.value = time
+    }
+
+    fun getExchangeTime(): String? {
+        return _exchangeTime.value
     }
 
     fun clearOcr() {
