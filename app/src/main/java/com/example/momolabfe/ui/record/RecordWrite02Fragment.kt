@@ -120,15 +120,11 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
         val hour12 = hourPicker.value
         val minute = arrayOf("00", "10", "20", "30", "40", "50")[minutePicker.value]
 
-        // 화면 표시용 (12시간 형식)
-        val displayTimeText = "${if (ampm == 0) "오전" else "오후"} $hour12:$minute"
-        targetEditText.setText(displayTimeText)
-
         // 서버 전송용 24시간 형식으로 변환
         val hour24 = convertTo24Hour(ampm, hour12)
         val serverTimeText = String.format(Locale.KOREA, "%02d:%s", hour24, minute)
 
-        val currentList = exchangeAdapter.items.toMutableList()
+        val currentList = exchangeAdapter.items
         if (position >= 0 && position < currentList.size) {
             val updatedItem = currentList[position].copy(
                 // 24시간 형식 문자열을 LocalTime 객체로 파싱
@@ -204,21 +200,19 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
         }
 
         // 새 항목의 exchangeNo 계산
-        val newPosition = currentExchanges.size
         val newExchangeNo = currentExchanges.size + 1
 
         val newExchange = RecordExchangeOcrResponse(
             id = -1, // 임시 ID 할당
             exchangeNo = newExchangeNo,
-            exchangeTime = LocalTime.of(0,0),
+            exchangeTime = LocalTime.now(),
             drainVolume = 0,
             fillConcentration = 0.0,
             fillVolume = 0,
             uf = 0
         )
 
-        currentExchanges.add(newExchange)
-        exchangeAdapter.notifyItemInserted(newPosition)
+        exchangeAdapter.addExchangeItem(newExchange)
 
         updateAddButtonVisibility()
         binding.exchangeRv.requestLayout()
@@ -238,7 +232,7 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
             val firstExchange = RecordExchangeOcrResponse(
                 id = -1, // 임시 ID
                 exchangeNo = 1,
-                exchangeTime = LocalTime.of(0, 0),
+                exchangeTime = LocalTime.now(),
                 drainVolume = 0,
                 fillConcentration = 0.0,
                 fillVolume = 0,
@@ -248,7 +242,11 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
         }
 
         exchangeAdapter.items = exchanges
-        exchangeAdapter.notifyDataSetChanged()
+        if (exchanges.size == 1) {
+            exchangeAdapter.notifyItemInserted(0)
+        } else {
+            exchangeAdapter.notifyItemRangeInserted(0, exchanges.size)
+        }
         updateAddButtonVisibility()
         binding.exchangeRv.requestLayout() // 레이아웃 다시 계산하도록 요청
     }

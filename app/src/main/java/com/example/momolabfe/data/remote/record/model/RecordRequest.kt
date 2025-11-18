@@ -11,11 +11,11 @@ data class RecordCreateRequest (
     @SerializedName("weight") val weight: Double,
     @SerializedName("systolic") val systolic: Int,
     @SerializedName("diastolic") val diastolic: Int,
-    @SerializedName("fasting_glucose") val fastingGlucose: Int?,
-    @SerializedName("urine_count") val urineCount: Int?,
-    @SerializedName("turbidity") val turbidity: Turbidity?,
+    @SerializedName("fasting_glucose") val fastingGlucose: Int,
+    @SerializedName("urine_count") val urineCount: Int,
+    @SerializedName("turbidity") val turbidity: Turbidity,
     @SerializedName("notes") val notes: String? = null,
-    @SerializedName("total_uf") val totalUf: Int?,
+    @SerializedName("total_uf") val totalUf: Int? = null,
 )
 
 data class RecordExchangeCreateRequest (
