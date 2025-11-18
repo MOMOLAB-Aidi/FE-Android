@@ -1,7 +1,9 @@
 package com.example.momolabfe.ui.record.adapter
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -14,20 +16,42 @@ import java.util.Locale
 class RecordExchangeAdapter :
     ListAdapter<RecordExchangeOcrResponse, RecordExchangeAdapter.ExchangeViewHolder>(DIFF_CALLBACK) {
 
+    // TimePicker 클릭 이벤트 처리를 위한 인터페이스 정의
+    interface OnTimePickerClickListener {
+        fun onTimePickerClick(posistion: Int, targetEditText: EditText)
+    }
+
+    // 외부에서 리스너를 설정할 수 있는 속성
+    var onTimePickerClickListener: OnTimePickerClickListener? = null
+
     inner class ExchangeViewHolder(
         private val binding: ItemRecordExchangeBinding
     ) : RecyclerView.ViewHolder(binding.root) {
 
+        init {
+            val clickListener = View.OnClickListener {
+                val position = absoluteAdapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    onTimePickerClickListener?.onTimePickerClick(position, binding.exchangeTimeEt)
+                }
+            }
+
+            binding.exchangeTimeCv.setOnClickListener(clickListener)
+            binding.exchangeTimeEt.setOnClickListener(clickListener)
+        }
+
         fun bind(item: RecordExchangeOcrResponse) {
             binding.exchangeNoTv.text = "${item.exchangeNo}회차"
 
-            // LocalTime → "HH:mm" 표시
-            binding.exchangeTimeEt.setText(formatTime(item.exchangeTime))
+            // LocalTime이 00:00이 아닐 때만 표시
+            val timeText = if (item.exchangeTime == LocalTime.of(0, 0)) "" else formatTime(item.exchangeTime)
+            binding.exchangeTimeEt.setText(timeText)
 
-            binding.drainVolumeEt.setText(item.drainVolume.toString())
-            binding.fillConcentrationEt.setText(item.fillConcentration.toString())
-            binding.fillVolumeEt.setText(item.fillVolume.toString())
-            binding.ufEt.setText(item.uf.toString())
+            // 값이 0일 경우 빈 문자열("")로 표시
+            binding.drainVolumeEt.setText(if (item.drainVolume == 0) "" else item.drainVolume.toString())
+            binding.fillConcentrationEt.setText(if (item.fillConcentration == 0.0) "" else item.fillConcentration.toString())
+            binding.fillVolumeEt.setText(if (item.fillVolume == 0) "" else item.fillVolume.toString())
+            binding.ufEt.setText(if (item.uf == 0) "" else item.uf.toString())
         }
 
         private fun formatTime(time: LocalTime): String {
@@ -47,14 +71,20 @@ class RecordExchangeAdapter :
 
     companion object {
         private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<RecordExchangeOcrResponse>() {
-            override fun areItemsTheSame(oldItem: RecordExchangeOcrResponse, newItem: RecordExchangeOcrResponse) =
+            override fun areItemsTheSame(
+                oldItem: RecordExchangeOcrResponse,
+                newItem: RecordExchangeOcrResponse
+            ) =
                 oldItem.exchangeNo == newItem.exchangeNo
 
-            override fun areContentsTheSame(oldItem: RecordExchangeOcrResponse, newItem: RecordExchangeOcrResponse) =
+            override fun areContentsTheSame(
+                oldItem: RecordExchangeOcrResponse,
+                newItem: RecordExchangeOcrResponse
+            ) =
                 oldItem == newItem
         }
 
-        private val TIME_FORMATTER: DateTimeFormatter =
+        val TIME_FORMATTER: DateTimeFormatter =
             DateTimeFormatter.ofPattern("HH:mm", Locale.KOREA)
     }
 }
