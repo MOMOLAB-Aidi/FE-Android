@@ -19,8 +19,6 @@ class RecordExchangeAdapter :
     var items: MutableList<RecordExchangeOcrResponse> = mutableListOf()
         set(value) {
             field = value.toMutableList()
-            // 데이터가 갱신될 때마다 강제로 UI를 갱신
-            notifyDataSetChanged()
         }
 
     // TimePicker 클릭 이벤트 처리를 위한 인터페이스 정의

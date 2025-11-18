@@ -34,6 +34,8 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
     private val viewModel: RecordViewModel by activityViewModels()
     private lateinit var exchangeAdapter: RecordExchangeAdapter
 
+    private val MAX_EXCHANGES = 5
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -193,10 +195,15 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
 
     // 회차 추가 버튼 클릭 시 새로운 교환 항목 추가 + 업데이트
     private fun addExchange() {
-        val currentExchanges = exchangeAdapter.items.toMutableList()
+        val currentExchanges = exchangeAdapter.items
+
+        if (currentExchanges.size >= MAX_EXCHANGES) {
+            return
+        }
 
         // 새 항목의 exchangeNo 계산
         val newExchangeNo = currentExchanges.size + 1
+        val newPosition = currentExchanges.size
 
         val newExchange = RecordExchangeOcrResponse(
             id = -1, // 임시 ID 할당
@@ -209,9 +216,10 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
         )
 
         currentExchanges.add(newExchange)
-        exchangeAdapter.items = currentExchanges
+        exchangeAdapter.notifyItemInserted(newPosition)
 
-        // 추가된 항목 위치로 스크롤합니다.
+        updateAddButtonVisibility()
+        // 추가된 항목 위치로 스크롤
         binding.exchangeRv.scrollToPosition(currentExchanges.size - 1)
     }
 
@@ -236,6 +244,17 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
         }
 
         exchangeAdapter.items = exchanges
+        exchangeAdapter.notifyDataSetChanged()
+        updateAddButtonVisibility()
+    }
+
+    private fun updateAddButtonVisibility() {
+        // 현재 어댑터의 항목 개수를 확인
+        if (exchangeAdapter.itemCount >= MAX_EXCHANGES) {
+            binding.addExchangeBtn.visibility = View.GONE
+        } else {
+            binding.addExchangeBtn.visibility = View.VISIBLE
+        }
     }
 
     override fun onDestroyView() {
