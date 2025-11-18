@@ -34,7 +34,7 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
     private val viewModel: RecordViewModel by activityViewModels()
     private lateinit var exchangeAdapter: RecordExchangeAdapter
 
-    private val MAX_EXCHANGES = 5
+    private val MAX_EXCHANGES = RecordExchangeAdapter.MAX_EXCHANGES
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -135,7 +135,7 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
                 exchangeTime = LocalTime.parse(serverTimeText, RecordExchangeAdapter.TIME_FORMATTER)
             )
             currentList[position] = updatedItem
-            exchangeAdapter.items = currentList
+            exchangeAdapter.notifyItemChanged(position)
         }
 
         // ViewModel에 24시간 형식 저장 (서버 전송용)
@@ -190,6 +190,8 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
         }
         binding.exchangeRv.apply {
             adapter = exchangeAdapter
+            setHasFixedSize(false)
+            setItemViewCacheSize(MAX_EXCHANGES)
         }
     }
 
@@ -202,8 +204,8 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
         }
 
         // 새 항목의 exchangeNo 계산
-        val newExchangeNo = currentExchanges.size + 1
         val newPosition = currentExchanges.size
+        val newExchangeNo = currentExchanges.size + 1
 
         val newExchange = RecordExchangeOcrResponse(
             id = -1, // 임시 ID 할당
@@ -219,6 +221,8 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
         exchangeAdapter.notifyItemInserted(newPosition)
 
         updateAddButtonVisibility()
+        binding.exchangeRv.requestLayout()
+
         // 추가된 항목 위치로 스크롤
         binding.exchangeRv.scrollToPosition(currentExchanges.size - 1)
     }
@@ -246,6 +250,7 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
         exchangeAdapter.items = exchanges
         exchangeAdapter.notifyDataSetChanged()
         updateAddButtonVisibility()
+        binding.exchangeRv.requestLayout() // 레이아웃 다시 계산하도록 요청
     }
 
     private fun updateAddButtonVisibility() {

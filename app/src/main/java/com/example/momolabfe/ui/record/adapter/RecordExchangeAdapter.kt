@@ -82,5 +82,7 @@ class RecordExchangeAdapter :
     companion object {
         val TIME_FORMATTER: DateTimeFormatter =
             DateTimeFormatter.ofPattern("HH:mm", Locale.KOREA)
+
+        const val MAX_EXCHANGES = 5
     }
 }
