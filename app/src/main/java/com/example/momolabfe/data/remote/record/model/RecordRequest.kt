@@ -15,14 +15,14 @@ data class RecordCreateRequest (
     @SerializedName("urine_count") val urineCount: Int,
     @SerializedName("turbidity") val turbidity: Turbidity,
     @SerializedName("notes") val notes: String? = null,
-    @SerializedName("total_uf") val totalUf: Int,
+    @SerializedName("total_uf") val totalUf: Int? = null,
 )
 
 data class RecordExchangeCreateRequest (
     @SerializedName("exchange_time") val exchangeTime: LocalTime,
     @SerializedName("drain_volume") val drainVolume: Int,
     @SerializedName("fill_volume") val fillVolume: Int,
-    @SerializedName("fill_concentration") val fillConcentration: Float,
+    @SerializedName("fill_concentration") val fillConcentration: Double,
     @SerializedName("uf") val uf: Int
 
 )
