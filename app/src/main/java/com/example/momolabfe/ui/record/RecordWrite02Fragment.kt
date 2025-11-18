@@ -126,14 +126,14 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
         val hour24 = convertTo24Hour(ampm, hour12)
         val serverTimeText = String.format(Locale.KOREA, "%02d:%s", hour24, minute)
 
-        val currentList = exchangeAdapter.currentList.toMutableList()
+        val currentList = exchangeAdapter.items.toMutableList()
         if (position >= 0 && position < currentList.size) {
             val updatedItem = currentList[position].copy(
                 // 24시간 형식 문자열을 LocalTime 객체로 파싱
                 exchangeTime = LocalTime.parse(serverTimeText, RecordExchangeAdapter.TIME_FORMATTER)
             )
             currentList[position] = updatedItem
-            exchangeAdapter.submitList(currentList)
+            exchangeAdapter.items = currentList
         }
 
         // ViewModel에 24시간 형식 저장 (서버 전송용)
@@ -193,7 +193,7 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
 
     // 회차 추가 버튼 클릭 시 새로운 교환 항목 추가 + 업데이트
     private fun addExchange() {
-        val currentExchanges = exchangeAdapter.currentList.toMutableList()
+        val currentExchanges = exchangeAdapter.items.toMutableList()
 
         // 새 항목의 exchangeNo 계산
         val newExchangeNo = currentExchanges.size + 1
@@ -209,7 +209,7 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
         )
 
         currentExchanges.add(newExchange)
-        exchangeAdapter.submitList(currentExchanges)
+        exchangeAdapter.items = currentExchanges
 
         // 추가된 항목 위치로 스크롤합니다.
         binding.exchangeRv.scrollToPosition(currentExchanges.size - 1)
@@ -235,7 +235,7 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
             exchanges.add(firstExchange)
         }
 
-        exchangeAdapter.submitList(exchanges)
+        exchangeAdapter.items = exchanges
     }
 
     override fun onDestroyView() {

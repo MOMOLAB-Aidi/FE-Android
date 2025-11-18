@@ -14,15 +14,26 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 class RecordExchangeAdapter :
-    ListAdapter<RecordExchangeOcrResponse, RecordExchangeAdapter.ExchangeViewHolder>(DIFF_CALLBACK) {
+    RecyclerView.Adapter<RecordExchangeAdapter.ExchangeViewHolder>() {
+
+    var items: MutableList<RecordExchangeOcrResponse> = mutableListOf()
+        set(value) {
+            field = value.toMutableList()
+            // 데이터가 갱신될 때마다 강제로 UI를 갱신
+            notifyDataSetChanged()
+        }
 
     // TimePicker 클릭 이벤트 처리를 위한 인터페이스 정의
     interface OnTimePickerClickListener {
-        fun onTimePickerClick(posistion: Int, targetEditText: EditText)
+        fun onTimePickerClick(position: Int, targetEditText: EditText)
     }
 
     // 외부에서 리스너를 설정할 수 있는 속성
     var onTimePickerClickListener: OnTimePickerClickListener? = null
+
+    override fun getItemCount(): Int {
+        return items.size
+    }
 
     inner class ExchangeViewHolder(
         private val binding: ItemRecordExchangeBinding
@@ -44,7 +55,8 @@ class RecordExchangeAdapter :
             binding.exchangeNoTv.text = "${item.exchangeNo}회차"
 
             // LocalTime이 00:00이 아닐 때만 표시
-            val timeText = if (item.exchangeTime == LocalTime.of(0, 0)) "" else formatTime(item.exchangeTime)
+            val timeText =
+                if (item.exchangeTime == LocalTime.of(0, 0)) "" else formatTime(item.exchangeTime)
             binding.exchangeTimeEt.setText(timeText)
 
             // 값이 0일 경우 빈 문자열("")로 표시
@@ -66,24 +78,10 @@ class RecordExchangeAdapter :
     }
 
     override fun onBindViewHolder(holder: ExchangeViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        holder.bind(items[position])
     }
 
     companion object {
-        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<RecordExchangeOcrResponse>() {
-            override fun areItemsTheSame(
-                oldItem: RecordExchangeOcrResponse,
-                newItem: RecordExchangeOcrResponse
-            ) =
-                oldItem.exchangeNo == newItem.exchangeNo
-
-            override fun areContentsTheSame(
-                oldItem: RecordExchangeOcrResponse,
-                newItem: RecordExchangeOcrResponse
-            ) =
-                oldItem == newItem
-        }
-
         val TIME_FORMATTER: DateTimeFormatter =
             DateTimeFormatter.ofPattern("HH:mm", Locale.KOREA)
     }
