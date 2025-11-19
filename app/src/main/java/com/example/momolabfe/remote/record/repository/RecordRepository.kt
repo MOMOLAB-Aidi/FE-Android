@@ -94,6 +94,15 @@ class RecordRepository @Inject constructor(
         response.body() ?: throw ApiException(response.code(), "빈 본문")
     }
 
+    // 최근 3개 기록 조회
+    suspend fun getRecentRecords(): Result<List<RecordGetResponse>> = runCatching {
+        val response = recordService.getRecentRecords()
+        if (!response.isSuccessful) {
+            throw ApiException(response.code(), "HTTP ${response.code()}")
+        }
+        response.body() ?: throw ApiException(response.code(), "빈 본문")
+    }
+
     // 특정 기록 삭제
     suspend fun deleteRecord(recId: Long): Result<Unit> = runCatching {
         val response = recordService.deleteRecord(recId)

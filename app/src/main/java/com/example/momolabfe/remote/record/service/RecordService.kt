@@ -61,6 +61,10 @@ abstract class RecordService (
         @GET("/api/v1/records/{rec_id}")
         suspend fun getRecord(@Path("rec_id") recId: Long): Response<RecordGetResponse>
 
+        // 최근 3개 기록 조회
+        @GET("/api/v1/records/latest")
+        suspend fun getRecentRecords(): Response<List<RecordGetResponse>>
+
         // 특정 기록 삭제
         @DELETE("/api/v1/records/{rec_id}")
         suspend fun deleteRecord(@Path("rec_id") recId: Long): Response<Unit>
@@ -106,6 +110,10 @@ abstract class RecordService (
 
     suspend fun getRecord(recId: Long): Response<RecordGetResponse> {
         return pythonService.getRecord(recId)
+    }
+
+    suspend fun getRecentRecords(): Response<List<RecordGetResponse>> {
+        return pythonService.getRecentRecords()
     }
 
     suspend fun deleteRecord(recId: Long): Response<Unit> {
