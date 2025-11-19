@@ -1,7 +1,6 @@
 package com.example.momolabfe.ui.main
 
 import android.os.Bundle
-import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -13,7 +12,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.example.momolabfe.R
 import com.example.momolabfe.databinding.ActivityMainBinding
 import com.example.momolabfe.ui.auth.LoginFragment
-import com.example.momolabfe.data.remote.auth.LogoutManager
+import com.example.momolabfe.remote.auth.LogoutManager
 import com.example.momolabfe.ui.consult.ConsultFragment
 import com.example.momolabfe.ui.record.RecordFragment
 import com.example.momolabfe.ui.statistics.StatisticsFragment

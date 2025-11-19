@@ -2,11 +2,11 @@ package com.example.momolabfe.utils
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.example.momolabfe.data.remote.auth.repository.PreferenceRepository
-import com.example.momolabfe.data.remote.auth.repository.SharedPreferencesRepository
-import com.example.momolabfe.data.remote.auth.service.AuthService
-import com.example.momolabfe.data.remote.record.service.RecordService
-import com.example.momolabfe.data.remote.user.service.UserService
+import com.example.momolabfe.remote.auth.repository.PreferenceRepository
+import com.example.momolabfe.remote.auth.repository.SharedPreferencesRepository
+import com.example.momolabfe.remote.auth.service.AuthService
+import com.example.momolabfe.remote.record.service.RecordService
+import com.example.momolabfe.remote.user.service.UserService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

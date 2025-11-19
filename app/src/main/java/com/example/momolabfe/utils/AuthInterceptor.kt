@@ -1,9 +1,8 @@
 package com.example.momolabfe.utils
 
 import android.util.Log
-import com.example.momolabfe.remote.auth.data.TokenRequest
-import com.example.momolabfe.data.remote.auth.service.AuthService
-import com.example.momolabfe.data.remote.auth.LogoutManager
+import com.example.momolabfe.remote.auth.LogoutManager
+import com.example.momolabfe.remote.auth.service.AuthService
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.runBlocking
@@ -18,7 +17,6 @@ class AuthInterceptor @Inject constructor(
     private val tokenManager: TokenManager,
     private val logoutManager: LogoutManager,
     @NoAuthRetrofit private val noAuthService: AuthService,
-    private val gson: Gson
 ) : Interceptor {
 
     companion object {

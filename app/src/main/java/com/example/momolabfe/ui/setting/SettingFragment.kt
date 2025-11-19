@@ -9,9 +9,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.example.momolabfe.R
-import com.example.momolabfe.data.remote.auth.LogoutManager
 import com.example.momolabfe.databinding.FragmentSettingBinding
-import com.example.momolabfe.ui.main.HomeFragment
+import com.example.momolabfe.remote.auth.LogoutManager
 import com.example.momolabfe.ui.setting.viewModel.SettingViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint

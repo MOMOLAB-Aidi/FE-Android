@@ -5,11 +5,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.momolabfe.data.remote.record.model.GetCalendarResponse
+import com.example.momolabfe.remote.record.model.GetCalendarResponse
 import com.example.momolabfe.remote.record.model.RecordCreateRequest
 import com.example.momolabfe.remote.record.model.RecordExchangeCreateRequest
 import com.example.momolabfe.remote.record.model.RecordOcrResponse
-import com.example.momolabfe.data.remote.record.repository.RecordRepository
+import com.example.momolabfe.remote.record.repository.RecordRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -35,8 +35,8 @@ class RecordViewModel @Inject constructor(
     private val _recordResult = MutableLiveData<Unit?>()
     val recordResult: LiveData<Unit?> get() = _recordResult
 
-    private val _ocrRecordResult = MutableLiveData<com.example.momolabfe.remote.record.model.RecordOcrResponse?>()
-    val ocrRecordResult: LiveData<com.example.momolabfe.remote.record.model.RecordOcrResponse?> get() = _ocrRecordResult
+    private val _ocrRecordResult = MutableLiveData<RecordOcrResponse?>()
+    val ocrRecordResult: LiveData<RecordOcrResponse?> get() = _ocrRecordResult
 
     private val _recordCreated = MutableSharedFlow<Long>(extraBufferCapacity = 1)
     val recordCreated: SharedFlow<Long> = _recordCreated
@@ -60,7 +60,7 @@ class RecordViewModel @Inject constructor(
 
 
     // 수기 작성 - 공통 정보
-    fun recordCommonByWriting(request: com.example.momolabfe.remote.record.model.RecordCreateRequest) {
+    fun recordCommonByWriting(request: RecordCreateRequest) {
         viewModelScope.launch {
             val result = recordRepository.recordCommonByWriting(request)
             result.onSuccess { id ->
@@ -72,7 +72,7 @@ class RecordViewModel @Inject constructor(
     }
 
     // 수기 작성 - 회차별 정보
-    fun recordExchangeByWriting(recId: Long, request: com.example.momolabfe.remote.record.model.RecordExchangeCreateRequest) {
+    fun recordExchangeByWriting(recId: Long, request: RecordExchangeCreateRequest) {
         viewModelScope.launch {
             val result = recordRepository.recordExchangeByWriting(recId, request)
             result.onSuccess {

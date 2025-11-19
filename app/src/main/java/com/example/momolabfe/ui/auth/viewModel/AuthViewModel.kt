@@ -6,8 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.momolabfe.remote.auth.data.LoginRequest
 import com.example.momolabfe.remote.auth.data.TokenResponse
-import com.example.momolabfe.data.remote.auth.repository.AuthRepository
-import com.example.momolabfe.data.remote.auth.repository.PreferenceRepository
+import com.example.momolabfe.remote.auth.repository.AuthRepository
+import com.example.momolabfe.remote.auth.repository.PreferenceRepository
 import com.example.momolabfe.utils.TokenManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -29,7 +29,7 @@ class AuthViewModel @Inject constructor(
     private val _loginSuccess = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
     val loginSuccess: SharedFlow<Unit> = _loginSuccess.asSharedFlow()
 
-    fun login(request: com.example.momolabfe.remote.auth.data.LoginRequest) {
+    fun login(request: LoginRequest) {
         viewModelScope.launch {
             val result = authRepository.login(request)
             result.onSuccess { loginResponse ->
@@ -42,7 +42,7 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    private fun saveTokens(tokens: com.example.momolabfe.remote.auth.data.TokenResponse) {
+    private fun saveTokens(tokens: TokenResponse) {
         tokenManager.saveTokens(
             accessToken = tokens.accessToken,
             refreshToken = tokens.refreshToken
@@ -50,20 +50,20 @@ class AuthViewModel @Inject constructor(
     }
 
 
-    // 1. ID 저장
+    // ID 저장
     fun savePatientId(id: String) {
         viewModelScope.launch {
             prefRepository.savePatientId(id)
         }
     }
 
-    // 2. ID 제거
+    // ID 제거
     fun clearSavedPatientId() {
         viewModelScope.launch {
             prefRepository.clearPatientId()
         }
     }
 
-    // 3. ID 불러오기
+    // ID 불러오기
     fun getSavedPatientId(): LiveData<String> = prefRepository.getPatientId()
 }

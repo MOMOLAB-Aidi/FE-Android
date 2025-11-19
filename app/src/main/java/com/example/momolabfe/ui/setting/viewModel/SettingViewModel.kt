@@ -1,12 +1,11 @@
 package com.example.momolabfe.ui.setting.viewModel
 
-import com.example.momolabfe.data.remote.user.repository.UserRepository
-
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.momolabfe.data.remote.user.data.MyPageResponse
+import com.example.momolabfe.remote.user.data.MyPageResponse
+import com.example.momolabfe.remote.user.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow

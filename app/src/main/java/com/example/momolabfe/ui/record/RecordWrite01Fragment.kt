@@ -20,10 +20,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import com.example.momolabfe.R
-import com.example.momolabfe.data.remote.record.model.GetCalendarResponse
-import com.example.momolabfe.data.remote.record.model.Turbidity
 import com.example.momolabfe.databinding.DialogCalendarBinding
 import com.example.momolabfe.databinding.FragmentRecordWrite01Binding
+import com.example.momolabfe.remote.record.model.GetCalendarResponse
+import com.example.momolabfe.remote.record.model.Turbidity
 import com.example.momolabfe.ui.record.viewModel.RecordViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.kizitonwose.calendar.core.CalendarDay
