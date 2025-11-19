@@ -38,7 +38,7 @@
                     android:layout_marginTop="30dp"
                     android:src="@drawable/ic_robot_sv"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"/>
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
                     android:id="@+id/title_tv"
@@ -55,6 +55,26 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageView
+                    android:id="@+id/history_iv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="25dp"
+                    android:src="@drawable/ic_history_sv"
+                    app:layout_constraintTop_toTopOf="@id/title_tv"
+                    app:layout_constraintEnd_toStartOf="@id/plus_iv"/>
+
+                <ImageView
+                    android:id="@+id/plus_iv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="20dp"
+                    android:src="@drawable/ic_plus_sv"
+                    app:layout_constraintTop_toTopOf="@id/title_tv"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+
+                <ImageView
                     android:id="@+id/sparkle_iv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -62,7 +82,7 @@
                     android:layout_marginTop="5dp"
                     android:src="@drawable/ic_sparkle_sv"
                     app:layout_constraintStart_toEndOf="@id/robot_iv"
-                    app:layout_constraintTop_toBottomOf="@id/title_tv"/>
+                    app:layout_constraintTop_toBottomOf="@id/title_tv" />
 
                 <TextView
                     android:id="@+id/content_tv"
@@ -74,7 +94,7 @@
                     android:includeFontPadding="false"
                     android:text="24시간 상담 가능"
                     android:textColor="@color/white"
-                    android:textSize="17sp"
+                    android:textSize="15sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@id/sparkle_iv"
                     app:layout_constraintTop_toTopOf="@id/sparkle_iv" />
@@ -85,18 +105,18 @@
                 android:id="@+id/agent_iv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
                 android:layout_marginStart="20dp"
+                android:layout_marginTop="30dp"
                 android:src="@drawable/ic_robot_agent_sv"
-                app:layout_constraintTop_toBottomOf="@id/title_container"
-                app:layout_constraintStart_toStartOf="@id/title_container"/>
+                app:layout_constraintStart_toStartOf="@id/title_container"
+                app:layout_constraintTop_toBottomOf="@id/title_container" />
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/agent_cv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
                 android:layout_marginHorizontal="10dp"
+                android:layout_marginStart="20dp"
                 android:backgroundTint="@color/white"
                 app:cardCornerRadius="10dp"
                 app:cardElevation="1dp"
@@ -107,8 +127,8 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="5dp"
-                    android:background="@color/white">
+                    android:background="@color/white"
+                    android:padding="5dp">
 
                     <TextView
                         android:id="@+id/agent_tv"
@@ -116,31 +136,162 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
                         android:fontFamily="@font/noto_sans_kr_regular"
-                        android:text="안녕하세요! 복막투석 AI 상담사입니다. \n투석 관리, 식단, 건강 상태 등에 대해 \n무엇이든 물어보세요."
-                        android:textColor="@color/secondary_text"
                         android:includeFontPadding="false"
+                        android:text="안녕하세요! 복막투석 AI 상담사입니다. \n투석 관리, 일반 지침, 건강 상태 등에 대해 \n무엇이든 물어보세요."
+                        android:textColor="@color/secondary_text"
                         android:textSize="15sp"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"/>
+                        app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
                         android:id="@+id/time_tv"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="5dp"
-                        android:text="오후 07:37"
                         android:fontFamily="@font/noto_sans_kr_regular"
-                        android:textColor="@color/secondary_text"
                         android:includeFontPadding="false"
+                        android:text="오후 07:37"
+                        android:textColor="@color/secondary_text"
                         android:textSize="14sp"
                         app:layout_constraintStart_toStartOf="@id/agent_tv"
-                        app:layout_constraintTop_toBottomOf="@id/agent_tv"/>
-
+                        app:layout_constraintTop_toBottomOf="@id/agent_tv" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.card.MaterialCardView>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
+
+    <TextView
+        android:id="@+id/quick_question_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/noto_sans_kr_regular"
+        android:includeFontPadding="false"
+        android:text="빠른 질문"
+        android:textColor="@color/secondary_text"
+        android:textSize="15sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/quick_question_group"/>
+
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/quick_question_group"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="10dp"
+        app:chipSpacingHorizontal="8dp"
+        app:chipSpacingVertical="8dp"
+        app:singleLine="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/input_container">
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip1"
+            style="@style/Widget.MaterialComponents.Chip.Choice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="제수량이 잘 안 나와요"
+            android:textColor="@color/secondary_text"
+            android:fontFamily="@font/noto_sans_kr_regular"
+            android:textSize="14sp"
+            app:chipBackgroundColor="@color/white"
+            app:chipCornerRadius="10dp"
+            app:chipStrokeColor="@color/main_bg"
+            app:chipStrokeWidth="1dp"/>
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip2"
+            style="@style/Widget.MaterialComponents.Chip.Choice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="식단 관리하는 방법"
+            android:textColor="@color/secondary_text"
+            android:fontFamily="@font/noto_sans_kr_regular"
+            android:textSize="14sp"
+            app:chipBackgroundColor="@color/white"
+            app:chipCornerRadius="10dp"
+            app:chipStrokeColor="@color/main_bg"
+            app:chipStrokeWidth="1dp"/>
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip3"
+            style="@style/Widget.MaterialComponents.Chip.Choice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="복통이 있어요"
+            android:textColor="@color/secondary_text"
+            android:fontFamily="@font/noto_sans_kr_regular"
+            android:textSize="14sp"
+            app:chipBackgroundColor="@color/white"
+            app:chipCornerRadius="10dp"
+            app:chipStrokeColor="@color/main_bg"
+            app:chipStrokeWidth="1dp"/>
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip4"
+            style="@style/Widget.MaterialComponents.Chip.Choice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="혈압이 높아요"
+            android:textColor="@color/secondary_text"
+            android:fontFamily="@font/noto_sans_kr_regular"
+            android:textSize="14sp"
+            app:chipBackgroundColor="@color/white"
+            app:chipCornerRadius="10dp"
+            app:chipStrokeColor="@color/main_bg"
+            app:chipStrokeWidth="1dp"/>
+
+    </com.google.android.material.chip.ChipGroup>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/input_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:elevation="8dp"
+        android:padding="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <EditText
+            android:id="@+id/message_input"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="#F3F3F5"
+            android:hint="궁금한 점을 물어보세요..."
+            android:fontFamily="@font/noto_sans_kr_regular"
+            android:includeFontPadding="false"
+            android:minHeight="48dp"
+            android:padding="12dp"
+            android:textColor="@color/text_primary"
+            android:textColorHint="@color/secondary_text"
+            android:textSize="15sp"
+            android:inputType="textMultiLine|textCapSentences"
+            android:maxLines="4"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/send_button"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <ImageButton
+            android:id="@+id/send_button"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/ic_send_sv"
+            android:contentDescription="전송"
+            android:src="@drawable/ic_send_sv"
+            app:layout_constraintBottom_toBottomOf="@id/message_input"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/message_input"
+            app:layout_constraintTop_toTopOf="@id/message_input"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
