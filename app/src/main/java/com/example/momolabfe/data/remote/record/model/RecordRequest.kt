@@ -16,6 +16,7 @@ data class RecordCreateRequest (
     @SerializedName("turbidity") val turbidity: Turbidity,
     @SerializedName("notes") val notes: String? = null,
     @SerializedName("total_uf") val totalUf: Int? = null,
+    @SerializedName("gcs_path") val gcsPath: String? = null
 )
 
 data class RecordExchangeCreateRequest (
@@ -24,5 +25,25 @@ data class RecordExchangeCreateRequest (
     @SerializedName("fill_volume") val fillVolume: Int,
     @SerializedName("fill_concentration") val fillConcentration: Double,
     @SerializedName("uf") val uf: Int
+)
 
+data class RecordUpdateRequest (
+    @SerializedName("record_date") val recordDate: LocalDate? = null,
+    @SerializedName("record_dw") val recordDw: DayWeek? = null,
+    @SerializedName("weight") val weight: Double? = null,
+    @SerializedName("systolic") val systolic: Int? = null,
+    @SerializedName("diastolic") val diastolic: Int? = null,
+    @SerializedName("fasting_glucose") val fastingGlucose: Int? = null,
+    @SerializedName("urine_count") val urineCount: Int? = null,
+    @SerializedName("turbidity") val turbidity: Turbidity? = null,
+    @SerializedName("notes") val notes: String? = null,
+    @SerializedName("total_uf") val totalUf: Int? = null,
+)
+
+data class RecordExchangeUpdateRequest (
+    @SerializedName("exchange_time") val exchangeTime: LocalTime? = null,
+    @SerializedName("drain_volume") val drainVolume: Int? = null,
+    @SerializedName("fill_volume") val fillVolume: Int? = null,
+    @SerializedName("fill_concentration") val fillConcentration: Double? = null,
+    @SerializedName("uf") val uf: Int? = null
 )

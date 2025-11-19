@@ -7,8 +7,10 @@ import android.util.Log
 import com.example.momolabfe.data.remote.record.model.GetCalendarResponse
 import com.example.momolabfe.data.remote.record.model.RecordCreateRequest
 import com.example.momolabfe.data.remote.record.model.RecordExchangeCreateRequest
-import com.example.momolabfe.data.remote.record.model.RecordIdResponse
+import com.example.momolabfe.data.remote.record.model.RecordExchangeUpdateRequest
+import com.example.momolabfe.data.remote.record.model.RecordGetResponse
 import com.example.momolabfe.data.remote.record.model.RecordOcrResponse
+import com.example.momolabfe.data.remote.record.model.RecordUpdateRequest
 import com.example.momolabfe.data.remote.record.service.RecordService
 import com.example.momolabfe.utils.ApiException
 import com.example.momolabfe.utils.handleApiResponse
@@ -21,9 +23,10 @@ import javax.inject.Singleton
 import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.ResponseBody
 
 @Singleton
-class RecordRepository @Inject constructor (
+class RecordRepository @Inject constructor(
     private val recordService: RecordService,
     @ApplicationContext private val appContext: Context
 ) {
@@ -46,6 +49,15 @@ class RecordRepository @Inject constructor (
         body.id
     }
 
+    // 공통 정보 수정
+    suspend fun updateCommonRecord(request: RecordUpdateRequest): Result<Unit> = runCatching {
+        val response = recordService.updateCommonRecord(request)
+        if (!response.isSuccessful) {
+            throw ApiException(response.code(), "HTTP ${response.code()}")
+        }
+        Unit
+    }
+
     // 수기 작성 - 회차별 정보 생성
     suspend fun recordExchangeByWriting(recId: Long, request: RecordExchangeCreateRequest): Result<Unit> = runCatching {
         val response = recordService.recordExchangeByWriting(recId, request)
@@ -55,15 +67,60 @@ class RecordRepository @Inject constructor (
         Unit
     }
 
-    // OCR로 기록 생성
-    suspend fun recordByOcr(imageUri: Uri): Result<RecordOcrResponse> = runCatching {
-            val part = makeFilePartFromUri(appContext, imageUri, partName = "file")
-            val response = recordService.recordByOcr(part)
-            if (!response.isSuccessful) {
-                throw ApiException(response.code(), "HTTP ${response.code()}")
-            }
-            response.body() ?: throw ApiException(response.code(), "빈 본문")
+    // 회차별 정보 수정
+    suspend fun updateExchangeRecord(request: RecordExchangeUpdateRequest): Result<Unit> = runCatching {
+        val response = recordService.updateExchangeRecord(request)
+        if (!response.isSuccessful) {
+            throw ApiException(response.code(), "HTTP ${response.code()}")
         }
+        Unit
+    }
+
+    // 전체 기록 조회
+    suspend fun getRecordList(year: Int, month: Int): Result<List<RecordGetResponse>> = runCatching {
+        val response = recordService.getRecordList(year, month)
+        if (!response.isSuccessful) {
+            throw ApiException(response.code(), "HTTP ${response.code()}")
+        }
+        response.body() ?: throw ApiException(response.code(), "빈 본문")
+    }
+
+    // 특정 기록 조회
+    suspend fun getRecord(recId: Long): Result<RecordGetResponse> = runCatching {
+        val response = recordService.getRecord(recId)
+        if (!response.isSuccessful) {
+            throw ApiException(response.code(), "HTTP ${response.code()}")
+        }
+        response.body() ?: throw ApiException(response.code(), "빈 본문")
+    }
+
+    // 특정 기록 삭제
+    suspend fun deleteRecord(recId: Long): Result<Unit> = runCatching {
+        val response = recordService.deleteRecord(recId)
+        if (!response.isSuccessful) {
+            throw ApiException(response.code(), "HTTP ${response.code()}")
+        }
+        Unit
+    }
+
+    // OCR 텍스트 인식
+    suspend fun recordByOcr(imageUri: Uri): Result<RecordOcrResponse> = runCatching {
+        val part = makeFilePartFromUri(appContext, imageUri, partName = "file")
+        val response = recordService.recordByOcr(part)
+        if (!response.isSuccessful) {
+            throw ApiException(response.code(), "HTTP ${response.code()}")
+        }
+        response.body() ?: throw ApiException(response.code(), "빈 본문")
+    }
+
+    // OCR 이미지 다운로드
+    suspend fun downloadOcrImage(gcsPath: String): Result<ResponseBody> = runCatching {
+        val response = recordService.downloadOcrImage(gcsPath)
+        if (!response.isSuccessful) {
+            throw ApiException(response.code(), "HTTP ${response.code()}")
+        }
+        response.body() ?: throw ApiException(response.code(), "빈 본문")
+    }
 
 
     // 헬퍼 메소드
