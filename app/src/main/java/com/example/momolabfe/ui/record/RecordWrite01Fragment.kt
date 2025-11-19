@@ -367,24 +367,24 @@ class RecordWrite01Fragment : Fragment() {
 
             isOcrApplied = true  // 다시 덮어쓰지 않도록 플래그 ON
 
-            selectedDate = ocr.recordDate
-            binding.dateEt.setText(ocr.recordDate.format(displayFormatter))
-            binding.weightEt.setText(ocr.weight.toString())
-            binding.systolicEt.setText(ocr.systolic.toString())
-            binding.diastolicEt.setText(ocr.diastolic.toString())
-            binding.fastingGlucoseEt.setText(ocr.fastingGlucose.toString())
-            binding.urineCountEt.setText(ocr.urineCount.toString())
+            selectedDate = ocr.ocrData.recordDate
+            binding.dateEt.setText(ocr.ocrData.recordDate.format(displayFormatter))
+            binding.weightEt.setText(ocr.ocrData.weight.toString())
+            binding.systolicEt.setText(ocr.ocrData.systolic.toString())
+            binding.diastolicEt.setText(ocr.ocrData.diastolic.toString())
+            binding.fastingGlucoseEt.setText(ocr.ocrData.fastingGlucose.toString())
+            binding.urineCountEt.setText(ocr.ocrData.urineCount.toString())
 
             binding.turbidityNCheckbox.isChecked = false
             binding.turbidityYCheckbox.isChecked = false
 
-            when (ocr.turbidity) {
+            when (ocr.ocrData.turbidity) {
                 Turbidity.NONE -> binding.turbidityNCheckbox.isChecked = true
                 Turbidity.PRESENT -> binding.turbidityYCheckbox.isChecked = true
             }
 
-            binding.totalUfEt.setText(ocr.totalUf.toString())
-            binding.notesEt.setText(ocr.notes ?: "")
+            binding.totalUfEt.setText(ocr.ocrData.totalUf.toString())
+            binding.notesEt.setText(ocr.ocrData.notes ?: "")
         }
     }
 

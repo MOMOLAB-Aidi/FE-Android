@@ -15,7 +15,7 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.example.momolabfe.R
-import com.example.momolabfe.data.remote.record.model.RecordExchangeOcrResponse
+import com.example.momolabfe.data.remote.record.model.OcrRecordExchangeData
 import com.example.momolabfe.databinding.DialogTimePickerBinding
 import com.example.momolabfe.databinding.FragmentRecordWrite02Binding
 import com.example.momolabfe.ui.record.adapter.RecordExchangeAdapter
@@ -202,7 +202,7 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
         // 새 항목의 exchangeNo 계산
         val newExchangeNo = currentExchanges.size + 1
 
-        val newExchange = RecordExchangeOcrResponse(
+        val newExchange = OcrRecordExchangeData(
             id = -1, // 임시 ID 할당
             exchangeNo = newExchangeNo,
             exchangeTime = LocalTime.now(),
@@ -225,11 +225,11 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
         val ocr = viewModel.ocrRecordResult.value
 
         // OCR 결과가 null이거나 exchanges 리스트가 비어있는지 확인
-        val exchanges = ocr?.exchanges.orEmpty().toMutableList()
+        val exchanges = ocr?.ocrData?.exchanges.orEmpty().toMutableList()
 
         if (exchanges.isEmpty()) {
             // 1회차 항목을 생성하여 추가
-            val firstExchange = RecordExchangeOcrResponse(
+            val firstExchange = OcrRecordExchangeData(
                 id = -1, // 임시 ID
                 exchangeNo = 1,
                 exchangeTime = LocalTime.now(),
