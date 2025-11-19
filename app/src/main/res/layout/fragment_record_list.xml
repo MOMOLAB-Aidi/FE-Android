@@ -51,7 +51,7 @@
                     android:layout_marginBottom="20dp"
                     android:fontFamily="@font/noto_sans_kr_regular"
                     android:includeFontPadding="false"
-                    android:text="연도-월"
+                    android:text="날짜를 선택하여 기록을 확인하세요"
                     android:textColor="@color/white"
                     android:textSize="17sp"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -61,12 +61,12 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/weekly_avg_weight_cv"
-                android:layout_width="165dp"
+                android:id="@+id/calendar_cv"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="10dp"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="20dp"
+                android:layout_marginEnd="20dp"
                 android:backgroundTint="@color/white"
                 app:cardCornerRadius="10dp"
                 app:cardElevation="0dp"
@@ -80,98 +80,79 @@
                     android:background="@color/white"
                     android:padding="5dp">
 
-                    <TextView
-                        android:id="@+id/weekly_avg_weight_title_tv"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                    <ImageView
+                        android:id="@+id/calendar_previous_date_iv"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
                         android:layout_marginStart="20dp"
-                        android:layout_marginTop="5dp"
-                        android:fontFamily="@font/noto_sans_kr_regular"
-                        android:includeFontPadding="false"
-                        android:text="이번 주 평균"
-                        android:textColor="@color/secondary_text"
-                        android:textSize="15sp"
+                        android:layout_marginTop="20dp"
+                        android:src="@drawable/ic_calendar_previous_sv"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
-                    <TextView
-                        android:id="@+id/weekly_avg_weight_content_tv"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="5dp"
-                        android:fontFamily="@font/noto_sans_kr_regular"
-                        android:text="체중: 56.5kg"
-                        android:textColor="@color/secondary_text"
-                        android:textSize="15sp"
-                        android:textStyle="bold"
-                        app:layout_constraintStart_toStartOf="@id/weekly_avg_weight_title_tv"
-                        app:layout_constraintTop_toBottomOf="@id/weekly_avg_weight_title_tv" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/weekly_avg_uf_cv"
-                android:layout_width="165dp"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="10dp"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="20dp"
-                android:backgroundTint="@color/white"
-                app:cardCornerRadius="10dp"
-                app:cardElevation="0dp"
-                app:layout_constraintStart_toEndOf="@id/weekly_avg_weight_cv"
-                app:layout_constraintTop_toBottomOf="@id/title_container"
-                app:strokeWidth="0dp">
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/white"
-                    android:padding="5dp">
+                    <ImageView
+                        android:id="@+id/calendar_next_date_iv"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_marginEnd="20dp"
+                        android:src="@drawable/ic_calendar_next_sv"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/calendar_previous_date_iv" />
 
                     <TextView
-                        android:id="@+id/weekly_avg_uf_title_tv"
+                        android:id="@+id/selected_date_tv"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
-                        android:layout_marginTop="5dp"
                         android:fontFamily="@font/noto_sans_kr_regular"
                         android:includeFontPadding="false"
-                        android:text="평균 제수량"
-                        android:textColor="@color/secondary_text"
-                        android:textSize="15sp"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <TextView
-                        android:id="@+id/weekly_avg_uf_content_tv"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="5dp"
-                        android:fontFamily="@font/noto_sans_kr_regular"
-                        android:text="502g/일"
-                        android:textColor="@color/secondary_text"
-                        android:textSize="15sp"
+                        android:text="2025년 11월"
+                        android:textColor="@color/text_primary"
+                        android:textSize="18sp"
                         android:textStyle="bold"
-                        app:layout_constraintStart_toStartOf="@id/weekly_avg_uf_title_tv"
-                        app:layout_constraintTop_toBottomOf="@id/weekly_avg_uf_title_tv" />
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/calendar_previous_date_iv" />
+
+                    <LinearLayout
+                        android:id="@+id/calendar_weekdays_row"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:orientation="horizontal"
+                        android:paddingBottom="8dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/calendar_previous_date_iv" />
+
+                    <com.kizitonwose.calendar.view.CalendarView
+                        android:id="@+id/calender_view"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="20dp"
+                        app:cv_dayViewResource="@layout/calendar_day_layout"
+                        app:cv_orientation="horizontal"
+                        app:cv_outDateStyle="endOfRow"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/calendar_weekdays_row" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
+
             </com.google.android.material.card.MaterialCardView>
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recent_record_rv"
+                android:id="@+id/recent_list_rv"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="22dp"
-                android:nestedScrollingEnabled="false"
+                android:layout_marginTop="40dp"
+                android:nestedScrollingEnabled="true"
                 android:orientation="vertical"
                 android:overScrollMode="never"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/weekly_avg_weight_cv"
+                app:layout_constraintTop_toBottomOf="@id/calendar_cv"
                 tools:listitem="@layout/item_record_list" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
