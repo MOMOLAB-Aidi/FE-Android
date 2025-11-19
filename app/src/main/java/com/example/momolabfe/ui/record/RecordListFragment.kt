@@ -32,7 +32,8 @@ class RecordListFragment : Fragment() {
     private var _binding: FragmentRecordListBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var monthCalendar: CalendarView
+    private val monthCalendar: CalendarView
+        get() = binding.calenderView
 
     private val today: LocalDate = LocalDate.now()
     private var selectedDate: LocalDate = today
@@ -72,8 +73,6 @@ class RecordListFragment : Fragment() {
 
         // 바텀 내비게이션 숨기기
         activity?.findViewById<BottomNavigationView>(R.id.main_bnv)?.visibility = View.GONE
-
-        monthCalendar = binding.calenderView
 
         // 해당 라이브러리는 캘린더 범위를 무제한으로 설정할 수 없어 일단은 +-50년으로 설정...
         val currentMonth = YearMonth.now()

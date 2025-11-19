@@ -63,7 +63,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/consult_history_content_tv"
-        tools:listitem="@layout/item_recent_record" />
+        tools:listitem="@layout/item_consult_history" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 
