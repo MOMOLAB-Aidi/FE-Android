@@ -1,7 +1,7 @@
-package com.example.momolabfe.data.remote.auth
+package com.example.momolabfe.remote.auth
 
 import android.util.Log
-import com.example.momolabfe.data.remote.auth.service.AuthService
+import com.example.momolabfe.remote.auth.service.AuthService
 import com.example.momolabfe.utils.AuthRetrofit
 import com.example.momolabfe.utils.TokenManager
 import kotlinx.coroutines.CoroutineScope

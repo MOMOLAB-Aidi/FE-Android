@@ -1,11 +1,9 @@
-package com.example.momolabfe.data.remote.auth.repository
+package com.example.momolabfe.remote.auth.repository
 
 import android.util.Log
-import com.example.momolabfe.data.remote.auth.data.LoginRequest
-import com.example.momolabfe.data.remote.auth.data.LoginResponse
-import com.example.momolabfe.data.remote.auth.data.TokenRequest
-import com.example.momolabfe.data.remote.auth.data.TokenResponse
-import com.example.momolabfe.data.remote.auth.service.AuthService
+import com.example.momolabfe.remote.auth.data.LoginRequest
+import com.example.momolabfe.remote.auth.data.LoginResponse
+import com.example.momolabfe.remote.auth.service.AuthService
 import com.example.momolabfe.utils.NoAuthRetrofit
 import com.example.momolabfe.utils.handleApiResponse
 import javax.inject.Inject
@@ -18,7 +16,7 @@ class AuthRepository @Inject constructor (
 
     suspend fun login(request: LoginRequest): Result<LoginResponse> = runCatching {
         val response = authService.login(request)
-        Log.d("Login", "Login API call completed with code: ${response.code()}")
+        Log.d("Login", "Login API 호출 코드: ${response.code()}")
         handleApiResponse(response)
     }
 }

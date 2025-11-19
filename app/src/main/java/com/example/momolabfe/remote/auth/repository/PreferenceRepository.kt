@@ -1,4 +1,4 @@
-package com.example.momolabfe.data.remote.auth.repository
+package com.example.momolabfe.remote.auth.repository
 
 import android.content.SharedPreferences
 import androidx.lifecycle.LiveData

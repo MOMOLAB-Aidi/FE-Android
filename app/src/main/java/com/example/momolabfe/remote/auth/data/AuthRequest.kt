@@ -1,4 +1,4 @@
-package com.example.momolabfe.data.remote.auth.data
+package com.example.momolabfe.remote.auth.data
 
 import com.google.gson.annotations.SerializedName
 

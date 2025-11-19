@@ -1,17 +1,17 @@
-package com.example.momolabfe.data.remote.record.repository
+package com.example.momolabfe.remote.record.repository
 
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
 import android.util.Log
-import com.example.momolabfe.data.remote.record.model.GetCalendarResponse
-import com.example.momolabfe.data.remote.record.model.RecordCreateRequest
-import com.example.momolabfe.data.remote.record.model.RecordExchangeCreateRequest
-import com.example.momolabfe.data.remote.record.model.RecordExchangeUpdateRequest
-import com.example.momolabfe.data.remote.record.model.RecordGetResponse
-import com.example.momolabfe.data.remote.record.model.RecordOcrResponse
-import com.example.momolabfe.data.remote.record.model.RecordUpdateRequest
-import com.example.momolabfe.data.remote.record.service.RecordService
+import com.example.momolabfe.remote.record.model.RecordCreateRequest
+import com.example.momolabfe.remote.record.model.RecordExchangeCreateRequest
+import com.example.momolabfe.remote.record.model.RecordExchangeUpdateRequest
+import com.example.momolabfe.remote.record.model.RecordGetResponse
+import com.example.momolabfe.remote.record.model.RecordOcrResponse
+import com.example.momolabfe.remote.record.model.RecordUpdateRequest
+import com.example.momolabfe.remote.record.model.GetCalendarResponse
+import com.example.momolabfe.remote.record.service.RecordService
 import com.example.momolabfe.utils.ApiException
 import com.example.momolabfe.utils.handleApiResponse
 import okhttp3.MediaType.Companion.toMediaTypeOrNull

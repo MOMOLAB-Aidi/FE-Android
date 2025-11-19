@@ -1,13 +1,13 @@
-package com.example.momolabfe.data.remote.record.service
+package com.example.momolabfe.remote.record.service
 
-import com.example.momolabfe.data.remote.record.model.GetCalendarResponse
-import com.example.momolabfe.data.remote.record.model.RecordCreateRequest
-import com.example.momolabfe.data.remote.record.model.RecordExchangeCreateRequest
-import com.example.momolabfe.data.remote.record.model.RecordExchangeUpdateRequest
-import com.example.momolabfe.data.remote.record.model.RecordGetResponse
-import com.example.momolabfe.data.remote.record.model.RecordIdResponse
-import com.example.momolabfe.data.remote.record.model.RecordOcrResponse
-import com.example.momolabfe.data.remote.record.model.RecordUpdateRequest
+import com.example.momolabfe.remote.record.model.GetCalendarResponse
+import com.example.momolabfe.remote.record.model.RecordCreateRequest
+import com.example.momolabfe.remote.record.model.RecordExchangeCreateRequest
+import com.example.momolabfe.remote.record.model.RecordExchangeUpdateRequest
+import com.example.momolabfe.remote.record.model.RecordGetResponse
+import com.example.momolabfe.remote.record.model.RecordIdResponse
+import com.example.momolabfe.remote.record.model.RecordOcrResponse
+import com.example.momolabfe.remote.record.model.RecordUpdateRequest
 import com.example.momolabfe.utils.ApiResponse
 import com.example.momolabfe.utils.AuthRetrofit
 import com.example.momolabfe.utils.PythonRetrofit

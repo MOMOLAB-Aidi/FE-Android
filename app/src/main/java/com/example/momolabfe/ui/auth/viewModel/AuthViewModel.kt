@@ -4,8 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.momolabfe.data.remote.auth.data.LoginRequest
-import com.example.momolabfe.data.remote.auth.data.TokenResponse
+import com.example.momolabfe.remote.auth.data.LoginRequest
+import com.example.momolabfe.remote.auth.data.TokenResponse
 import com.example.momolabfe.data.remote.auth.repository.AuthRepository
 import com.example.momolabfe.data.remote.auth.repository.PreferenceRepository
 import com.example.momolabfe.utils.TokenManager
@@ -29,7 +29,7 @@ class AuthViewModel @Inject constructor(
     private val _loginSuccess = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
     val loginSuccess: SharedFlow<Unit> = _loginSuccess.asSharedFlow()
 
-    fun login(request: LoginRequest) {
+    fun login(request: com.example.momolabfe.remote.auth.data.LoginRequest) {
         viewModelScope.launch {
             val result = authRepository.login(request)
             result.onSuccess { loginResponse ->
@@ -42,7 +42,7 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    private fun saveTokens(tokens: TokenResponse) {
+    private fun saveTokens(tokens: com.example.momolabfe.remote.auth.data.TokenResponse) {
         tokenManager.saveTokens(
             accessToken = tokens.accessToken,
             refreshToken = tokens.refreshToken

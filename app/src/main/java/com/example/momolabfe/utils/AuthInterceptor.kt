@@ -1,7 +1,7 @@
 package com.example.momolabfe.utils
 
 import android.util.Log
-import com.example.momolabfe.data.remote.auth.data.TokenRequest
+import com.example.momolabfe.remote.auth.data.TokenRequest
 import com.example.momolabfe.data.remote.auth.service.AuthService
 import com.example.momolabfe.data.remote.auth.LogoutManager
 import com.google.gson.Gson
@@ -149,7 +149,11 @@ class AuthInterceptor @Inject constructor(
     private suspend fun reissueOnce(refreshToken: String): String? {
         return try {
 
-            val reissueResponse = noAuthService.reissue(TokenRequest(refreshToken))
+            val reissueResponse = noAuthService.reissue(
+                com.example.momolabfe.remote.auth.data.TokenRequest(
+                    refreshToken
+                )
+            )
 
             if (reissueResponse.isSuccessful) {
                 val newToken = reissueResponse.body()?.result

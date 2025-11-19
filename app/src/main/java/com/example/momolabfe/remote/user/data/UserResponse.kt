@@ -1,4 +1,4 @@
-package com.example.momolabfe.data.remote.user.data
+package com.example.momolabfe.remote.user.data
 
 import com.google.gson.annotations.SerializedName
 import java.time.LocalDate
