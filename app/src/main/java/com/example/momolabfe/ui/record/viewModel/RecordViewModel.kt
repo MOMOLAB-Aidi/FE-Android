@@ -8,11 +8,16 @@ import androidx.lifecycle.viewModelScope
 import com.example.momolabfe.remote.record.model.GetCalendarResponse
 import com.example.momolabfe.remote.record.model.RecordCreateRequest
 import com.example.momolabfe.remote.record.model.RecordExchangeCreateRequest
+import com.example.momolabfe.remote.record.model.RecordExchangeUpdateRequest
+import com.example.momolabfe.remote.record.model.RecordGetResponse
 import com.example.momolabfe.remote.record.model.RecordOcrResponse
+import com.example.momolabfe.remote.record.model.RecordUpdateRequest
 import com.example.momolabfe.remote.record.repository.RecordRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -35,11 +40,24 @@ class RecordViewModel @Inject constructor(
     private val _recordResult = MutableLiveData<Unit?>()
     val recordResult: LiveData<Unit?> get() = _recordResult
 
+    private val _record = MutableLiveData<RecordGetResponse>()
+    val record: LiveData<RecordGetResponse> = _record
+
+    private val _recordlistItems = MutableLiveData<List<RecordGetResponse>>()
+    val recordlistItems: LiveData<List<RecordGetResponse>> get() = _recordlistItems
+
     private val _ocrRecordResult = MutableLiveData<RecordOcrResponse?>()
     val ocrRecordResult: LiveData<RecordOcrResponse?> get() = _ocrRecordResult
 
+    // OCR 이미지 다운로드 결과 (다운로드된 이미지 파일의 바이트 배열)
+    private val _ocrImageBytes = MutableStateFlow<ByteArray?>(null)
+    val ocrImageBytes: StateFlow<ByteArray?> = _ocrImageBytes
+
     private val _recordCreated = MutableSharedFlow<Long>(extraBufferCapacity = 1)
     val recordCreated: SharedFlow<Long> = _recordCreated
+
+    private val _deleteSuccess = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+    val deleteSuccess: SharedFlow<Unit> = _deleteSuccess.asSharedFlow()
 
     private val _calendarData = MutableLiveData<List<GetCalendarResponse>>()
     val calendarData: LiveData<List<GetCalendarResponse>> = _calendarData
@@ -57,8 +75,6 @@ class RecordViewModel @Inject constructor(
         }
     }
 
-
-
     // 수기 작성 - 공통 정보
     fun recordCommonByWriting(request: RecordCreateRequest) {
         viewModelScope.launch {
@@ -67,6 +83,18 @@ class RecordViewModel @Inject constructor(
                 _recordCreated.emit(id)
             }.onFailure { e ->
                 _errorMessage.value = e.localizedMessage ?: "공통 정보 저장에 실패했습니다."
+            }
+        }
+    }
+
+    // 공통 정보 수정
+    fun updateCommonRecord(request: RecordUpdateRequest) {
+        viewModelScope.launch {
+            val result = recordRepository.updateCommonRecord(request)
+            result.onSuccess {
+                _recordSuccess.tryEmit(Unit)
+            }.onFailure { e ->
+                _errorMessage.value = e.localizedMessage ?: "공통 정보 수정에 실패했습니다."
             }
         }
     }
@@ -83,6 +111,67 @@ class RecordViewModel @Inject constructor(
         }
     }
 
+    // 회차별 정보 수정
+    fun updateExchangeRecord(request: RecordExchangeUpdateRequest) {
+        viewModelScope.launch {
+            val result = recordRepository.updateExchangeRecord(request)
+            result.onSuccess {
+                _recordSuccess.tryEmit(Unit)
+            }.onFailure { e ->
+                _errorMessage.value = e.localizedMessage ?: "회차별 정보 수정에 실패했습니다."
+            }
+        }
+    }
+
+    // 전체 기록 조회
+    fun getRecordList(year: Int, month: Int) {
+        viewModelScope.launch {
+            val result = recordRepository.getRecordList(year, month)
+            result.onSuccess { list ->
+                _recordlistItems.value = list
+            }.onFailure { e ->
+                _errorMessage.value = e.localizedMessage ?: "전체 기록 조회에 실패했습니다."
+            }
+        }
+    }
+
+    // 특정 기록 조회
+    fun getRecord(recId: Long) {
+        viewModelScope.launch {
+            val result = recordRepository.getRecord(recId)
+            result.onSuccess {
+                _record.value = it
+            }.onFailure { e ->
+                _errorMessage.value = e.localizedMessage ?: "특정 기록 조회에 실패했습니다."
+            }
+        }
+    }
+
+    // 최근 3개 기록 조회
+    fun getRecentRecords() {
+        viewModelScope.launch {
+            val result = recordRepository.getRecentRecords()
+            result.onSuccess { list ->
+                _recordlistItems.value = list
+            }.onFailure { e ->
+                _errorMessage.value = e.localizedMessage ?: "최근 3개 기록 조회에 실패했습니다."
+            }
+        }
+    }
+
+    // 특정 기록 삭제
+    fun deleteRecord(recId: Long) {
+        viewModelScope.launch {
+            val result = recordRepository.deleteRecord(recId)
+            result.onSuccess {
+                _deleteSuccess.tryEmit(Unit)
+            }.onFailure { e ->
+                _errorMessage.value = e.localizedMessage ?: "특정 기록 삭제에 실패했습니다."
+                _errorMessage.value = null
+            }
+        }
+    }
+
     // ocr 텍스트 추출
     fun recordByOcr(imageUri: Uri) {
         viewModelScope.launch {
@@ -93,6 +182,23 @@ class RecordViewModel @Inject constructor(
                 _ocrRecordResult.value = it
             }.onFailure { e ->
                 _errorMessage.value = e.localizedMessage ?: "OCR 텍스트 추출에 실패했습니다."
+            }
+        }
+    }
+
+    // ocr 이미지 다운로드
+    fun downloadOcrImage(gcsPath: String) {
+        viewModelScope.launch {
+            _ocrImageBytes.value = null // 다운로드 시작 전 StateFlow 초기화
+
+            val result = recordRepository.downloadOcrImage(gcsPath)
+
+            result.onSuccess { imageBytes ->
+                // 성공 시 ByteArray를 StateFlow에 저장
+                _ocrImageBytes.value = imageBytes
+                _errorMessage.value = null
+            }.onFailure { e ->
+                _errorMessage.value = e.localizedMessage ?: "OCR 이미지 다운로드에 실패했습니다."
             }
         }
     }

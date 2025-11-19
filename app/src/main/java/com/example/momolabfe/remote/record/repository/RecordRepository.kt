@@ -24,6 +24,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.ResponseBody
+import java.io.IOException
 
 @Singleton
 class RecordRepository @Inject constructor(
@@ -123,12 +124,26 @@ class RecordRepository @Inject constructor(
     }
 
     // OCR 이미지 다운로드
-    suspend fun downloadOcrImage(gcsPath: String): Result<ResponseBody> = runCatching {
-        val response = recordService.downloadOcrImage(gcsPath)
-        if (!response.isSuccessful) {
-            throw ApiException(response.code(), "HTTP ${response.code()}")
+    suspend fun downloadOcrImage(gcsPath: String): Result<ByteArray> {
+        return try {
+            val response = recordService.downloadOcrImage(gcsPath)
+
+            if (response.isSuccessful) {
+                // ResponseBody를 ByteArray로 변환
+                val bytes = response.body()?.bytes()
+
+                if (bytes != null) {
+                    // ByteArray를 Result.success로 감싸서 반환
+                    Result.success(bytes)
+                } else {
+                    Result.failure(IOException("서버에서 빈 이미지 데이터를 받았습니다."))
+                }
+            } else {
+                Result.failure(IOException("이미지 다운로드 실패: HTTP ${response.code()} ${response.message()}"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
         }
-        response.body() ?: throw ApiException(response.code(), "빈 본문")
     }
 
 
