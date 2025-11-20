@@ -97,10 +97,10 @@
             app:layout_constraintTop_toTopOf="@id/weight_title_tv"/>
 
         <TextView
-            android:id="@+id/blood_pressure_content_tv"
+            android:id="@+id/systolic_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="125/78"
+            android:text="125"
             android:textSize="15sp"
             android:textColor="@color/text_primary"
             android:fontFamily="@font/noto_sans_kr_regular"
@@ -109,16 +109,40 @@
             app:layout_constraintTop_toBottomOf="@id/blood_pressure_title_tv"/>
 
         <TextView
+            android:id="@+id/blood_pressure_divider"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/noto_sans_kr_regular"
+            android:includeFontPadding="false"
+            android:text="/"
+            android:textColor="@color/text_primary"
+            android:textSize="15sp"
+            app:layout_constraintStart_toEndOf="@id/systolic_tv"
+            app:layout_constraintTop_toTopOf="@id/systolic_tv" />
+
+        <TextView
+            android:id="@+id/diastolic_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="78"
+            android:textSize="15sp"
+            android:textColor="@color/text_primary"
+            android:fontFamily="@font/noto_sans_kr_regular"
+            android:includeFontPadding="false"
+            app:layout_constraintStart_toEndOf="@id/blood_pressure_divider"
+            app:layout_constraintTop_toTopOf="@id/blood_pressure_divider"/>
+
+        <TextView
             android:id="@+id/total_uf_title_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="70dp"
-            android:text="제수량"
+            android:text="제수량 합계"
             android:textSize="15sp"
             android:textColor="@color/secondary_text"
             android:fontFamily="@font/noto_sans_kr_regular"
             android:includeFontPadding="false"
-            app:layout_constraintStart_toEndOf="@id/blood_pressure_content_tv"
+            app:layout_constraintStart_toEndOf="@id/diastolic_tv"
             app:layout_constraintTop_toTopOf="@id/blood_pressure_title_tv"/>
 
         <TextView

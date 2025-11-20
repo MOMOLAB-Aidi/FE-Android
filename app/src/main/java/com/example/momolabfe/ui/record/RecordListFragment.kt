@@ -3,6 +3,7 @@ package com.example.momolabfe.ui.record
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.util.Log
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -12,8 +13,12 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import com.example.momolabfe.R
 import com.example.momolabfe.databinding.FragmentRecordListBinding
+import com.example.momolabfe.remote.record.model.RecordGetResponse
+import com.example.momolabfe.ui.record.adapter.RecordAdapter
+import com.example.momolabfe.ui.record.viewModel.RecordViewModel
 import com.example.momolabfe.utils.weekdayShortKorean
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.kizitonwose.calendar.core.CalendarDay
@@ -42,7 +47,12 @@ class RecordListFragment : Fragment() {
     private val headerFormatter = DateTimeFormatter.ofPattern(DATE_PATTERN)
 
     // 중복 호출 방지용 캐시: 마지막으로 서버에 요청했던 [시작일, 종료일]
-    private var lastRequestedRange: Pair<LocalDate, LocalDate>? = null
+    private var lastRequestedRange: Pair<Int, Int>? = null
+
+    private lateinit var adapter: RecordAdapter
+    private var recordListItems: List<RecordGetResponse> = emptyList()
+
+    private val viewModel: RecordViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -148,6 +158,18 @@ class RecordListFragment : Fragment() {
         view.post {
             monthCalendar.findFirstVisibleMonth()?.let { requestForMonth(it) }
         }
+
+        adapter = RecordAdapter(parentFragmentManager, recordListItems)
+        binding.exchangeDetailRv.adapter = adapter
+
+        setupObservers()
+
+        binding.detailEditBtn.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.main_frm, RecordInfoFragment())
+                .addToBackStack(null)
+                .commit()
+        }
     }
 
     private fun updateHeaderForCurrentMode() {
@@ -172,13 +194,21 @@ class RecordListFragment : Fragment() {
         }
     }
 
-    // 월 범위 요청 함수 (캘린더 조회용)
     private fun requestForMonth(month: CalendarMonth) {
-        val start = month.weekDays.first().first().date
-        val end = month.weekDays.last().last().date
-        val range = start to end
-        if (lastRequestedRange == range) return
-        lastRequestedRange = range
+        val year = month.yearMonth.year
+        val monthValue = month.yearMonth.monthValue
+
+        val requestedYearMonth = month.yearMonth.year to month.yearMonth.monthValue
+
+        if (lastRequestedRange?.first == requestedYearMonth.first &&
+            lastRequestedRange?.second == requestedYearMonth.second
+        ) {
+            return
+        }
+
+        lastRequestedRange = requestedYearMonth
+        viewModel.getCalendar(year, monthValue)
+        viewModel.getRecordList(year, monthValue)
     }
 
     companion object {
@@ -196,6 +226,24 @@ class RecordListFragment : Fragment() {
     // DayView의 뷰 홀더
     private inner class DayViewContainer(view: View) : ViewContainer(view) {
         val textView: TextView = view.findViewById(R.id.calendar_day_tv)
+    }
+
+    private fun setupObservers() {
+        viewModel.recordlistItems.observe(viewLifecycleOwner) { itemList ->
+            recordListItems = itemList
+
+            adapter.updateList(itemList)
+
+            if (itemList.isEmpty()) {
+                binding.exchangeDetailRv.visibility = View.GONE
+            } else {
+                binding.exchangeDetailRv.visibility = View.VISIBLE
+            }
+        }
+
+        viewModel.errorMessage.observe(viewLifecycleOwner) { errorMsg ->
+            Log.e("RECORD_LIST_FRAGMENT", errorMsg.toString())
+        }
     }
 
     override fun onDestroyView() {

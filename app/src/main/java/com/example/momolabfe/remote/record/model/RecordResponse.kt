@@ -10,7 +10,7 @@ data class RecordIdResponse (
 )
 
 data class RecordGetResponse (
-    @SerializedName("id") val id: Int,
+    @SerializedName("id") val id: Long,
     @SerializedName("record_date") val recordDate: LocalDate,
     @SerializedName("record_dw") val recordDw: DayWeek,
     @SerializedName("weight") val weight: Double,
@@ -26,7 +26,7 @@ data class RecordGetResponse (
 )
 
 data class RecordExchangeGetResponse (
-    @SerializedName("id") val id: Int,
+    @SerializedName("id") val id: Long,
     @SerializedName("exchange_no") val exchangeNo: Int,
     @SerializedName("exchange_time") val exchangeTime: LocalTime,
     @SerializedName("drain_volume") val drainVolume: Int,

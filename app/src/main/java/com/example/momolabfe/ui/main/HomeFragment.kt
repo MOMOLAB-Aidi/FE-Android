@@ -1,14 +1,18 @@
 package com.example.momolabfe.ui.main
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import com.example.momolabfe.R
 import com.example.momolabfe.databinding.FragmentHomeBinding
 import com.example.momolabfe.ui.record.RecordFragment
 import com.example.momolabfe.ui.record.RecordListFragment
+import com.example.momolabfe.ui.record.adapter.RecentRecordAdapter
+import com.example.momolabfe.ui.record.viewModel.RecordViewModel
 import com.example.momolabfe.ui.setting.SettingFragment
 import com.example.momolabfe.ui.statistics.StatisticsFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -20,6 +24,9 @@ class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
+
+    private lateinit var adapter: RecentRecordAdapter
+    private val viewModel: RecordViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,6 +44,12 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        adapter = RecentRecordAdapter(parentFragmentManager, emptyList())
+        binding.recentRecordRv.adapter = adapter
+
+        setupObservers()
+        viewModel.getRecentRecords()
 
         try {
             // 날짜 포맷
@@ -77,6 +90,22 @@ class HomeFragment : Fragment() {
                 .replace(R.id.main_frm, RecordListFragment())
                 .addToBackStack(null)
                 .commit()
+        }
+    }
+
+    private fun setupObservers() {
+        viewModel.recordlistItems.observe(viewLifecycleOwner) { itemList ->
+            adapter.updateList(itemList)
+
+            if (itemList.isEmpty()) {
+                binding.recentRecordRv.visibility = View.GONE
+            } else {
+                binding.recentRecordRv.visibility = View.VISIBLE
+            }
+        }
+
+        viewModel.errorMessage.observe(viewLifecycleOwner) { errorMsg ->
+            Log.e("HOME_FRAGMENT", errorMsg.toString())
         }
     }
 

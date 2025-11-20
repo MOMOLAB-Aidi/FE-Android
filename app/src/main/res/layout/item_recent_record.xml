@@ -64,7 +64,7 @@
             app:layout_constraintTop_toTopOf="@id/date_tv"/>
 
         <TextView
-            android:id="@+id/uf_tv"
+            android:id="@+id/total_uf_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="520g"

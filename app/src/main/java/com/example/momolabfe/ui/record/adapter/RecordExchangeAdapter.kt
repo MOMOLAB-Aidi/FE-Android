@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import android.widget.EditText
 import androidx.recyclerview.widget.RecyclerView
 import com.example.momolabfe.R
-import com.example.momolabfe.remote.record.model.OcrRecordData
 import com.example.momolabfe.remote.record.model.OcrRecordExchangeData
 import com.example.momolabfe.databinding.ItemRecordExchangeBinding
 import java.time.LocalTime
@@ -19,7 +18,7 @@ class RecordExchangeAdapter :
     // 항목의 확장/축소 상태를 저장하는 리스트
     private var isExpandedList: MutableList<Boolean> = mutableListOf()
 
-    var items: MutableList<com.example.momolabfe.remote.record.model.OcrRecordExchangeData> = mutableListOf()
+    var items: MutableList<OcrRecordExchangeData> = mutableListOf()
         set(value) {
             field = value.toMutableList()
             isExpandedList = MutableList(value.size) { true } // 항목 리스트 크기에 맞춰 확장 상태 리스트 업데이트
@@ -66,7 +65,7 @@ class RecordExchangeAdapter :
             }
         }
 
-        fun bind(item: com.example.momolabfe.remote.record.model.OcrRecordExchangeData) {
+        fun bind(item: OcrRecordExchangeData) {
             binding.exchangeNoTv.text = "${item.exchangeNo}회차"
 
             val timeText = formatTime(item.exchangeTime)
@@ -101,7 +100,7 @@ class RecordExchangeAdapter :
     }
 
     // 새로운 항목을 추가하고 확장 상태를 동기화
-    fun addExchangeItem(item: com.example.momolabfe.remote.record.model.OcrRecordExchangeData) {
+    fun addExchangeItem(item: OcrRecordExchangeData) {
         val newPosition = items.size
 
         items.add(item)
