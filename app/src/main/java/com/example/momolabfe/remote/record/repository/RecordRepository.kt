@@ -11,6 +11,7 @@ import com.example.momolabfe.remote.record.model.RecordGetResponse
 import com.example.momolabfe.remote.record.model.RecordOcrResponse
 import com.example.momolabfe.remote.record.model.RecordUpdateRequest
 import com.example.momolabfe.remote.record.model.GetCalendarResponse
+import com.example.momolabfe.remote.record.model.WeeklyAverageResponse
 import com.example.momolabfe.remote.record.service.RecordService
 import com.example.momolabfe.utils.ApiException
 import com.example.momolabfe.utils.handleApiResponse
@@ -25,6 +26,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.ResponseBody
 import java.io.IOException
+import java.util.Date
 
 @Singleton
 class RecordRepository @Inject constructor(
@@ -98,6 +100,15 @@ class RecordRepository @Inject constructor(
     // 최근 3개 기록 조회
     suspend fun getRecentRecords(): Result<List<RecordGetResponse>> = runCatching {
         val response = recordService.getRecentRecords()
+        if (!response.isSuccessful) {
+            throw ApiException(response.code(), "HTTP ${response.code()}")
+        }
+        response.body() ?: throw ApiException(response.code(), "빈 본문")
+    }
+
+    // 주간 평균 기록 조회
+    suspend fun getWeeklyAvgRecords(targetDate: Date): Result<WeeklyAverageResponse> = runCatching {
+        val response = recordService.getWeeklyAvgRecords(targetDate)
         if (!response.isSuccessful) {
             throw ApiException(response.code(), "HTTP ${response.code()}")
         }

@@ -8,6 +8,7 @@ import com.example.momolabfe.remote.record.model.RecordGetResponse
 import com.example.momolabfe.remote.record.model.RecordIdResponse
 import com.example.momolabfe.remote.record.model.RecordOcrResponse
 import com.example.momolabfe.remote.record.model.RecordUpdateRequest
+import com.example.momolabfe.remote.record.model.WeeklyAverageResponse
 import com.example.momolabfe.utils.ApiResponse
 import com.example.momolabfe.utils.AuthRetrofit
 import com.example.momolabfe.utils.PythonRetrofit
@@ -24,6 +25,7 @@ import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
+import java.util.Date
 
 abstract class RecordService (
     @AuthRetrofit springRetrofit: Retrofit,
@@ -64,6 +66,10 @@ abstract class RecordService (
         // 최근 3개 기록 조회
         @GET("/api/v1/records/latest")
         suspend fun getRecentRecords(): Response<List<RecordGetResponse>>
+
+        // 주간 평균 기록 조회
+        @GET("/api/v1/records/weekly-average")
+        suspend fun getWeeklyAvgRecords(@Query("target_date") targetDate: Date): Response<WeeklyAverageResponse>
 
         // 특정 기록 삭제
         @DELETE("/api/v1/records/{rec_id}")
@@ -114,6 +120,10 @@ abstract class RecordService (
 
     suspend fun getRecentRecords(): Response<List<RecordGetResponse>> {
         return pythonService.getRecentRecords()
+    }
+
+    suspend fun getWeeklyAvgRecords(targetDate: Date): Response<WeeklyAverageResponse> {
+        return pythonService.getWeeklyAvgRecords(targetDate)
     }
 
     suspend fun deleteRecord(recId: Long): Response<Unit> {
