@@ -167,7 +167,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="5dp"
                         android:layout_marginTop="20dp"
-                        android:src="@drawable/ic_password_sv"
+                        android:src="@drawable/ic_login_sv"
                         app:layout_constraintTop_toBottomOf="@id/id_cv"
                         app:layout_constraintStart_toStartOf="@id/id_cv"/>
 
@@ -200,7 +200,7 @@
                         android:id="@+id/record_start_date_iv"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="30dp"
+                        android:layout_marginTop="35dp"
                         android:src="@drawable/ic_start_date_sv"
                         app:layout_constraintTop_toBottomOf="@id/last_login_iv"
                         app:layout_constraintStart_toStartOf="@id/last_login_iv"/>
