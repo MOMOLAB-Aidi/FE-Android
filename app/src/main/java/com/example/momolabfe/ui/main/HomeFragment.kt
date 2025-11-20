@@ -51,6 +51,8 @@ class HomeFragment : Fragment() {
         setupObservers()
         viewModel.getRecentRecords()
 
+        viewModel.getWeeklyAvgRecords(Date())
+
         try {
             // 날짜 포맷
             val now = Date()
@@ -101,6 +103,44 @@ class HomeFragment : Fragment() {
                 binding.recentRecordRv.visibility = View.GONE
             } else {
                 binding.recentRecordRv.visibility = View.VISIBLE
+            }
+        }
+
+        viewModel.weeklyAverageData.observe(viewLifecycleOwner) { weeklyAvgResponse ->
+
+            if (weeklyAvgResponse != null) {
+
+                val data = weeklyAvgResponse.data
+
+                // 주간 기간 포맷 설정 (yyyy-MM-dd 형식)
+                val rangeFormat = SimpleDateFormat("yyyy-MM-dd", Locale.KOREA)
+                val startDateStr = rangeFormat.format(weeklyAvgResponse.startDate)
+                val endDateStr = rangeFormat.format(weeklyAvgResponse.endDate)
+
+                binding.weeklyAvgTv.text = String.format(
+                    Locale.KOREA,
+                    "이번 주 평균 (%s ~ %s)",
+                    startDateStr,
+                    endDateStr
+                )
+
+                binding.weeklyWeightTv.text =
+                    String.format(
+                        Locale.KOREA,
+                        "체중: %.1fkg",
+                        data.weightAvg
+                    )
+
+                binding.weeklyUfTv.text =
+                    String.format(
+                        Locale.KOREA,
+                        "제수량 합계: %.0fg/일",
+                        data.totalUfAvg
+                    )
+            } else {
+                binding.weeklyAvgTv.text = "이번 주 평균 (데이터 없음)"
+                binding.weeklyWeightTv.text = "체중: -.-kg"
+                binding.weeklyUfTv.text = "제수량 합계: -g/일"
             }
         }
 

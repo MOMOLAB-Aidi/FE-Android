@@ -105,7 +105,7 @@ class RecordViewModel @Inject constructor(
     }
 
     // 수기 작성 - 회차별 정보
-    fun recordExchangeByWriting(recId: Long, request: RecordExchangeCreateRequest) {
+    fun recordExchangeByWriting(recId: Long, request: List<RecordExchangeCreateRequest>) {
         viewModelScope.launch {
             val result = recordRepository.recordExchangeByWriting(recId, request)
             result.onSuccess {

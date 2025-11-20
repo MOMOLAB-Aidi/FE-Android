@@ -62,7 +62,7 @@ class RecordRepository @Inject constructor(
     }
 
     // 수기 작성 - 회차별 정보 생성
-    suspend fun recordExchangeByWriting(recId: Long, request: RecordExchangeCreateRequest): Result<Unit> = runCatching {
+    suspend fun recordExchangeByWriting(recId: Long, request: List<RecordExchangeCreateRequest>): Result<Unit> = runCatching {
         val response = recordService.recordExchangeByWriting(recId, request)
         if (!response.isSuccessful) {
             throw ApiException(response.code(), "HTTP ${response.code()}")

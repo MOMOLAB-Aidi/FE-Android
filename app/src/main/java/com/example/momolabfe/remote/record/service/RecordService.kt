@@ -49,7 +49,7 @@ abstract class RecordService (
 
         // 회차별 정보 작성
         @POST("/api/v1/records/{rec_id}/exchanges")
-        suspend fun recordExchangeByWriting(@Path("rec_id") recId: Long, @Body request: RecordExchangeCreateRequest): Response<Unit>
+        suspend fun recordExchangeByWriting(@Path("rec_id") recId: Long, @Body request: List<RecordExchangeCreateRequest>): Response<Unit>
 
         // 회차별 정보 수정
         @PATCH("/api/v1/records/{rec_id}/exchanges/{exchange_no}")
@@ -102,7 +102,7 @@ abstract class RecordService (
         return pythonService.updateCommonRecord(request)
     }
 
-    suspend fun recordExchangeByWriting(recId: Long, request: RecordExchangeCreateRequest): Response<Unit> {
+    suspend fun recordExchangeByWriting(recId: Long, request: List<RecordExchangeCreateRequest>): Response<Unit> {
         return pythonService.recordExchangeByWriting(recId, request)
     }
 

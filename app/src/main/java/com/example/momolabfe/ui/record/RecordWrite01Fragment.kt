@@ -5,6 +5,7 @@ import android.content.res.ColorStateList
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.util.Log
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -19,10 +20,13 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import com.example.momolabfe.R
 import com.example.momolabfe.databinding.DialogCalendarBinding
 import com.example.momolabfe.databinding.FragmentRecordWrite01Binding
+import com.example.momolabfe.remote.record.model.DayWeek
 import com.example.momolabfe.remote.record.model.GetCalendarResponse
+import com.example.momolabfe.remote.record.model.RecordCreateRequest
 import com.example.momolabfe.remote.record.model.Turbidity
 import com.example.momolabfe.ui.record.viewModel.RecordViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -33,6 +37,8 @@ import com.kizitonwose.calendar.core.daysOfWeek
 import com.kizitonwose.calendar.view.CalendarView
 import com.kizitonwose.calendar.view.MonthDayBinder
 import com.kizitonwose.calendar.view.ViewContainer
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
@@ -49,7 +55,7 @@ class RecordWrite01Fragment : Fragment() {
 
     private var visibleMonth: YearMonth = YearMonth.now()
     private val headerFormatter = DateTimeFormatter.ofPattern(DATE_PATTERN)
-    private val displayFormatter : DateTimeFormatter =
+    private val displayFormatter: DateTimeFormatter =
         DateTimeFormatter.ofPattern(DATE_DISPLAY_PATTERN, Locale.KOREA)
 
     // 중복 호출 방지용 캐시: 마지막으로 서버에 요청했던 [시작일, 종료일]
@@ -91,12 +97,10 @@ class RecordWrite01Fragment : Fragment() {
         }
 
         binding.nextBtn.setOnClickListener {
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.main_frm, RecordWrite02Fragment())
-                .addToBackStack(null)
-                .commit()
+            collectDataAndCallApi()
         }
 
+        setupObservers()
         setupTurbidityCheckboxes()
         observeOcrAndFillFields()
     }
@@ -234,7 +238,8 @@ class RecordWrite01Fragment : Fragment() {
                     val hasRecord = eventDates.contains(day.date)
 
                     if (hasRecord) {
-                        Toast.makeText(requireContext(), "해당 날짜에 이미 기록이 존재합니다.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "해당 날짜에 이미 기록이 존재합니다.", Toast.LENGTH_SHORT)
+                            .show()
                         // 기록이 있는 날짜는 선택 상태를 변경하지 않고 종료
                         return@setOnClickListener
                     }
@@ -360,6 +365,61 @@ class RecordWrite01Fragment : Fragment() {
         return (dp * resources.displayMetrics.density).toInt()
     }
 
+    private fun collectDataAndCallApi() {
+        val dateText = binding.dateEt.text.toString()
+        val weightText = binding.weightEt.text.toString()
+        val systolicText = binding.systolicEt.text.toString()
+        val diastolicText = binding.diastolicEt.text.toString()
+        val fastingGlucoseText = binding.fastingGlucoseEt.text.toString()
+        val urineCountText = binding.urineCountEt.text.toString()
+        val totalUfText = binding.totalUfEt.text.toString()
+        val notesText = binding.notesEt.text.toString()
+
+        if (dateText.isEmpty() || weightText.isEmpty() || systolicText.isEmpty() || diastolicText.isEmpty()) {
+            Toast.makeText(requireContext(), "필수 정보를 모두 입력해주세요. (날짜, 체중, 혈압)", Toast.LENGTH_SHORT)
+                .show()
+            return
+        }
+
+        val turbidityValue = when {
+            binding.turbidityNCheckbox.isChecked -> Turbidity.NONE
+            binding.turbidityYCheckbox.isChecked -> Turbidity.PRESENT
+            else -> {
+                Toast.makeText(requireContext(), "혼탁도를 선택해주세요.", Toast.LENGTH_SHORT).show()
+                return
+            }
+        }
+
+        val recordDwValue = when (selectedDate.dayOfWeek) {
+            DayOfWeek.MONDAY -> DayWeek.MON
+            DayOfWeek.TUESDAY -> DayWeek.TUE
+            DayOfWeek.WEDNESDAY -> DayWeek.WED
+            DayOfWeek.THURSDAY -> DayWeek.THU
+            DayOfWeek.FRIDAY -> DayWeek.FRI
+            DayOfWeek.SATURDAY -> DayWeek.SAT
+            DayOfWeek.SUNDAY -> DayWeek.SUN
+            else -> {
+                Toast.makeText(requireContext(), "요일 정보를 가져올 수 없습니다.", Toast.LENGTH_SHORT).show()
+                return
+            }
+        }
+
+        val request = RecordCreateRequest(
+            recordDate = selectedDate,
+            recordDw = recordDwValue,
+            weight = weightText.toDouble(),
+            systolic = systolicText.toInt(),
+            diastolic = diastolicText.toInt(),
+            fastingGlucose = fastingGlucoseText.toInt(),
+            urineCount = urineCountText.toInt(),
+            turbidity = turbidityValue,
+            totalUf = totalUfText.toIntOrNull() ?: 0,
+            notes = notesText.takeIf { it.isNotBlank() }
+        )
+
+        viewModel.recordCommonByWriting(request)
+    }
+
     private fun observeOcrAndFillFields() {
         viewModel.ocrRecordResult.observe(viewLifecycleOwner) { ocr ->
             // null 이거나 이미 한 번 반영했다면 스킵
@@ -385,6 +445,27 @@ class RecordWrite01Fragment : Fragment() {
 
             binding.totalUfEt.setText(ocr.ocrData.totalUf.toString())
             binding.notesEt.setText(ocr.ocrData.notes ?: "")
+        }
+    }
+
+    private fun setupObservers() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.recordCreated.collectLatest { recordId ->
+                val fragment = RecordWrite02Fragment().apply {
+                    arguments = Bundle().apply {
+                        putLong("recordId", recordId)
+                    }
+                }
+
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.main_frm, fragment)
+                    .addToBackStack(null)
+                    .commit()
+            }
+        }
+
+        viewModel.errorMessage.observe(viewLifecycleOwner) { errorMsg ->
+            Log.e("RECORD_WRITE_01_FRAGMENT", errorMsg.toString())
         }
     }
 

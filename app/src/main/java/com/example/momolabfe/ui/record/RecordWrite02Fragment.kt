@@ -3,6 +3,7 @@ package com.example.momolabfe.ui.record
 import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -10,18 +11,23 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.EditText
 import android.widget.NumberPicker
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import com.example.momolabfe.R
 import com.example.momolabfe.remote.record.model.OcrRecordExchangeData
 import com.example.momolabfe.databinding.DialogTimePickerBinding
 import com.example.momolabfe.databinding.FragmentRecordWrite02Binding
+import com.example.momolabfe.remote.record.model.RecordExchangeCreateRequest
 import com.example.momolabfe.ui.record.adapter.RecordExchangeAdapter
 import com.example.momolabfe.ui.record.viewModel.RecordViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import java.time.LocalTime
 import java.util.Locale
 
@@ -30,6 +36,8 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
 
     private var _binding: FragmentRecordWrite02Binding? = null
     private val binding get() = _binding!!
+
+    private var recordId: Long = -1L
 
     private val viewModel: RecordViewModel by activityViewModels()
     private lateinit var exchangeAdapter: RecordExchangeAdapter
@@ -41,6 +49,8 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentRecordWrite02Binding.inflate(inflater, container, false)
+
+        recordId = arguments?.getLong("recordId") ?: -1L
         return binding.root
     }
 
@@ -56,6 +66,12 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
         binding.addExchangeBtn.setOnClickListener {
             addExchange()
         }
+
+        binding.saveBtn.setOnClickListener {
+            collectDataAndCallApi()
+        }
+
+        setupObservers()
     }
 
     // 어댑터에서 호출되는 콜백 함수 구현
@@ -202,7 +218,7 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
         // 새 항목의 exchangeNo 계산
         val newExchangeNo = currentExchanges.size + 1
 
-        val newExchange = com.example.momolabfe.remote.record.model.OcrRecordExchangeData(
+        val newExchange = OcrRecordExchangeData(
             id = -1, // 임시 ID 할당
             exchangeNo = newExchangeNo,
             exchangeTime = LocalTime.now(),
@@ -257,6 +273,46 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
             binding.addExchangeBtn.visibility = View.GONE
         } else {
             binding.addExchangeBtn.visibility = View.VISIBLE
+        }
+    }
+
+    private fun collectDataAndCallApi() {
+        val exchanges = exchangeAdapter.items
+
+        // 각 회차 데이터 유효성 검사 및 DTO 리스트 생성
+        val requestList = exchanges.map { item ->
+            if (item.drainVolume <= 0 || item.fillVolume <= 0  || item.fillConcentration <= 0) {
+                Toast.makeText(requireContext(), "${item.exchangeNo}회차 기록을 확인해주세요.", Toast.LENGTH_SHORT).show()
+                return
+            }
+
+            RecordExchangeCreateRequest(
+                exchangeTime = item.exchangeTime,
+                drainVolume = item.drainVolume,
+                fillConcentration = item.fillConcentration,
+                fillVolume = item.fillVolume,
+                uf = item.uf
+            )
+        }.toList()
+
+        if (requestList.size != exchanges.size) {
+            return
+        }
+
+        viewModel.recordExchangeByWriting(recordId, requestList)
+    }
+
+    private fun setupObservers() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.recordSuccess.collectLatest {
+
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.main_frm, RecordListFragment())
+                    .commit()
+            }
+        }
+        viewModel.errorMessage.observe(viewLifecycleOwner) { errorMsg ->
+            Log.e("RECORD_WRITE_02_FRAGMENT", errorMsg.toString())
         }
     }
 
