@@ -2,6 +2,7 @@ package com.example.momolabfe.ui.record
 
 import android.app.AlertDialog
 import android.content.res.ColorStateList
+import android.graphics.BitmapFactory
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
@@ -84,6 +85,10 @@ class RecordWrite01Fragment : Fragment() {
 
         // 바텀 내비게이션 숨기기
         activity?.findViewById<BottomNavigationView>(R.id.main_bnv)?.visibility = View.GONE
+
+        if (!isOcrApplied) {
+            binding.ocrImagePreview.visibility = View.GONE
+        }
 
         // 최초 가시 월 기준으로 한 번 조회
         visibleMonth = YearMonth.now()
@@ -423,7 +428,10 @@ class RecordWrite01Fragment : Fragment() {
     private fun observeOcrAndFillFields() {
         viewModel.ocrRecordResult.observe(viewLifecycleOwner) { ocr ->
             // null 이거나 이미 한 번 반영했다면 스킵
-            if (ocr == null || isOcrApplied) return@observe
+            if (ocr == null || isOcrApplied) {
+                binding.ocrImagePreview.visibility = View.GONE
+                return@observe
+            }
 
             isOcrApplied = true  // 다시 덮어쓰지 않도록 플래그 ON
 
@@ -445,6 +453,12 @@ class RecordWrite01Fragment : Fragment() {
 
             binding.totalUfEt.setText(ocr.ocrData.totalUf.toString())
             binding.notesEt.setText(ocr.ocrData.notes ?: "")
+
+            // gCS Path를 사용하여 이미지 다운로드 시작
+            val gcsPath = ocr.gcsPath
+            if (gcsPath.isNotEmpty()) {
+                viewModel.downloadOcrImage(gcsPath)
+            }
         }
     }
 
@@ -461,6 +475,26 @@ class RecordWrite01Fragment : Fragment() {
                     .replace(R.id.main_frm, fragment)
                     .addToBackStack(null)
                     .commit()
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.ocrImageBytes.collectLatest { imageBytes ->
+                if (imageBytes != null) {
+                    try {
+                        // ByteArray를 Bitmap으로 변환하여 ImageView에 설정
+                        val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+                        binding.ocrImagePreview.setImageBitmap(bitmap)
+                        binding.ocrImagePreview.visibility = View.VISIBLE
+                        Log.d("OCR_IMAGE", "OCR 이미지 로드 성공")
+                    } catch (e: Exception) {
+                        Log.e("OCR_IMAGE", "Bitmap 변환 실패: ${e.message}")
+                    }
+                } else {
+                    if (!isOcrApplied) { // 수기 작성
+                        binding.ocrImagePreview.visibility = View.GONE
+                    }
+                }
             }
         }
 
