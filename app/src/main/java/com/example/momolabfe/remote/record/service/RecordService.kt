@@ -53,7 +53,7 @@ abstract class RecordService (
 
         // 회차별 정보 수정
         @PATCH("/api/v1/records/{rec_id}/exchanges/{exchange_no}")
-        suspend fun updateExchangeRecord(@Body request: RecordExchangeUpdateRequest): Response<Unit>
+        suspend fun updateExchangeRecord(@Body request: List<RecordExchangeUpdateRequest>): Response<Unit>
 
         // 전체 기록 조회
         @GET("/api/v1/records")
@@ -106,7 +106,7 @@ abstract class RecordService (
         return pythonService.recordExchangeByWriting(recId, request)
     }
 
-    suspend fun updateExchangeRecord(request: RecordExchangeUpdateRequest): Response<Unit> {
+    suspend fun updateExchangeRecord(request: List<RecordExchangeUpdateRequest>): Response<Unit> {
         return pythonService.updateExchangeRecord(request)
     }
 

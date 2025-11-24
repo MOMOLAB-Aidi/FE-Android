@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.example.momolabfe.R
 import com.example.momolabfe.databinding.FragmentRecordInfoBinding
+import com.example.momolabfe.remote.record.model.Turbidity
 import com.example.momolabfe.ui.record.adapter.RecordExchangeInfoAdapter
 import com.example.momolabfe.ui.record.viewModel.RecordViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -34,14 +35,11 @@ class RecordInfoFragment : Fragment() {
         return binding.root
     }
 
-    override fun onResume() {
-        super.onResume()
-        val bottomNav = activity?.findViewById<BottomNavigationView>(R.id.main_bnv)
-        bottomNav?.visibility = View.VISIBLE
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // 바텀 내비게이션 숨기기
+        activity?.findViewById<BottomNavigationView>(R.id.main_bnv)?.visibility = View.GONE
 
         adapter = RecordExchangeInfoAdapter(emptyList())
         binding.exchangeInfoRv.adapter = adapter
@@ -51,6 +49,13 @@ class RecordInfoFragment : Fragment() {
         }
 
         setupObservers()
+
+        binding.editBtn.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.main_frm, RecordEditFragment())
+                .addToBackStack(null)
+                .commit()
+        }
     }
 
     private fun setupObservers() {
@@ -61,7 +66,13 @@ class RecordInfoFragment : Fragment() {
                 binding.bloodPressureDiastolicTv.text = recordItem.diastolic.toString()
                 binding.fastingGlucoseValueTv.text = recordItem.fastingGlucose.toString()
                 binding.urineCountValueTv.text = recordItem.urineCount.toString()
-                binding.turbidityValueTv.text = recordItem.turbidity.toString()
+
+                // 복막액 혼탁 표기
+                binding.turbidityValueTv.text = when (recordItem.turbidity) {
+                    Turbidity.NONE -> "없음"
+                    Turbidity.PRESENT -> "있음"
+                }
+
                 binding.totalUfValueTv.text = recordItem.totalUf.toString()
                 binding.noteValueTv.text = recordItem.notes
             }

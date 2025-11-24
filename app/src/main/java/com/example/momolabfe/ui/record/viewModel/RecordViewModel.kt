@@ -117,7 +117,7 @@ class RecordViewModel @Inject constructor(
     }
 
     // 회차별 정보 수정
-    fun updateExchangeRecord(request: RecordExchangeUpdateRequest) {
+    fun updateExchangeRecord(request: List<RecordExchangeUpdateRequest>) {
         viewModelScope.launch {
             val result = recordRepository.updateExchangeRecord(request)
             result.onSuccess {

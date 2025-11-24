@@ -9,6 +9,7 @@ import com.example.momolabfe.R
 import com.example.momolabfe.databinding.ItemRecentRecordBinding
 import com.example.momolabfe.remote.record.model.RecordGetResponse
 import com.example.momolabfe.ui.record.RecordInfoFragment
+import java.util.Locale
 
 class RecentRecordAdapter(
     private val fragmentManager: FragmentManager,
@@ -27,8 +28,13 @@ class RecentRecordAdapter(
         val item = recordList[position]
         val b = holder.binding
         b.dateTv.text = item.recordDate.toString()
-        b.weightTv.text = item.weight.toString()
-        b.totalUfTv.text = item.totalUf.toString()
+        b.weightTv.text = item.weight.let { weight ->
+            String.format(Locale.KOREA, "%.1fkg", weight)
+        }
+
+        b.totalUfTv.text = item.totalUf.let { uf ->
+            String.format(Locale.KOREA, "%dg", uf)
+        }
 
         val exchangeCount = item.exchanges.size
         b.completeTv.text = "${exchangeCount}회차 완료"

@@ -14,10 +14,12 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import com.example.momolabfe.R
 import com.example.momolabfe.databinding.FragmentRecordListBinding
+import com.example.momolabfe.remote.record.model.GetCalendarResponse
 import com.example.momolabfe.remote.record.model.RecordGetResponse
-import com.example.momolabfe.ui.record.adapter.RecordAdapter
+import com.example.momolabfe.ui.record.adapter.RecordExchangeDetailAdapter
 import com.example.momolabfe.ui.record.viewModel.RecordViewModel
 import com.example.momolabfe.utils.weekdayShortKorean
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -31,11 +33,16 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 class RecordListFragment : Fragment() {
 
     private var _binding: FragmentRecordListBinding? = null
     private val binding get() = _binding!!
+
+    private var recordId: Long = -1L
+
+    private lateinit var adapter: RecordExchangeDetailAdapter
 
     private val monthCalendar: CalendarView
         get() = binding.calenderView
@@ -45,20 +52,25 @@ class RecordListFragment : Fragment() {
 
     private var visibleMonth: YearMonth = YearMonth.now()
     private val headerFormatter = DateTimeFormatter.ofPattern(DATE_PATTERN)
+    private val DATE_DISPLAY_FORMATTER: DateTimeFormatter =
+        DateTimeFormatter.ofPattern("yyyy.MM.dd (E)", Locale.KOREA)
 
     // 중복 호출 방지용 캐시: 마지막으로 서버에 요청했던 [시작일, 종료일]
     private var lastRequestedRange: Pair<Int, Int>? = null
 
-    private lateinit var adapter: RecordAdapter
-    private var recordListItems: List<RecordGetResponse> = emptyList()
-
+    // 일정 있는 날짜들 캐시
+    private val eventDates = hashSetOf<LocalDate>()
     private val viewModel: RecordViewModel by activityViewModels()
+
+    private var monthRecordList: List<RecordGetResponse> = emptyList()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentRecordListBinding.inflate(inflater, container, false)
+
+        recordId = arguments?.getLong("record_id") ?: -1L
 
         selectedDate = today
         updateHeaderForCurrentMode()
@@ -83,6 +95,13 @@ class RecordListFragment : Fragment() {
 
         // 바텀 내비게이션 숨기기
         activity?.findViewById<BottomNavigationView>(R.id.main_bnv)?.visibility = View.GONE
+
+        if (recordId != -1L) {
+            viewModel.getRecord(recordId)
+        }
+
+        adapter = RecordExchangeDetailAdapter(emptyList())
+        binding.exchangeDetailRv.adapter = adapter
 
         // 해당 라이브러리는 캘린더 범위를 무제한으로 설정할 수 없어 일단은 +-50년으로 설정...
         val currentMonth = YearMonth.now()
@@ -109,6 +128,13 @@ class RecordListFragment : Fragment() {
 
             override fun bind(container: DayViewContainer, day: CalendarDay) {
                 val tv = container.textView
+                val dot = container.dotView
+
+                // dot 간격 설정
+                (dot.layoutParams as? ViewGroup.MarginLayoutParams)?.let { params ->
+                    params.topMargin = dpToPx(3)
+                    dot.layoutParams = params
+                }
 
                 // 기본 스타일 초기화
                 tv.text = day.date.dayOfMonth.toString()
@@ -125,6 +151,10 @@ class RecordListFragment : Fragment() {
                         if (isThisMonth) R.color.text_primary else R.color.deactive
                     )
                 )
+
+                // 일정 점 표시
+                dot.visibility =
+                    if (eventDates.contains(day.date) && isThisMonth) View.VISIBLE else View.GONE
 
                 // 오늘 표시
                 if (day.date == today) {
@@ -151,16 +181,34 @@ class RecordListFragment : Fragment() {
                     monthCalendar.notifyDateChanged(selectedDate)
 
                     updateHeaderForCurrentMode()
+
+                    // 선택한 날짜에 해당하는 기록 찾기
+                    val target = monthRecordList.firstOrNull { rec ->
+                        rec.recordDate == selectedDate
+                    }
+
+                    if (target != null) {
+                        viewModel.getRecord(target.id)  // 실제 필드명에 맞게
+                    } else {
+                        clearRecordViews()
+                        adapter.updateList(emptyList())
+                        binding.exchangeDetailRv.visibility = View.GONE
+                    }
                 }
             }
         }
 
-        view.post {
-            monthCalendar.findFirstVisibleMonth()?.let { requestForMonth(it) }
+        val observer = Observer<List<GetCalendarResponse>> { items ->
+            eventDates.clear()
+            items.forEach { ev ->
+                if (ev.hasSchedule) {
+                    eventDates += ev.date
+                }
+            }
+            monthCalendar.notifyCalendarChanged()
         }
 
-        adapter = RecordAdapter(parentFragmentManager, recordListItems)
-        binding.exchangeDetailRv.adapter = adapter
+        viewModel.calendarData.observe(viewLifecycleOwner, observer)
 
         setupObservers()
 
@@ -174,6 +222,8 @@ class RecordListFragment : Fragment() {
 
     private fun updateHeaderForCurrentMode() {
         binding.selectedDateTv.text = visibleMonth.format(headerFormatter)
+        // 선택된 날짜 표시
+        binding.selectedDateDisplayTv.text = selectedDate.format(DATE_DISPLAY_FORMATTER)
     }
 
     // 요일 텍스트 설정 (일~토)
@@ -215,6 +265,10 @@ class RecordListFragment : Fragment() {
         private const val DATE_PATTERN = "yyyy년 M월"
     }
 
+    private fun dpToPx(dp: Int): Int {
+        return (dp * resources.displayMetrics.density).toInt()
+    }
+
     // 채운 동그라미 배경
     private fun circleFill(fillColor: Int): GradientDrawable {
         return GradientDrawable().apply {
@@ -226,18 +280,48 @@ class RecordListFragment : Fragment() {
     // DayView의 뷰 홀더
     private inner class DayViewContainer(view: View) : ViewContainer(view) {
         val textView: TextView = view.findViewById(R.id.calendar_day_tv)
+        val dotView: View = view.findViewById(R.id.dot_view)
     }
 
     private fun setupObservers() {
         viewModel.recordlistItems.observe(viewLifecycleOwner) { itemList ->
-            recordListItems = itemList
+            monthRecordList = itemList
 
-            adapter.updateList(itemList)
-
-            if (itemList.isEmpty()) {
-                binding.exchangeDetailRv.visibility = View.GONE
+            // 현재 선택된 날짜에 기록 있으면 자동으로 상세 조회
+            val target = monthRecordList.firstOrNull { rec ->
+                rec.recordDate == selectedDate
+            }
+            if (target != null) {
+                viewModel.getRecord(target.id)
             } else {
-                binding.exchangeDetailRv.visibility = View.VISIBLE
+                clearRecordViews()
+                adapter.updateList(emptyList())
+                binding.exchangeDetailRv.visibility = View.GONE
+            }
+        }
+
+        // 단일 기록 조회 결과
+        viewModel.record.observe(viewLifecycleOwner) { recordItem ->
+            if (recordItem != null) {
+                binding.selectedDateDisplayTv.text =
+                    recordItem.recordDate.format(DATE_DISPLAY_FORMATTER)
+
+                binding.weightValueTv.text = String.format(Locale.KOREA, "%.1fkg", recordItem.weight)
+
+                val bpText = "${recordItem.systolic}/${recordItem.diastolic}"
+                binding.bloodPressureValueTv.text = bpText
+
+                binding.fastingGlucoseValueTv.text = "${recordItem.fastingGlucose} mg/dL"
+                binding.totalUfValueTv.text = "${recordItem.totalUf}g"
+                binding.noteContentTv.text = recordItem.notes ?: ""
+
+                adapter.updateList(recordItem.exchanges)
+                binding.exchangeDetailRv.visibility =
+                    if (recordItem.exchanges.isEmpty()) View.GONE else View.VISIBLE
+            } else {
+                clearRecordViews()
+                adapter.updateList(emptyList())
+                binding.exchangeDetailRv.visibility = View.GONE
             }
         }
 
@@ -245,6 +329,19 @@ class RecordListFragment : Fragment() {
             Log.e("RECORD_LIST_FRAGMENT", errorMsg.toString())
         }
     }
+
+    private fun clearRecordViews() {
+
+        // 건강 정보 카드 초기화
+        binding.weightValueTv.text = "-kg"
+        binding.bloodPressureValueTv.text = "-/-"
+        binding.fastingGlucoseValueTv.text = "- mg/dL"
+        binding.totalUfValueTv.text = "-g"
+
+        // 비고 내용 초기화
+        binding.noteContentTv.text = ""
+    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

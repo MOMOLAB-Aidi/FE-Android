@@ -45,6 +45,12 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
+        if (savedInstanceState == null) {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.main_frm, LoginFragment())
+                .commit()
+        }
+
         observeLogoutEvent()
     }
 

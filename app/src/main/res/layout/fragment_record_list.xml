@@ -284,7 +284,7 @@
                         app:layout_constraintTop_toTopOf="@id/weight_value_tv" />
 
                     <TextView
-                        android:id="@+id/blood_sugar_label_tv"
+                        android:id="@+id/fasting_glucose_label_tv"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="15dp"
@@ -297,7 +297,7 @@
                         app:layout_constraintTop_toBottomOf="@id/weight_value_tv" />
 
                     <TextView
-                        android:id="@+id/blood_sugar_value_tv"
+                        android:id="@+id/fasting_glucose_value_tv"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="5dp"
@@ -307,7 +307,7 @@
                         android:textColor="@color/white"
                         android:textSize="16sp"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/blood_sugar_label_tv" />
+                        app:layout_constraintTop_toBottomOf="@id/fasting_glucose_label_tv" />
 
                     <TextView
                         android:id="@+id/total_uf_label_tv"
@@ -319,7 +319,7 @@
                         android:textColor="@color/white"
                         android:textSize="14sp"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@id/blood_sugar_label_tv" />
+                        app:layout_constraintTop_toTopOf="@id/fasting_glucose_label_tv" />
 
                     <TextView
                         android:id="@+id/total_uf_value_tv"
@@ -331,7 +331,7 @@
                         android:textColor="@color/white"
                         android:textSize="16sp"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@id/blood_sugar_value_tv" />
+                        app:layout_constraintTop_toTopOf="@id/fasting_glucose_value_tv" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -353,12 +353,15 @@
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/exchange_detail_rv"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="20dp"
-                android:nestedScrollingEnabled="true"
+                android:nestedScrollingEnabled="false"
+                android:orientation="vertical"
+                android:overScrollMode="never"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/session_detail_title_tv"

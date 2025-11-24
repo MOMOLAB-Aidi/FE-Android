@@ -25,6 +25,7 @@ class SettingFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val DATE_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy년 M월 d일")
+    private val LAST_LOGIN_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH:mm:ss")
 
     private val viewModel: SettingViewModel by viewModels()
 
@@ -61,6 +62,9 @@ class SettingFragment : Fragment() {
                 binding.loginIdTv.text = it.loginId
                 binding.recordStartDateTv.text = it.recordStartDate.format(DATE_FORMATTER)
                 binding.recordPeriodTv.text = "(${it.recordPeriod})"
+
+                val formattedLastLogin = it.lastLoginAt.format(LAST_LOGIN_FORMATTER)
+                binding.lastLoginDataTv.text = formattedLastLogin
             }
         }
 

@@ -71,7 +71,7 @@ class RecordRepository @Inject constructor(
     }
 
     // 회차별 정보 수정
-    suspend fun updateExchangeRecord(request: RecordExchangeUpdateRequest): Result<Unit> = runCatching {
+    suspend fun updateExchangeRecord(request: List<RecordExchangeUpdateRequest>): Result<Unit> = runCatching {
         val response = recordService.updateExchangeRecord(request)
         if (!response.isSuccessful) {
             throw ApiException(response.code(), "HTTP ${response.code()}")
