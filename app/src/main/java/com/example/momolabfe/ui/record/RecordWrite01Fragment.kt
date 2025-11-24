@@ -52,7 +52,7 @@ class RecordWrite01Fragment : Fragment() {
     private val binding get() = _binding!!
 
     private val today: LocalDate = LocalDate.now()
-    private var selectedDate: LocalDate = LocalDate.now()
+    private var selectedDate: LocalDate? = null
 
     private var visibleMonth: YearMonth = YearMonth.now()
     private val headerFormatter = DateTimeFormatter.ofPattern(DATE_PATTERN)
@@ -70,13 +70,26 @@ class RecordWrite01Fragment : Fragment() {
     // OCR 값으로 한 번만 채우기 위한 플래그
     private var isOcrApplied = false
 
+    private val isFromOcr: Boolean by lazy {
+        arguments?.getBoolean("fromOcr", false) ?: false
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentRecordWrite01Binding.inflate(inflater, container, false)
 
-        binding.dateEt.setText(selectedDate.format(displayFormatter))
+        if (!isFromOcr) {
+            // 이전 OCR 결과/입력값 초기화
+            clearAllInputs()
+            isOcrApplied = false
+            viewModel.clearOcr()
+            binding.dateEt.setText("")
+        } else {
+            binding.dateEt.setText("")
+        }
+
         return binding.root
     }
 
@@ -146,9 +159,9 @@ class RecordWrite01Fragment : Fragment() {
             .setView(dialogBinding.root)
             .create()
 
-        // 캘린더 초기 상태 설정 (현재 선택된 날짜로 시작)
-        var dialogSelectedDate: LocalDate = selectedDate
-        var dialogVisibleMonth: YearMonth = YearMonth.of(selectedDate.year, selectedDate.month)
+        var dialogSelectedDate: LocalDate = selectedDate ?: today
+        var dialogVisibleMonth: YearMonth =
+            YearMonth.of(dialogSelectedDate.year, dialogSelectedDate.month)
 
         // 캘린더 뷰 초기화
         val monthCalendar: CalendarView = dialogBinding.calendarView
@@ -276,7 +289,7 @@ class RecordWrite01Fragment : Fragment() {
 
         dialogBinding.applyTv.setOnClickListener {
             selectedDate = dialogSelectedDate
-            binding.dateEt.setText(selectedDate.format(displayFormatter))
+            binding.dateEt.setText(dialogSelectedDate.format(displayFormatter))
             dialog.dismiss()
         }
 
@@ -371,7 +384,6 @@ class RecordWrite01Fragment : Fragment() {
     }
 
     private fun collectDataAndCallApi() {
-        val dateText = binding.dateEt.text.toString()
         val weightText = binding.weightEt.text.toString()
         val systolicText = binding.systolicEt.text.toString()
         val diastolicText = binding.diastolicEt.text.toString()
@@ -380,8 +392,14 @@ class RecordWrite01Fragment : Fragment() {
         val totalUfText = binding.totalUfEt.text.toString()
         val notesText = binding.notesEt.text.toString()
 
-        if (dateText.isEmpty() || weightText.isEmpty() || systolicText.isEmpty() || diastolicText.isEmpty()) {
-            Toast.makeText(requireContext(), "필수 정보를 모두 입력해주세요. (날짜, 체중, 혈압)", Toast.LENGTH_SHORT)
+        val selected = selectedDate
+        if (selected == null) {
+            Toast.makeText(requireContext(), "날짜를 선택해주세요.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (weightText.isEmpty() || systolicText.isEmpty() || diastolicText.isEmpty()) {
+            Toast.makeText(requireContext(), "필수 정보를 모두 입력해주세요. (체중, 혈압)", Toast.LENGTH_SHORT)
                 .show()
             return
         }
@@ -395,7 +413,7 @@ class RecordWrite01Fragment : Fragment() {
             }
         }
 
-        val recordDwValue = when (selectedDate.dayOfWeek) {
+        val recordDwValue = when (selected.dayOfWeek) {
             DayOfWeek.MONDAY -> DayWeek.MON
             DayOfWeek.TUESDAY -> DayWeek.TUE
             DayOfWeek.WEDNESDAY -> DayWeek.WED
@@ -410,7 +428,7 @@ class RecordWrite01Fragment : Fragment() {
         }
 
         val request = RecordCreateRequest(
-            recordDate = selectedDate,
+            recordDate = selected,
             recordDw = recordDwValue,
             weight = weightText.toDouble(),
             systolic = systolicText.toInt(),
@@ -427,6 +445,11 @@ class RecordWrite01Fragment : Fragment() {
 
     private fun observeOcrAndFillFields() {
         viewModel.ocrRecordResult.observe(viewLifecycleOwner) { ocr ->
+            if (!isFromOcr) {
+                binding.ocrImagePreview.visibility = View.GONE
+                return@observe
+            }
+
             // null 이거나 이미 한 번 반영했다면 스킵
             if (ocr == null || isOcrApplied) {
                 binding.ocrImagePreview.visibility = View.GONE
@@ -438,8 +461,8 @@ class RecordWrite01Fragment : Fragment() {
             selectedDate = ocr.ocrData.recordDate
             binding.dateEt.setText(ocr.ocrData.recordDate.format(displayFormatter))
             binding.weightEt.setText(ocr.ocrData.weight.toString())
-            binding.systolicEt.setText(ocr.ocrData.systolic.toString())
-            binding.diastolicEt.setText(ocr.ocrData.diastolic.toString())
+            binding.systolicEt.setText(ocr.ocrData.bloodPressure.systolic.toString())
+            binding.diastolicEt.setText(ocr.ocrData.bloodPressure.diastolic.toString())
             binding.fastingGlucoseEt.setText(ocr.ocrData.fastingGlucose.toString())
             binding.urineCountEt.setText(ocr.ocrData.urineCount.toString())
 
@@ -500,6 +523,22 @@ class RecordWrite01Fragment : Fragment() {
 
         viewModel.errorMessage.observe(viewLifecycleOwner) { errorMsg ->
             Log.e("RECORD_WRITE_01_FRAGMENT", errorMsg.toString())
+        }
+    }
+
+    private fun clearAllInputs() {
+        binding.apply {
+            dateEt.setText("")
+            weightEt.text?.clear()
+            systolicEt.text?.clear()
+            diastolicEt.text?.clear()
+            fastingGlucoseEt.text?.clear()
+            urineCountEt.text?.clear()
+            totalUfEt.text?.clear()
+            notesEt.text?.clear()
+
+            turbidityNCheckbox.isChecked = false
+            turbidityYCheckbox.isChecked = false
         }
     }
 

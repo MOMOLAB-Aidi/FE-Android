@@ -33,7 +33,6 @@ class SettingViewModel @Inject constructor(
             val result = userRepository.getMyPage()
             result.onSuccess {
                 _getPageResult.value = it
-                _getPageSuccess.tryEmit(Unit)
             }.onFailure { e ->
                 _errorMessage.value = e.localizedMessage ?: "마이페이지 조회에 실패했습니다."
             }

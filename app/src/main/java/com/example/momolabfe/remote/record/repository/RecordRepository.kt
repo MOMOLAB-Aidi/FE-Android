@@ -107,7 +107,7 @@ class RecordRepository @Inject constructor(
     }
 
     // 주간 평균 기록 조회
-    suspend fun getWeeklyAvgRecords(targetDate: Date): Result<WeeklyAverageResponse> = runCatching {
+    suspend fun getWeeklyAvgRecords(targetDate: String?): Result<WeeklyAverageResponse> = runCatching {
         val response = recordService.getWeeklyAvgRecords(targetDate)
         if (!response.isSuccessful) {
             throw ApiException(response.code(), "HTTP ${response.code()}")

@@ -8,5 +8,5 @@ data class MyPageResponse (
     @SerializedName("loginId") val loginId: String,
     @SerializedName("recordStartDate") val recordStartDate: LocalDate,
     @SerializedName("recordPeriod") val recordPeriod: String,
-    @SerializedName("lastLoginAt") val lastLoginAt: LocalDateTime
+    @SerializedName("lastLoginAt") val lastLoginAt: String
 )

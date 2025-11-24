@@ -69,7 +69,7 @@ abstract class RecordService (
 
         // 주간 평균 기록 조회
         @GET("/api/v1/records/weekly-average")
-        suspend fun getWeeklyAvgRecords(@Query("target_date") targetDate: Date): Response<WeeklyAverageResponse>
+        suspend fun getWeeklyAvgRecords(@Query("target_date") targetDate: String? = null): Response<WeeklyAverageResponse>
 
         // 특정 기록 삭제
         @DELETE("/api/v1/records/{rec_id}")
@@ -122,7 +122,7 @@ abstract class RecordService (
         return pythonService.getRecentRecords()
     }
 
-    suspend fun getWeeklyAvgRecords(targetDate: Date): Response<WeeklyAverageResponse> {
+    suspend fun getWeeklyAvgRecords(targetDate: String? = null): Response<WeeklyAverageResponse> {
         return pythonService.getWeeklyAvgRecords(targetDate)
     }
 

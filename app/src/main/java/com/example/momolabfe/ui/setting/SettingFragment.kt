@@ -15,6 +15,7 @@ import com.example.momolabfe.ui.setting.viewModel.SettingViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
@@ -63,7 +64,14 @@ class SettingFragment : Fragment() {
                 binding.recordStartDateTv.text = it.recordStartDate.format(DATE_FORMATTER)
                 binding.recordPeriodTv.text = "(${it.recordPeriod})"
 
-                val formattedLastLogin = it.lastLoginAt.format(LAST_LOGIN_FORMATTER)
+                val formattedLastLogin = it.lastLoginAt?.let { raw ->
+                    val trimmed = raw.substringBefore('.')   // 소수점 이하 잘라내기
+                    val ldt = LocalDateTime.parse(
+                        trimmed,
+                        DateTimeFormatter.ISO_LOCAL_DATE_TIME
+                    )
+                    ldt.format(LAST_LOGIN_FORMATTER)
+                }
                 binding.lastLoginDataTv.text = formattedLastLogin
             }
         }

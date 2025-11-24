@@ -1,6 +1,7 @@
 package com.example.momolabfe.ui.main
 
 import android.os.Bundle
+import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -102,11 +103,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun navigateToLoginFragment() {
+        supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+        binding.mainBnv.visibility = View.GONE
+
         supportFragmentManager.beginTransaction()
             .replace(R.id.main_frm, LoginFragment())
-            .commitAllowingStateLoss()
-
-        // 백스택 완전히 제거
-        supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+            .commit()
     }
 }

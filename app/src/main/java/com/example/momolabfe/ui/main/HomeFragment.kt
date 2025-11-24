@@ -17,6 +17,7 @@ import com.example.momolabfe.ui.setting.SettingFragment
 import com.example.momolabfe.ui.statistics.StatisticsFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import java.text.SimpleDateFormat
+import java.time.LocalDate
 import java.util.Date
 import java.util.Locale
 
@@ -50,8 +51,7 @@ class HomeFragment : Fragment() {
 
         setupObservers()
         viewModel.getRecentRecords()
-
-        viewModel.getWeeklyAvgRecords(Date())
+        viewModel.getWeeklyAvgRecords()
 
         try {
             // 날짜 포맷

@@ -165,9 +165,9 @@ class RecordViewModel @Inject constructor(
     }
 
     // 주간 평균 기록 조회
-    fun getWeeklyAvgRecords(targetDate: Date) {
+    fun getWeeklyAvgRecords() {
         viewModelScope.launch {
-            val result = recordRepository.getWeeklyAvgRecords(targetDate)
+            val result = recordRepository.getWeeklyAvgRecords(null)
             result.onSuccess { weeklyAvgData ->
                 _weeklyAverageData.value = weeklyAvgData
             }.onFailure { e ->

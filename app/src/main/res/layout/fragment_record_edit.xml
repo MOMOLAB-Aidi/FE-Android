@@ -306,11 +306,12 @@
                             android:id="@+id/turbidity_n_tv"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="3dp"
                             android:fontFamily="@font/noto_sans_kr_regular"
                             android:includeFontPadding="false"
                             android:text="없음"
                             android:textColor="@color/text_primary"
-                            android:textSize="16sp"
+                            android:textSize="14sp"
                             app:layout_constraintStart_toEndOf="@id/turbidity_n_checkbox"
                             app:layout_constraintTop_toTopOf="@id/turbidity_n_checkbox" />
 
@@ -322,17 +323,18 @@
                             android:minWidth="0dp"
                             android:minHeight="0dp"
                             app:layout_constraintStart_toEndOf="@id/turbidity_n_tv"
-                            app:layout_constraintTop_toTopOf="@id/turbidity_n_tv" />
+                            app:layout_constraintTop_toTopOf="@id/turbidity_n_checkbox" />
 
                         <TextView
                             android:id="@+id/turbidity_y_tv"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="3dp"
                             android:fontFamily="@font/noto_sans_kr_regular"
                             android:includeFontPadding="false"
                             android:text="있음"
                             android:textColor="@color/text_primary"
-                            android:textSize="16sp"
+                            android:textSize="14sp"
                             app:layout_constraintStart_toEndOf="@id/turbidity_y_checkbox"
                             app:layout_constraintTop_toTopOf="@id/turbidity_y_checkbox" />
 
@@ -340,7 +342,7 @@
                             android:id="@+id/total_uf_label_tv"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
+                            android:layout_marginTop="20dp"
                             android:fontFamily="@font/noto_sans_kr_regular"
                             android:includeFontPadding="false"
                             android:text="제수량 합계"
@@ -439,14 +441,18 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/exchange_info_rv"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="0dp"
                     android:layout_marginTop="10dp"
-                    android:nestedScrollingEnabled="true"
+                    android:nestedScrollingEnabled="false"
+                    android:orientation="vertical"
+                    android:overScrollMode="never"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     android:paddingStart="20dp"
                     android:paddingEnd="20dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/exchange_info_title_tv"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     tools:listitem="@layout/item_exchange_info" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>

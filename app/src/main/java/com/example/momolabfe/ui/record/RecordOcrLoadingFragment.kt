@@ -209,6 +209,7 @@ class RecordOcrLoadingFragment : Fragment() {
     private fun navigateToNextScreen() {
         val bundle = Bundle().apply {
             putString("imageUri", imageUri)
+            putBoolean("fromOcr", true)
         }
 
         val fragment = RecordWrite01Fragment()

@@ -44,15 +44,18 @@ data class OcrRecordData (
     @SerializedName("record_date") val recordDate: LocalDate,
     @SerializedName("record_dw") val recordDw: DayWeek,
     @SerializedName("weight") val weight: Double,
-    @SerializedName("systolic") val systolic: Int,
-    @SerializedName("diastolic") val diastolic: Int,
+    @SerializedName("blood_pressure") val bloodPressure: BpData,
     @SerializedName("fasting_glucose") val fastingGlucose: Int,
     @SerializedName("urine_count") val urineCount: Int,
     @SerializedName("turbidity") val turbidity: Turbidity,
     @SerializedName("notes") val notes: String?,
     @SerializedName("total_uf") val totalUf: Int,
-    @SerializedName("gcs_path") val gcsPath: String,
     @SerializedName("exchanges") val exchanges: List<OcrRecordExchangeData> = emptyList()
+)
+
+data class BpData (
+    @SerializedName("systolic") val systolic: Int,
+    @SerializedName("diastolic") val diastolic: Int
 )
 
 data class OcrRecordExchangeData (

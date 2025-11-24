@@ -314,7 +314,7 @@
                             tools:text="이번 주 평균 (2025-11-17 ~ 2025-11-23)"
                             android:textColor="@color/white"
                             android:includeFontPadding="false"
-                            android:textSize="15sp"
+                            android:textSize="14sp"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"/>
 
@@ -346,8 +346,8 @@
 
                         <ImageView
                             android:id="@+id/weekly_graph_iv"
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
+                            android:layout_width="35dp"
+                            android:layout_height="35dp"
                             android:layout_marginTop="10dp"
                             android:layout_marginEnd="25dp"
                             android:src="@drawable/ic_complete_graph_sv"

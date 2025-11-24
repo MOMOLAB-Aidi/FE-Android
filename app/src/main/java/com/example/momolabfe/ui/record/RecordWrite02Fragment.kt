@@ -62,6 +62,7 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
 
         setupRecyclerView()
         fillExchangesFromOcr()
+        downloadOcrImageIfAvailable()
 
         binding.addExchangeBtn.setOnClickListener {
             addExchange()
@@ -300,6 +301,16 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
         }
 
         viewModel.recordExchangeByWriting(recordId, requestList)
+    }
+
+    private fun downloadOcrImageIfAvailable() {
+        val ocr = viewModel.ocrRecordResult.value
+
+        val gcsPath = ocr?.gcsPath
+        if (!gcsPath.isNullOrEmpty()) {
+            // gcs path를 사용하여 이미지 다운로드 시작
+            viewModel.downloadOcrImage(gcsPath)
+        }
     }
 
     private fun setupObservers() {
