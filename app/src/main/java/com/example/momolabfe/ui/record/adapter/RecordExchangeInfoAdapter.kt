@@ -31,6 +31,8 @@ class RecordExchangeInfoAdapter(
 
     override fun getItemCount(): Int = exchangeList.size
 
+    fun getItems(): List<RecordExchangeGetResponse> = exchangeList
+
     fun updateList(newList: List<RecordExchangeGetResponse>) {
         exchangeList = newList
         notifyDataSetChanged()

@@ -58,6 +58,9 @@ class RecordViewModel @Inject constructor(
     private val _ocrImageBytes = MutableStateFlow<ByteArray?>(null)
     val ocrImageBytes: StateFlow<ByteArray?> = _ocrImageBytes
 
+    private val _editSuccess = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+    val editSuccess: SharedFlow<Unit> = _editSuccess.asSharedFlow()
+
     private val _deleteSuccess = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
     val deleteSuccess: SharedFlow<Unit> = _deleteSuccess.asSharedFlow()
 
@@ -90,9 +93,9 @@ class RecordViewModel @Inject constructor(
     }
 
     // 기록 수정
-    fun updateRecord(request: RecordUpdateRequest) {
+    fun updateRecord(recId: Long, request: RecordUpdateRequest) {
         viewModelScope.launch {
-            val result = recordRepository.updateRecord(request)
+            val result = recordRepository.updateRecord(recId, request)
             result.onSuccess {
                 _recordSuccess.tryEmit(Unit)
             }.onFailure { e ->

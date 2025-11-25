@@ -52,8 +52,8 @@ class RecordRepository @Inject constructor(
     }
 
     // 기록 수정
-    suspend fun updateRecord(request: RecordUpdateRequest): Result<Unit> = runCatching {
-        val response = recordService.updateRecord(request)
+    suspend fun updateRecord(recId: Long, request: RecordUpdateRequest): Result<Unit> = runCatching {
+        val response = recordService.updateRecord(recId, request)
         if (!response.isSuccessful) {
             throw ApiException(response.code(), "HTTP ${response.code()}")
         }

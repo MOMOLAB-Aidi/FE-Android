@@ -40,8 +40,6 @@ class RecordListFragment : Fragment() {
     private var _binding: FragmentRecordListBinding? = null
     private val binding get() = _binding!!
 
-    private var recordId: Long = -1L
-
     private lateinit var adapter: RecordExchangeDetailAdapter
 
     private val monthCalendar: CalendarView
@@ -70,8 +68,6 @@ class RecordListFragment : Fragment() {
     ): View {
         _binding = FragmentRecordListBinding.inflate(inflater, container, false)
 
-        recordId = arguments?.getLong("record_id") ?: -1L
-
         selectedDate = today
         updateHeaderForCurrentMode()
 
@@ -95,10 +91,6 @@ class RecordListFragment : Fragment() {
 
         // 바텀 내비게이션 숨기기
         activity?.findViewById<BottomNavigationView>(R.id.main_bnv)?.visibility = View.GONE
-
-        if (recordId != -1L) {
-            viewModel.getRecord(recordId)
-        }
 
         adapter = RecordExchangeDetailAdapter(emptyList())
         binding.exchangeDetailRv.adapter = adapter
@@ -214,10 +206,22 @@ class RecordListFragment : Fragment() {
         setupObservers()
 
         binding.detailEditBtn.setOnClickListener {
+            val currentId = viewModel.record.value?.id ?: -1L
+
+            if (currentId == -1L) {
+                return@setOnClickListener
+            }
+            val fragment = RecordInfoFragment().apply {
+                arguments = Bundle().apply {
+                    putLong("record_id", currentId)
+                }
+            }
+
             parentFragmentManager.beginTransaction()
-                .replace(R.id.main_frm, RecordInfoFragment())
+                .replace(R.id.main_frm, fragment)
                 .addToBackStack(null)
                 .commit()
+
         }
 
         binding.deleteBtn.setOnClickListener {

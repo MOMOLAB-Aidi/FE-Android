@@ -45,7 +45,7 @@ abstract class RecordService (
 
         // 기록 수정
         @PATCH("/api/v1/records/{rec_id}")
-        suspend fun updateRecord(@Body request: RecordUpdateRequest): Response<Unit>
+        suspend fun updateRecord(@Path("rec_id") recId: Long, @Body request: RecordUpdateRequest): Response<Unit>
 
         // 전체 기록 조회
         @GET("/api/v1/records")
@@ -90,8 +90,8 @@ abstract class RecordService (
         return pythonService.createRecord(request)
     }
 
-    suspend fun updateRecord(request: RecordUpdateRequest): Response<Unit> {
-        return pythonService.updateRecord(request)
+    suspend fun updateRecord(recId: Long, request: RecordUpdateRequest): Response<Unit> {
+        return pythonService.updateRecord(recId, request)
     }
 
     suspend fun getRecordList(year: Int, month: Int): Response<List<RecordGetResponse>> {
