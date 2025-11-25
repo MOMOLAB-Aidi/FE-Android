@@ -695,7 +695,7 @@
                 android:id="@+id/app_rights_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="© 2025 AIDI. All rights reserved."
+                android:text="© 2025 Aidi. All rights reserved."
                 android:textColor="@color/secondary_text"
                 android:textSize="14sp"
                 android:includeFontPadding="false"

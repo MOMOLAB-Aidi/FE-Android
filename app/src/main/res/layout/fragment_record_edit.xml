@@ -470,18 +470,18 @@
                 app:layout_constraintEnd_toEndOf="parent">
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_todo_delete"
+                android:id="@+id/cancel_btn"
                 android:layout_width="0dp"
                 android:layout_height="65dp"
                 android:layout_marginEnd="8dp"
                 android:layout_weight="1"
-                android:text="삭제"
+                android:text="취소"
                 android:textColor="@color/text_primary"
                 app:backgroundTint="@color/white"
                 app:cornerRadius="12dp" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_todo_save"
+                android:id="@+id/save_btn"
                 android:layout_width="0dp"
                 android:layout_height="65dp"
                 android:layout_marginStart="8dp"

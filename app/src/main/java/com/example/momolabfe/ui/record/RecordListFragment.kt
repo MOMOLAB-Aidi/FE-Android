@@ -188,11 +188,12 @@ class RecordListFragment : Fragment() {
                     }
 
                     if (target != null) {
-                        viewModel.getRecord(target.id)  // 실제 필드명에 맞게
+                        showDetailViews()
+                        viewModel.getRecord(target.id)
                     } else {
+                        hideDetailViews()
                         clearRecordViews()
                         adapter.updateList(emptyList())
-                        binding.exchangeDetailRv.visibility = View.GONE
                     }
                 }
             }
@@ -218,6 +219,33 @@ class RecordListFragment : Fragment() {
                 .addToBackStack(null)
                 .commit()
         }
+
+        binding.deleteBtn.setOnClickListener {
+            val currentId = viewModel.record.value?.id ?: -1L
+            if (currentId == -1L) {
+                Log.e("RECORD_LIST_FRAGMENT", "삭제할 recordId가 없습니다.")
+                return@setOnClickListener
+            }
+
+            val bottomSheet = BottomSheetRecordDeleteFragment().apply {
+                arguments = Bundle().apply {
+                    putLong("record_id", currentId)
+                }
+            }
+            bottomSheet.show(parentFragmentManager, "BottomSheetRecordDelete")
+        }
+
+        // 기록 삭제 성공 이벤트 수신
+        parentFragmentManager.setFragmentResultListener("record_delete", viewLifecycleOwner) { _, _ ->
+            // 현재 보여지는 달 기준으로 다시 조회
+            val year = visibleMonth.year
+            val monthValue = visibleMonth.monthValue
+
+            viewModel.getCalendar(year, monthValue)
+            viewModel.getRecordList(year, monthValue)
+        }
+
+        hideDetailViews()
     }
 
     private fun updateHeaderForCurrentMode() {
@@ -292,17 +320,20 @@ class RecordListFragment : Fragment() {
                 rec.recordDate == selectedDate
             }
             if (target != null) {
+                showDetailViews()
                 viewModel.getRecord(target.id)
             } else {
+                hideDetailViews()
                 clearRecordViews()
                 adapter.updateList(emptyList())
-                binding.exchangeDetailRv.visibility = View.GONE
             }
         }
 
         // 단일 기록 조회 결과
         viewModel.record.observe(viewLifecycleOwner) { recordItem ->
             if (recordItem != null) {
+                showDetailViews()
+
                 binding.selectedDateDisplayTv.text =
                     recordItem.recordDate.format(DATE_DISPLAY_FORMATTER)
 
@@ -319,9 +350,9 @@ class RecordListFragment : Fragment() {
                 binding.exchangeDetailRv.visibility =
                     if (recordItem.exchanges.isEmpty()) View.GONE else View.VISIBLE
             } else {
+                hideDetailViews()
                 clearRecordViews()
                 adapter.updateList(emptyList())
-                binding.exchangeDetailRv.visibility = View.GONE
             }
         }
 
@@ -340,6 +371,31 @@ class RecordListFragment : Fragment() {
 
         // 비고 내용 초기화
         binding.noteContentTv.text = ""
+    }
+
+    private fun hideDetailViews() {
+        with(binding) {
+            selectedDateInfoContainer.visibility = View.GONE
+            healthInfoCv.visibility = View.GONE
+            sessionDetailTitleTv.visibility = View.GONE
+            exchangeDetailRv.visibility = View.GONE
+            noteCv.visibility = View.GONE
+            detailEditBtn.visibility = View.GONE
+            deleteBtn.visibility = View.GONE
+        }
+    }
+
+    private fun showDetailViews() {
+        with(binding) {
+            selectedDateInfoContainer.visibility = View.VISIBLE
+            healthInfoCv.visibility = View.VISIBLE
+            sessionDetailTitleTv.visibility = View.VISIBLE
+            // exchangeDetailRv는 회차 없으면 GONE 처리하니까 여기서 VISIBLE 해놔도 됨
+            exchangeDetailRv.visibility = View.VISIBLE
+            noteCv.visibility = View.VISIBLE
+            detailEditBtn.visibility = View.VISIBLE
+            deleteBtn.visibility = View.VISIBLE
+        }
     }
 
 
