@@ -263,6 +263,19 @@
                 app:layout_constraintStart_toStartOf="@id/fill_volume_tv"
                 app:layout_constraintTop_toBottomOf="@id/fill_volume_cv" />
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="4dp"
+                android:text="제수량은 배액량에서 주입액 중량을 뺀 값입니다."
+                android:fontFamily="@font/noto_sans_kr_regular"
+                android:includeFontPadding="false"
+                android:textColor="@color/main_1"
+                android:textSize="11sp"
+                app:layout_constraintStart_toEndOf="@id/uf_tv"
+                app:layout_constraintTop_toTopOf="@id/uf_tv"/>
+
             <androidx.cardview.widget.CardView
                 android:id="@+id/uf_cv"
                 android:layout_width="0dp"

@@ -58,9 +58,6 @@ class RecordViewModel @Inject constructor(
     private val _ocrImageBytes = MutableStateFlow<ByteArray?>(null)
     val ocrImageBytes: StateFlow<ByteArray?> = _ocrImageBytes
 
-    private val _recordCreated = MutableSharedFlow<Long>(extraBufferCapacity = 1)
-    val recordCreated: SharedFlow<Long> = _recordCreated
-
     private val _deleteSuccess = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
     val deleteSuccess: SharedFlow<Unit> = _deleteSuccess.asSharedFlow()
 
@@ -80,50 +77,26 @@ class RecordViewModel @Inject constructor(
         }
     }
 
-    // 수기 작성 - 공통 정보
-    fun recordCommonByWriting(request: RecordCreateRequest) {
+    // 기록 작성
+    fun createRecord(request: RecordCreateRequest) {
         viewModelScope.launch {
-            val result = recordRepository.recordCommonByWriting(request)
-            result.onSuccess { id ->
-                _recordCreated.emit(id)
+            val result = recordRepository.createRecord(request)
+            result.onSuccess {
+                _recordSuccess.tryEmit(Unit)
             }.onFailure { e ->
-                _errorMessage.value = e.localizedMessage ?: "공통 정보 저장에 실패했습니다."
+                _errorMessage.value = e.localizedMessage ?: "기록 작성에 실패했습니다."
             }
         }
     }
 
-    // 공통 정보 수정
-    fun updateCommonRecord(request: RecordUpdateRequest) {
+    // 기록 수정
+    fun updateRecord(request: RecordUpdateRequest) {
         viewModelScope.launch {
-            val result = recordRepository.updateCommonRecord(request)
+            val result = recordRepository.updateRecord(request)
             result.onSuccess {
                 _recordSuccess.tryEmit(Unit)
             }.onFailure { e ->
-                _errorMessage.value = e.localizedMessage ?: "공통 정보 수정에 실패했습니다."
-            }
-        }
-    }
-
-    // 수기 작성 - 회차별 정보
-    fun recordExchangeByWriting(recId: Long, request: List<RecordExchangeCreateRequest>) {
-        viewModelScope.launch {
-            val result = recordRepository.recordExchangeByWriting(recId, request)
-            result.onSuccess {
-                _recordSuccess.tryEmit(Unit)
-            }.onFailure { e ->
-                _errorMessage.value = e.localizedMessage ?: "회차별 정보 저장에 실패했습니다."
-            }
-        }
-    }
-
-    // 회차별 정보 수정
-    fun updateExchangeRecord(request: List<RecordExchangeUpdateRequest>) {
-        viewModelScope.launch {
-            val result = recordRepository.updateExchangeRecord(request)
-            result.onSuccess {
-                _recordSuccess.tryEmit(Unit)
-            }.onFailure { e ->
-                _errorMessage.value = e.localizedMessage ?: "회차별 정보 수정에 실패했습니다."
+                _errorMessage.value = e.localizedMessage ?: "기록 수정에 실패했습니다."
             }
         }
     }

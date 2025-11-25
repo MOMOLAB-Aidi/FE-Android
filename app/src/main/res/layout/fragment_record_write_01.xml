@@ -425,52 +425,6 @@
                         app:layout_constraintTop_toTopOf="@id/turbidity_y_checkbox" />
 
                     <TextView
-                        android:id="@+id/total_uf_tv"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="15dp"
-                        android:fontFamily="@font/noto_sans_kr_regular"
-                        android:includeFontPadding="false"
-                        android:text="제수량 합계 (g)"
-                        android:textColor="@color/secondary_text"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        app:layout_constraintStart_toStartOf="@id/turbidity_tv"
-                        app:layout_constraintTop_toBottomOf="@id/turbidity_n_checkbox" />
-
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/total_uf_cv"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:layout_marginEnd="20dp"
-                        android:backgroundTint="@color/edit_card"
-                        app:cardCornerRadius="8dp"
-                        app:cardElevation="0dp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="@id/total_uf_tv"
-                        app:layout_constraintTop_toBottomOf="@id/total_uf_tv">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:padding="12dp">
-
-                            <EditText
-                                android:id="@+id/total_uf_et"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:background="@color/transparent"
-                                android:hint="제수량 합계를 입력하세요 (예: 600)"
-                                android:inputType="number|numberSigned"
-                                android:textSize="16sp" />
-
-                        </LinearLayout>
-                    </androidx.cardview.widget.CardView>
-
-                    <TextView
                         android:id="@+id/notes_tv"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -481,8 +435,8 @@
                         android:textColor="@color/secondary_text"
                         android:textSize="16sp"
                         android:textStyle="bold"
-                        app:layout_constraintStart_toStartOf="@id/total_uf_tv"
-                        app:layout_constraintTop_toBottomOf="@id/total_uf_cv" />
+                        app:layout_constraintStart_toStartOf="@id/turbidity_tv"
+                        app:layout_constraintTop_toBottomOf="@id/turbidity_n_checkbox" />
 
                     <androidx.cardview.widget.CardView
                         android:id="@+id/notes_cv"

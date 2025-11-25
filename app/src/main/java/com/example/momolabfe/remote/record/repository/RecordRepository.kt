@@ -42,37 +42,18 @@ class RecordRepository @Inject constructor(
         handleApiResponse(response)
     }
 
-    // 수기 작성 - 공통 정보 생성
-    suspend fun recordCommonByWriting(request: RecordCreateRequest): Result<Long> = runCatching {
-        val response = recordService.recordCommonByWriting(request)
-        if (!response.isSuccessful) {
-            throw ApiException(response.code(), "HTTP ${response.code()}")
-        }
-        val body = response.body() ?: throw ApiException(500, "빈 응답 본문")
-        body.id
-    }
-
-    // 공통 정보 수정
-    suspend fun updateCommonRecord(request: RecordUpdateRequest): Result<Unit> = runCatching {
-        val response = recordService.updateCommonRecord(request)
+    // 기록 작성
+    suspend fun createRecord(request: RecordCreateRequest): Result<Unit> = runCatching {
+        val response = recordService.createRecord(request)
         if (!response.isSuccessful) {
             throw ApiException(response.code(), "HTTP ${response.code()}")
         }
         Unit
     }
 
-    // 수기 작성 - 회차별 정보 생성
-    suspend fun recordExchangeByWriting(recId: Long, request: List<RecordExchangeCreateRequest>): Result<Unit> = runCatching {
-        val response = recordService.recordExchangeByWriting(recId, request)
-        if (!response.isSuccessful) {
-            throw ApiException(response.code(), "HTTP ${response.code()}")
-        }
-        Unit
-    }
-
-    // 회차별 정보 수정
-    suspend fun updateExchangeRecord(request: List<RecordExchangeUpdateRequest>): Result<Unit> = runCatching {
-        val response = recordService.updateExchangeRecord(request)
+    // 기록 수정
+    suspend fun updateRecord(request: RecordUpdateRequest): Result<Unit> = runCatching {
+        val response = recordService.updateRecord(request)
         if (!response.isSuccessful) {
             throw ApiException(response.code(), "HTTP ${response.code()}")
         }

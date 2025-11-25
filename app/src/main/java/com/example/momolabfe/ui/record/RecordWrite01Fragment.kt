@@ -29,6 +29,7 @@ import com.example.momolabfe.remote.record.model.DayWeek
 import com.example.momolabfe.remote.record.model.GetCalendarResponse
 import com.example.momolabfe.remote.record.model.RecordCreateRequest
 import com.example.momolabfe.remote.record.model.Turbidity
+import com.example.momolabfe.ui.record.data.RecordCommonDraft
 import com.example.momolabfe.ui.record.viewModel.RecordViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.kizitonwose.calendar.core.CalendarDay
@@ -73,6 +74,9 @@ class RecordWrite01Fragment : Fragment() {
     private val isFromOcr: Boolean by lazy {
         arguments?.getBoolean("fromOcr", false) ?: false
     }
+
+    // 마지막으로 만든 공통정보 요청값을 임시 저장
+    private var latestRecordRequest: RecordCreateRequest? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -389,7 +393,6 @@ class RecordWrite01Fragment : Fragment() {
         val diastolicText = binding.diastolicEt.text.toString()
         val fastingGlucoseText = binding.fastingGlucoseEt.text.toString()
         val urineCountText = binding.urineCountEt.text.toString()
-        val totalUfText = binding.totalUfEt.text.toString()
         val notesText = binding.notesEt.text.toString()
 
         val selected = selectedDate
@@ -427,7 +430,7 @@ class RecordWrite01Fragment : Fragment() {
             }
         }
 
-        val request = RecordCreateRequest(
+        val draft = RecordCommonDraft(
             recordDate = selected,
             recordDw = recordDwValue,
             weight = weightText.toDouble(),
@@ -436,11 +439,21 @@ class RecordWrite01Fragment : Fragment() {
             fastingGlucose = fastingGlucoseText.toInt(),
             urineCount = urineCountText.toInt(),
             turbidity = turbidityValue,
-            totalUf = totalUfText.toIntOrNull() ?: 0,
             notes = notesText.takeIf { it.isNotBlank() }
         )
 
-        viewModel.recordCommonByWriting(request)
+        val fragment = RecordWrite02Fragment().apply {
+            arguments = Bundle().apply {
+                putSerializable("record_common", draft)
+            }
+        }
+
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.main_frm, fragment)
+            .addToBackStack(null)
+            .commit()
+
+
     }
 
     private fun observeOcrAndFillFields() {
@@ -474,7 +487,6 @@ class RecordWrite01Fragment : Fragment() {
                 Turbidity.PRESENT -> binding.turbidityYCheckbox.isChecked = true
             }
 
-            binding.totalUfEt.setText(ocr.ocrData.totalUf.toString())
             binding.notesEt.setText(ocr.ocrData.notes ?: "")
 
             // gCS Path를 사용하여 이미지 다운로드 시작
@@ -486,20 +498,6 @@ class RecordWrite01Fragment : Fragment() {
     }
 
     private fun setupObservers() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.recordCreated.collectLatest { recordId ->
-                val fragment = RecordWrite02Fragment().apply {
-                    arguments = Bundle().apply {
-                        putLong("recordId", recordId)
-                    }
-                }
-
-                parentFragmentManager.beginTransaction()
-                    .replace(R.id.main_frm, fragment)
-                    .addToBackStack(null)
-                    .commit()
-            }
-        }
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.ocrImageBytes.collectLatest { imageBytes ->
@@ -534,7 +532,6 @@ class RecordWrite01Fragment : Fragment() {
             diastolicEt.text?.clear()
             fastingGlucoseEt.text?.clear()
             urineCountEt.text?.clear()
-            totalUfEt.text?.clear()
             notesEt.text?.clear()
 
             turbidityNCheckbox.isChecked = false

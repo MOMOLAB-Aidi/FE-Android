@@ -2,6 +2,7 @@ package com.example.momolabfe.ui.record
 
 import android.app.AlertDialog
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
@@ -21,8 +22,10 @@ import com.example.momolabfe.R
 import com.example.momolabfe.remote.record.model.OcrRecordExchangeData
 import com.example.momolabfe.databinding.DialogTimePickerBinding
 import com.example.momolabfe.databinding.FragmentRecordWrite02Binding
+import com.example.momolabfe.remote.record.model.RecordCreateRequest
 import com.example.momolabfe.remote.record.model.RecordExchangeCreateRequest
 import com.example.momolabfe.ui.record.adapter.RecordExchangeAdapter
+import com.example.momolabfe.ui.record.data.RecordCommonDraft
 import com.example.momolabfe.ui.record.viewModel.RecordViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
@@ -44,6 +47,21 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
 
     private val MAX_EXCHANGES = RecordExchangeAdapter.MAX_EXCHANGES
 
+    private val isFromOcr: Boolean by lazy {
+        arguments?.getBoolean("fromOcr", false) ?: false
+    }
+
+    // write01에서 넘긴 공통 정보 받기 (getSerializable deprecation 처리)
+    private val commonDraft: RecordCommonDraft? by lazy {
+        val args = arguments ?: return@lazy null
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            args.getSerializable("record_common", RecordCommonDraft::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            args.getSerializable("record_common") as? RecordCommonDraft
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -62,7 +80,12 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
 
         setupRecyclerView()
         fillExchangesFromOcr()
-        downloadOcrImageIfAvailable()
+
+        if (isFromOcr) {
+            downloadOcrImageIfAvailable()
+        } else {
+            binding.ocrImagePreview.visibility = View.GONE
+        }
 
         binding.addExchangeBtn.setOnClickListener {
             addExchange()
@@ -246,7 +269,7 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
 
         if (exchanges.isEmpty()) {
             // 1회차 항목을 생성하여 추가
-            val firstExchange = com.example.momolabfe.remote.record.model.OcrRecordExchangeData(
+            val firstExchange = OcrRecordExchangeData(
                 id = -1, // 임시 ID
                 exchangeNo = 1,
                 exchangeTime = LocalTime.now(),
@@ -278,29 +301,61 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
     }
 
     private fun collectDataAndCallApi() {
-        val exchanges = exchangeAdapter.items
 
-        // 각 회차 데이터 유효성 검사 및 DTO 리스트 생성
-        val requestList = exchanges.map { item ->
-            if (item.drainVolume <= 0 || item.fillVolume <= 0  || item.fillConcentration <= 0) {
-                Toast.makeText(requireContext(), "${item.exchangeNo}회차 기록을 확인해주세요.", Toast.LENGTH_SHORT).show()
-                return
-            }
-
-            RecordExchangeCreateRequest(
-                exchangeTime = item.exchangeTime,
-                drainVolume = item.drainVolume,
-                fillConcentration = item.fillConcentration,
-                fillVolume = item.fillVolume,
-                uf = item.uf
-            )
-        }.toList()
-
-        if (requestList.size != exchanges.size) {
+        val draft = commonDraft
+        if (draft == null) {
+            Toast.makeText(requireContext(), "공통 정보가 없습니다. 처음 화면부터 다시 작성해주세요.", Toast.LENGTH_SHORT).show()
             return
         }
 
-        viewModel.recordExchangeByWriting(recordId, requestList)
+        val totalUfText = binding.totalUfEt.text.toString()
+        val totalUf = totalUfText.toIntOrNull()
+        if (totalUf == null) {
+            Toast.makeText(requireContext(), "제수량 합계를 숫자로 입력해주세요.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val exchanges = exchangeAdapter.items
+
+        // 각 회차 데이터 유효성 검사 및 DTO 리스트 생성
+        val requestList = mutableListOf<RecordExchangeCreateRequest>()
+        for (item in exchanges) {
+
+            if (item.drainVolume <= 0 || item.fillVolume <= 0 || item.fillConcentration <= 0.0) {
+                Toast.makeText(
+                    requireContext(),
+                    "${item.exchangeNo}회차 기록을 확인해주세요.",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return
+            }
+
+            requestList += RecordExchangeCreateRequest(
+                exchangeNo = item.exchangeNo,
+                exchangeTime = item.exchangeTime.format(RecordExchangeAdapter.TIME_FORMATTER),
+                drainVolume = item.drainVolume,
+                fillVolume = item.fillVolume,
+                fillConcentration = item.fillConcentration,
+                uf = item.uf
+            )
+        }
+
+        val fullRequest = RecordCreateRequest(
+            recordDate = draft.recordDate,
+            recordDw = draft.recordDw,
+            weight = draft.weight,
+            systolic = draft.systolic,
+            diastolic = draft.diastolic,
+            fastingGlucose = draft.fastingGlucose,
+            urineCount = draft.urineCount,
+            turbidity = draft.turbidity,
+            notes = draft.notes,
+            totalUf = totalUf,
+            gcsPath = draft.gcsPath,
+            exchanges = requestList
+        )
+
+        viewModel.createRecord(fullRequest)
     }
 
     private fun downloadOcrImageIfAvailable() {

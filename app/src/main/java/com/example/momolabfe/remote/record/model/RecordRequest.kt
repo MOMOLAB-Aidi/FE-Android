@@ -1,6 +1,7 @@
 package com.example.momolabfe.remote.record.model
 
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -15,12 +16,14 @@ data class RecordCreateRequest (
     @SerializedName("urine_count") val urineCount: Int,
     @SerializedName("turbidity") val turbidity: Turbidity,
     @SerializedName("notes") val notes: String? = null,
-    @SerializedName("total_uf") val totalUf: Int? = null,
-    @SerializedName("gcs_path") val gcsPath: String? = null
-)
+    @SerializedName("total_uf") val totalUf: Int,
+    @SerializedName("gcs_path") val gcsPath: String? = null,
+    @SerializedName("exchanges") val exchanges: List<RecordExchangeCreateRequest>
+) : Serializable
 
 data class RecordExchangeCreateRequest (
-    @SerializedName("exchange_time") val exchangeTime: LocalTime,
+    @SerializedName("exchange_no") val exchangeNo: Int? = null,
+    @SerializedName("exchange_time") val exchangeTime: String,
     @SerializedName("drain_volume") val drainVolume: Int,
     @SerializedName("fill_volume") val fillVolume: Int,
     @SerializedName("fill_concentration") val fillConcentration: Double,
@@ -38,10 +41,12 @@ data class RecordUpdateRequest (
     @SerializedName("turbidity") val turbidity: Turbidity? = null,
     @SerializedName("notes") val notes: String? = null,
     @SerializedName("total_uf") val totalUf: Int? = null,
+    @SerializedName("exchanges") val exchanges: List<RecordExchangeUpdateRequest>? = null,
 )
 
 data class RecordExchangeUpdateRequest (
-    @SerializedName("exchange_time") val exchangeTime: LocalTime? = null,
+    @SerializedName("id") val id: Long? = null,
+    @SerializedName("exchange_time") val exchangeTime: String? = null,
     @SerializedName("drain_volume") val drainVolume: Int? = null,
     @SerializedName("fill_volume") val fillVolume: Int? = null,
     @SerializedName("fill_concentration") val fillConcentration: Double? = null,

@@ -39,21 +39,13 @@ abstract class RecordService (
     }
 
     private interface PythonApiService {
-        // 공통 정보 작성
+        // 기록 작성
         @POST("/api/v1/records")
-        suspend fun recordCommonByWriting(@Body request: RecordCreateRequest): Response<RecordIdResponse>
+        suspend fun createRecord(@Body request: RecordCreateRequest): Response<Unit>
 
-        // 공통 정보 수정
+        // 기록 수정
         @PATCH("/api/v1/records/{rec_id}")
-        suspend fun updateCommonRecord(@Body request: RecordUpdateRequest): Response<Unit>
-
-        // 회차별 정보 작성
-        @POST("/api/v1/records/{rec_id}/exchanges")
-        suspend fun recordExchangeByWriting(@Path("rec_id") recId: Long, @Body request: List<RecordExchangeCreateRequest>): Response<Unit>
-
-        // 회차별 정보 수정
-        @PATCH("/api/v1/records/{rec_id}/exchanges/{exchange_no}")
-        suspend fun updateExchangeRecord(@Body request: List<RecordExchangeUpdateRequest>): Response<Unit>
+        suspend fun updateRecord(@Body request: RecordUpdateRequest): Response<Unit>
 
         // 전체 기록 조회
         @GET("/api/v1/records")
@@ -94,20 +86,12 @@ abstract class RecordService (
         return springService.getCalendar(year, month)
     }
 
-    suspend fun recordCommonByWriting(request: RecordCreateRequest): Response<RecordIdResponse> {
-        return pythonService.recordCommonByWriting(request)
+    suspend fun createRecord(request: RecordCreateRequest): Response<Unit> {
+        return pythonService.createRecord(request)
     }
 
-    suspend fun updateCommonRecord(request: RecordUpdateRequest): Response<Unit> {
-        return pythonService.updateCommonRecord(request)
-    }
-
-    suspend fun recordExchangeByWriting(recId: Long, request: List<RecordExchangeCreateRequest>): Response<Unit> {
-        return pythonService.recordExchangeByWriting(recId, request)
-    }
-
-    suspend fun updateExchangeRecord(request: List<RecordExchangeUpdateRequest>): Response<Unit> {
-        return pythonService.updateExchangeRecord(request)
+    suspend fun updateRecord(request: RecordUpdateRequest): Response<Unit> {
+        return pythonService.updateRecord(request)
     }
 
     suspend fun getRecordList(year: Int, month: Int): Response<List<RecordGetResponse>> {

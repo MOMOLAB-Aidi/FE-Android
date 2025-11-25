@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.RecyclerView
 import com.example.momolabfe.R
 import com.example.momolabfe.remote.record.model.OcrRecordExchangeData
@@ -76,6 +77,40 @@ class RecordExchangeAdapter :
             binding.fillConcentrationEt.setText(if (item.fillConcentration == 0.0) "" else item.fillConcentration.toString())
             binding.fillVolumeEt.setText(if (item.fillVolume == 0) "" else item.fillVolume.toString())
             binding.ufEt.setText(if (item.uf == 0) "" else item.uf.toString())
+
+
+            // items 리스트 값 동기화
+            binding.drainVolumeEt.doAfterTextChanged { text ->
+                val pos = bindingAdapterPosition
+                if (pos == RecyclerView.NO_POSITION) return@doAfterTextChanged
+
+                val value = text?.toString()?.toIntOrNull() ?: 0
+                items[pos] = items[pos].copy(drainVolume = value)
+            }
+
+            binding.fillVolumeEt.doAfterTextChanged { text ->
+                val pos = bindingAdapterPosition
+                if (pos == RecyclerView.NO_POSITION) return@doAfterTextChanged
+
+                val value = text?.toString()?.toIntOrNull() ?: 0
+                items[pos] = items[pos].copy(fillVolume = value)
+            }
+
+            binding.fillConcentrationEt.doAfterTextChanged { text ->
+                val pos = bindingAdapterPosition
+                if (pos == RecyclerView.NO_POSITION) return@doAfterTextChanged
+
+                val value = text?.toString()?.toDoubleOrNull() ?: 0.0
+                items[pos] = items[pos].copy(fillConcentration = value)
+            }
+
+            binding.ufEt.doAfterTextChanged { text ->
+                val pos = bindingAdapterPosition
+                if (pos == RecyclerView.NO_POSITION) return@doAfterTextChanged
+
+                val value = text?.toString()?.toIntOrNull() ?: 0
+                items[pos] = items[pos].copy(uf = value)
+            }
 
             updateExpansionState(absoluteAdapterPosition)
         }
