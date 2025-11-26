@@ -84,7 +84,7 @@ class LoginFragment : Fragment() {
                 viewModel.clearSavedPatientId()
             }
 
-            val request = com.example.momolabfe.remote.auth.data.LoginRequest(loginId, password)
+            val request = LoginRequest(loginId, password)
             viewModel.login(request)
         }
     }

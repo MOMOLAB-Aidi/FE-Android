@@ -61,7 +61,7 @@ class BottomSheetRecordDeleteFragment : BottomSheetDialogFragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
                     viewModel.deleteSuccess.collect {
-                        Log.d("RECORD_INFO_FRAGMENT", "기록이 성공적으로 삭제되었습니다.")
+                        Log.d("BOTTOM_SHEET_RECORD_DELETE", "기록이 성공적으로 삭제되었습니다.")
                         parentFragmentManager.setFragmentResult("record_delete", Bundle())
                         dismiss()
                     }
@@ -70,7 +70,7 @@ class BottomSheetRecordDeleteFragment : BottomSheetDialogFragment() {
         }
 
         viewModel.errorMessage.observe(viewLifecycleOwner) { errorMsg ->
-            Log.e("RECORD_INFO_FRAGMENT", errorMsg.toString())
+            Log.e("BOTTOM_SHEET_RECORD_DELETE", errorMsg.toString())
             binding.confirmTv.isEnabled = true
         }
     }

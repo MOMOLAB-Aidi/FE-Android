@@ -7,8 +7,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.momolabfe.remote.record.model.GetCalendarResponse
 import com.example.momolabfe.remote.record.model.RecordCreateRequest
-import com.example.momolabfe.remote.record.model.RecordExchangeCreateRequest
-import com.example.momolabfe.remote.record.model.RecordExchangeUpdateRequest
 import com.example.momolabfe.remote.record.model.RecordGetResponse
 import com.example.momolabfe.remote.record.model.RecordOcrResponse
 import com.example.momolabfe.remote.record.model.RecordUpdateRequest
@@ -21,7 +19,6 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
-import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
@@ -160,7 +157,6 @@ class RecordViewModel @Inject constructor(
                 _deleteSuccess.tryEmit(Unit)
             }.onFailure { e ->
                 _errorMessage.value = e.localizedMessage ?: "특정 기록 삭제에 실패했습니다."
-                _errorMessage.value = null
             }
         }
     }

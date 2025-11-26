@@ -64,15 +64,16 @@ class SettingFragment : Fragment() {
                 binding.recordStartDateTv.text = it.recordStartDate.format(DATE_FORMATTER)
                 binding.recordPeriodTv.text = "(${it.recordPeriod})"
 
-                val formattedLastLogin = it.lastLoginAt?.let { raw ->
-                    val trimmed = raw.substringBefore('.')   // 소수점 이하 잘라내기
-                    val ldt = LocalDateTime.parse(
-                        trimmed,
-                        DateTimeFormatter.ISO_LOCAL_DATE_TIME
-                    )
-                    ldt.format(LAST_LOGIN_FORMATTER)
+                val formattedLastLogin = it.lastLoginAt.let { raw ->
+                    runCatching {
+                        val trimmed = raw.substringBefore('.')
+                        val ldt = LocalDateTime.parse(trimmed, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                        ldt.format(LAST_LOGIN_FORMATTER)
+                    }.getOrElse { _ ->
+                        raw // 혹은 null 반환 후 "-" 등 기본 문구 사용
+                    }
                 }
-                binding.lastLoginDataTv.text = formattedLastLogin
+                binding.lastLoginDataTv.text = formattedLastLogin ?: "-"
             }
         }
 

@@ -41,6 +41,9 @@ class RecordExchangeAdapter :
         private val binding: ItemRecordExchangeBinding
     ) : RecyclerView.ViewHolder(binding.root) {
 
+        // 프로그램적으로 setText() 할 때 TextWatcher가 반응하지 않도록 막는 플래그
+        private var isBinding = false
+
         init {
             val clickListener = View.OnClickListener {
                 val position = absoluteAdapterPosition
@@ -64,9 +67,50 @@ class RecordExchangeAdapter :
                     notifyItemChanged(position)
                 }
             }
+
+            // TextWatcher 들은 init 블록에서 한 번만 등록
+            binding.drainVolumeEt.doAfterTextChanged { text ->
+                if (isBinding) return@doAfterTextChanged
+                val pos = bindingAdapterPosition
+                if (pos == RecyclerView.NO_POSITION) return@doAfterTextChanged
+
+                val value = text?.toString()?.toIntOrNull() ?: 0
+                items[pos] = items[pos].copy(drainVolume = value)
+            }
+
+            binding.fillVolumeEt.doAfterTextChanged { text ->
+                if (isBinding) return@doAfterTextChanged
+                val pos = bindingAdapterPosition
+                if (pos == RecyclerView.NO_POSITION) return@doAfterTextChanged
+
+                val value = text?.toString()?.toIntOrNull() ?: 0
+                items[pos] = items[pos].copy(fillVolume = value)
+            }
+
+            binding.fillConcentrationEt.doAfterTextChanged { text ->
+                if (isBinding) return@doAfterTextChanged
+                val pos = bindingAdapterPosition
+                if (pos == RecyclerView.NO_POSITION) return@doAfterTextChanged
+
+                val value = text?.toString()?.toDoubleOrNull() ?: 0.0
+                items[pos] = items[pos].copy(fillConcentration = value)
+            }
+
+            binding.ufEt.doAfterTextChanged { text ->
+                if (isBinding) return@doAfterTextChanged
+                val pos = bindingAdapterPosition
+                if (pos == RecyclerView.NO_POSITION) return@doAfterTextChanged
+
+                val value = text?.toString()?.toIntOrNull() ?: 0
+                items[pos] = items[pos].copy(uf = value)
+            }
         }
 
         fun bind(item: OcrRecordExchangeData) {
+
+            // TextWatcher 트리거를 막기 위해 true
+            isBinding = true
+
             binding.exchangeNoTv.text = "${item.exchangeNo}회차"
 
             val timeText = formatTime(item.exchangeTime)
@@ -78,41 +122,10 @@ class RecordExchangeAdapter :
             binding.fillVolumeEt.setText(if (item.fillVolume == 0) "" else item.fillVolume.toString())
             binding.ufEt.setText(if (item.uf == 0) "" else item.uf.toString())
 
-
-            // items 리스트 값 동기화
-            binding.drainVolumeEt.doAfterTextChanged { text ->
-                val pos = bindingAdapterPosition
-                if (pos == RecyclerView.NO_POSITION) return@doAfterTextChanged
-
-                val value = text?.toString()?.toIntOrNull() ?: 0
-                items[pos] = items[pos].copy(drainVolume = value)
-            }
-
-            binding.fillVolumeEt.doAfterTextChanged { text ->
-                val pos = bindingAdapterPosition
-                if (pos == RecyclerView.NO_POSITION) return@doAfterTextChanged
-
-                val value = text?.toString()?.toIntOrNull() ?: 0
-                items[pos] = items[pos].copy(fillVolume = value)
-            }
-
-            binding.fillConcentrationEt.doAfterTextChanged { text ->
-                val pos = bindingAdapterPosition
-                if (pos == RecyclerView.NO_POSITION) return@doAfterTextChanged
-
-                val value = text?.toString()?.toDoubleOrNull() ?: 0.0
-                items[pos] = items[pos].copy(fillConcentration = value)
-            }
-
-            binding.ufEt.doAfterTextChanged { text ->
-                val pos = bindingAdapterPosition
-                if (pos == RecyclerView.NO_POSITION) return@doAfterTextChanged
-
-                val value = text?.toString()?.toIntOrNull() ?: 0
-                items[pos] = items[pos].copy(uf = value)
-            }
-
             updateExpansionState(absoluteAdapterPosition)
+
+            // 바인딩 끝났으니 다시 false
+            isBinding = false
         }
 
         private fun updateExpansionState(position: Int) {

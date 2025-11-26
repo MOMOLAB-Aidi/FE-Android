@@ -3,8 +3,6 @@ package com.example.momolabfe.remote.record.model
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 import java.time.LocalDate
-import java.time.LocalTime
-
 
 data class RecordCreateRequest (
     @SerializedName("record_date") val recordDate: LocalDate,

@@ -92,6 +92,9 @@ class RecordInfoFragment : Fragment() {
 
                 binding.totalUfValueTv.text = recordItem.totalUf.toString()
                 binding.noteValueTv.text = recordItem.notes
+
+                // 회차별 정보 바인딩
+                adapter.updateList(recordItem.exchanges)
             }
         }
 

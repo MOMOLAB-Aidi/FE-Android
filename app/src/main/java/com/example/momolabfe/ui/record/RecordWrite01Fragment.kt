@@ -20,8 +20,10 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.example.momolabfe.R
 import com.example.momolabfe.databinding.DialogCalendarBinding
 import com.example.momolabfe.databinding.FragmentRecordWrite01Binding
@@ -31,6 +33,7 @@ import com.example.momolabfe.remote.record.model.RecordCreateRequest
 import com.example.momolabfe.remote.record.model.Turbidity
 import com.example.momolabfe.ui.record.data.RecordCommonDraft
 import com.example.momolabfe.ui.record.viewModel.RecordViewModel
+import com.example.momolabfe.utils.dpToPx
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.CalendarMonth
@@ -74,9 +77,6 @@ class RecordWrite01Fragment : Fragment() {
     private val isFromOcr: Boolean by lazy {
         arguments?.getBoolean("fromOcr", false) ?: false
     }
-
-    // 마지막으로 만든 공통정보 요청값을 임시 저장
-    private var latestRecordRequest: RecordCreateRequest? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -383,10 +383,6 @@ class RecordWrite01Fragment : Fragment() {
         private const val DATE_DISPLAY_PATTERN = "yyyy-MM-dd(E)"
     }
 
-    private fun dpToPx(dp: Int): Int {
-        return (dp * resources.displayMetrics.density).toInt()
-    }
-
     private fun collectDataAndCallApi() {
         val weightText = binding.weightEt.text.toString()
         val systolicText = binding.systolicEt.text.toString()
@@ -433,18 +429,33 @@ class RecordWrite01Fragment : Fragment() {
         val draft = RecordCommonDraft(
             recordDate = selected,
             recordDw = recordDwValue,
-            weight = weightText.toDouble(),
-            systolic = systolicText.toInt(),
-            diastolic = diastolicText.toInt(),
-            fastingGlucose = fastingGlucoseText.toInt(),
-            urineCount = urineCountText.toInt(),
+            weight = weightText.toDoubleOrNull() ?: run {
+                Toast.makeText(requireContext(), "체중을 올바른 숫자로 입력해주세요.", Toast.LENGTH_SHORT).show()
+                return
+            },
+            systolic = systolicText.toIntOrNull() ?: run {
+                Toast.makeText(requireContext(), "최고 혈압을 올바른 숫자로 입력해주세요.", Toast.LENGTH_SHORT).show()
+                return
+            },
+            diastolic = diastolicText.toIntOrNull() ?: run {
+                Toast.makeText(requireContext(), "최저 혈압을 올바른 숫자로 입력해주세요.", Toast.LENGTH_SHORT).show()
+                 return
+            },
+            fastingGlucose = fastingGlucoseText.toIntOrNull() ?: run {
+                Toast.makeText(requireContext(), "공복 혈당을 올바른 숫자로 입력해주세요.", Toast.LENGTH_SHORT).show()
+                return
+            },
+            urineCount = urineCountText.toIntOrNull() ?: run {
+                Toast.makeText(requireContext(), "소변 횟수를 올바른 숫자로 입력해주세요.", Toast.LENGTH_SHORT).show()
+                return
+            },
             turbidity = turbidityValue,
             notes = notesText.takeIf { it.isNotBlank() }
         )
 
         val fragment = RecordWrite02Fragment().apply {
             arguments = Bundle().apply {
-                putSerializable("record_common", draft)
+                putParcelable("record_common", draft)
             }
         }
 
@@ -500,20 +511,23 @@ class RecordWrite01Fragment : Fragment() {
     private fun setupObservers() {
 
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.ocrImageBytes.collectLatest { imageBytes ->
-                if (imageBytes != null) {
-                    try {
-                        // ByteArray를 Bitmap으로 변환하여 ImageView에 설정
-                        val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-                        binding.ocrImagePreview.setImageBitmap(bitmap)
-                        binding.ocrImagePreview.visibility = View.VISIBLE
-                        Log.d("OCR_IMAGE", "OCR 이미지 로드 성공")
-                    } catch (e: Exception) {
-                        Log.e("OCR_IMAGE", "Bitmap 변환 실패: ${e.message}")
-                    }
-                } else {
-                    if (!isOcrApplied) { // 수기 작성
-                        binding.ocrImagePreview.visibility = View.GONE
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.ocrImageBytes.collectLatest { imageBytes ->
+                    if (imageBytes != null) {
+                        try {
+                            // ByteArray를 Bitmap으로 변환하여 ImageView에 설정
+                            val bitmap =
+                                BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+                            binding.ocrImagePreview.setImageBitmap(bitmap)
+                            binding.ocrImagePreview.visibility = View.VISIBLE
+                            Log.d("OCR_IMAGE", "OCR 이미지 로드 성공")
+                        } catch (e: Exception) {
+                            Log.e("OCR_IMAGE", "Bitmap 변환 실패: ${e.message}")
+                        }
+                    } else {
+                        if (!isOcrApplied) { // 수기 작성
+                            binding.ocrImagePreview.visibility = View.GONE
+                        }
                     }
                 }
             }

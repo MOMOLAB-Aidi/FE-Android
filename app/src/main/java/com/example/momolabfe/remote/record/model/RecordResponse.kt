@@ -3,11 +3,6 @@ package com.example.momolabfe.remote.record.model
 import com.google.gson.annotations.SerializedName
 import java.time.LocalDate
 import java.time.LocalTime
-import java.util.Date
-
-data class RecordIdResponse (
-    @SerializedName("id") val id: Long
-)
 
 data class RecordGetResponse (
     @SerializedName("id") val id: Long,
@@ -59,7 +54,7 @@ data class BpData (
 )
 
 data class OcrRecordExchangeData (
-    @SerializedName("id") val id: Int,
+    @SerializedName("id") val id: Long,
     @SerializedName("exchange_no") val exchangeNo: Int,
     @SerializedName("exchange_time") val exchangeTime: LocalTime,
     @SerializedName("drain_volume") val drainVolume: Int,
@@ -74,7 +69,7 @@ data class WeeklyAverageData (
 )
 
 data class WeeklyAverageResponse (
-    @SerializedName("start_date") val startDate: Date,
-    @SerializedName("end_date") val endDate: Date,
+    @SerializedName("start_date") val startDate: LocalDate,
+    @SerializedName("end_date") val endDate: LocalDate,
     @SerializedName("data") val data: WeeklyAverageData
 )

@@ -21,6 +21,7 @@ import com.example.momolabfe.remote.record.model.GetCalendarResponse
 import com.example.momolabfe.remote.record.model.RecordGetResponse
 import com.example.momolabfe.ui.record.adapter.RecordExchangeDetailAdapter
 import com.example.momolabfe.ui.record.viewModel.RecordViewModel
+import com.example.momolabfe.utils.dpToPx
 import com.example.momolabfe.utils.weekdayShortKorean
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.kizitonwose.calendar.core.CalendarDay
@@ -231,6 +232,11 @@ class RecordListFragment : Fragment() {
                 return@setOnClickListener
             }
 
+            // 이미 표시된 BottomSheet가 있는지 확인
+            if (parentFragmentManager.findFragmentByTag("BottomSheetRecordDelete") != null) {
+                return@setOnClickListener
+            }
+
             val bottomSheet = BottomSheetRecordDeleteFragment().apply {
                 arguments = Bundle().apply {
                     putLong("record_id", currentId)
@@ -295,10 +301,6 @@ class RecordListFragment : Fragment() {
 
     companion object {
         private const val DATE_PATTERN = "yyyy년 M월"
-    }
-
-    private fun dpToPx(dp: Int): Int {
-        return (dp * resources.displayMetrics.density).toInt()
     }
 
     // 채운 동그라미 배경
@@ -401,7 +403,6 @@ class RecordListFragment : Fragment() {
             deleteBtn.visibility = View.VISIBLE
         }
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()

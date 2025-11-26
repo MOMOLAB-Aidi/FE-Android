@@ -1,11 +1,13 @@
 package com.example.momolabfe.ui.record.data
 
+import android.os.Parcelable
 import com.example.momolabfe.remote.record.model.DayWeek
 import com.example.momolabfe.remote.record.model.Turbidity
-import java.io.Serializable
+import kotlinx.parcelize.Parcelize
 import java.time.LocalDate
 
 // 화면 간 전달용
+@Parcelize
 data class RecordCommonDraft(
     val recordDate: LocalDate,
     val recordDw: DayWeek,
@@ -17,4 +19,4 @@ data class RecordCommonDraft(
     val turbidity: Turbidity,
     val notes: String? = null,
     val gcsPath: String? = null
-) : Serializable
+) : Parcelable

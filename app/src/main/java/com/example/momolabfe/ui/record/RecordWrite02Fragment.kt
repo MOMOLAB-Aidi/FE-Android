@@ -17,7 +17,9 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.example.momolabfe.R
 import com.example.momolabfe.remote.record.model.OcrRecordExchangeData
 import com.example.momolabfe.databinding.DialogTimePickerBinding
@@ -51,14 +53,14 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
         arguments?.getBoolean("fromOcr", false) ?: false
     }
 
-    // write01에서 넘긴 공통 정보 받기 (getSerializable deprecation 처리)
+    // write01에서 넘긴 공통 정보 받기
     private val commonDraft: RecordCommonDraft? by lazy {
         val args = arguments ?: return@lazy null
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            args.getSerializable("record_common", RecordCommonDraft::class.java)
+            args.getParcelable("record_common", RecordCommonDraft::class.java)
         } else {
             @Suppress("DEPRECATION")
-            args.getSerializable("record_common") as? RecordCommonDraft
+            args.getParcelable("record_common")
         }
     }
 
@@ -92,6 +94,7 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
         }
 
         binding.saveBtn.setOnClickListener {
+            binding.saveBtn.isEnabled = false
             collectDataAndCallApi()
         }
 
@@ -370,15 +373,17 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
 
     private fun setupObservers() {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.recordSuccess.collectLatest {
-
-                parentFragmentManager.beginTransaction()
-                    .replace(R.id.main_frm, RecordListFragment())
-                    .commit()
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.recordSuccess.collectLatest {
+                    parentFragmentManager.beginTransaction()
+                        .replace(R.id.main_frm, RecordListFragment())
+                        .commit()
+                }
             }
         }
         viewModel.errorMessage.observe(viewLifecycleOwner) { errorMsg ->
             Log.e("RECORD_WRITE_02_FRAGMENT", errorMsg.toString())
+            binding.saveBtn.isEnabled = true
         }
     }
 

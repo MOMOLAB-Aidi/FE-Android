@@ -1,12 +1,11 @@
 package com.example.momolabfe.remote.record.repository
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.net.Uri
 import android.provider.OpenableColumns
 import android.util.Log
 import com.example.momolabfe.remote.record.model.RecordCreateRequest
-import com.example.momolabfe.remote.record.model.RecordExchangeCreateRequest
-import com.example.momolabfe.remote.record.model.RecordExchangeUpdateRequest
 import com.example.momolabfe.remote.record.model.RecordGetResponse
 import com.example.momolabfe.remote.record.model.RecordOcrResponse
 import com.example.momolabfe.remote.record.model.RecordUpdateRequest
@@ -24,9 +23,8 @@ import javax.inject.Singleton
 import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.ResponseBody
+import java.io.ByteArrayOutputStream
 import java.io.IOException
-import java.util.Date
 
 @Singleton
 class RecordRepository @Inject constructor(
@@ -176,8 +174,9 @@ class RecordRepository @Inject constructor(
                 android.graphics.BitmapFactory.decodeStream(input)
             } ?: error("이미지 파일을 열 수 없습니다: $uri")
 
-            val bos = java.io.ByteArrayOutputStream()
-            bmp.compress(android.graphics.Bitmap.CompressFormat.JPEG, 90, bos)
+            val bos = ByteArrayOutputStream()
+            bmp.compress(Bitmap.CompressFormat.JPEG, 90, bos)
+            bmp.recycle() // 메모리 해제
             val jpegBytes = bos.toByteArray()
             val jpegBody = jpegBytes.toRequestBody("image/jpeg".toMediaType())
             val safeName = ensureJpegName(fileName)

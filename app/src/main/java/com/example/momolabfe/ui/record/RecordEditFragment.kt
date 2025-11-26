@@ -57,6 +57,7 @@ class RecordEditFragment : Fragment() {
         setupObservers()
 
         binding.saveBtn.setOnClickListener {
+            binding.saveBtn.isEnabled = false
             edit()
         }
 
@@ -177,6 +178,7 @@ class RecordEditFragment : Fragment() {
 
         viewModel.errorMessage.observe(viewLifecycleOwner) { errorMsg ->
             Log.e("RECORD_EDIT_FRAGMENT", errorMsg.toString())
+            binding.saveBtn.isEnabled = true
         }
     }
 

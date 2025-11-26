@@ -2,10 +2,7 @@ package com.example.momolabfe.remote.record.service
 
 import com.example.momolabfe.remote.record.model.GetCalendarResponse
 import com.example.momolabfe.remote.record.model.RecordCreateRequest
-import com.example.momolabfe.remote.record.model.RecordExchangeCreateRequest
-import com.example.momolabfe.remote.record.model.RecordExchangeUpdateRequest
 import com.example.momolabfe.remote.record.model.RecordGetResponse
-import com.example.momolabfe.remote.record.model.RecordIdResponse
 import com.example.momolabfe.remote.record.model.RecordOcrResponse
 import com.example.momolabfe.remote.record.model.RecordUpdateRequest
 import com.example.momolabfe.remote.record.model.WeeklyAverageResponse
@@ -25,9 +22,9 @@ import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
-import java.util.Date
+import javax.inject.Inject
 
-abstract class RecordService (
+class RecordService @Inject constructor (
     @AuthRetrofit springRetrofit: Retrofit,
     @PythonRetrofit pythonRetrofit: Retrofit
 ) {
