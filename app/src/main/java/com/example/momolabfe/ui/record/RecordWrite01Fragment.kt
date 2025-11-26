@@ -435,22 +435,22 @@ class RecordWrite01Fragment : Fragment() {
                 return
             },
             systolic = systolicText.toIntOrNull() ?: run {
-                Toast.makeText(requireContext(), "최고 혈압을 올바른 숫자로 입력해주세요.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "최고 혈압을 입력해주세요.", Toast.LENGTH_SHORT).show()
                 enableButtonAndReturn()
                 return
             },
             diastolic = diastolicText.toIntOrNull() ?: run {
-                Toast.makeText(requireContext(), "최저 혈압을 올바른 숫자로 입력해주세요.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "최저 혈압을 입력해주세요.", Toast.LENGTH_SHORT).show()
                 enableButtonAndReturn()
                  return
             },
             fastingGlucose = fastingGlucoseText.toIntOrNull() ?: run {
-                Toast.makeText(requireContext(), "공복 혈당을 올바른 숫자로 입력해주세요.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "공복 혈당을 입력해주세요.", Toast.LENGTH_SHORT).show()
                 enableButtonAndReturn()
                 return
             },
             urineCount = urineCountText.toIntOrNull() ?: run {
-                Toast.makeText(requireContext(), "소변 횟수를 올바른 숫자로 입력해주세요.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "소변 횟수를 입력해주세요.", Toast.LENGTH_SHORT).show()
                 enableButtonAndReturn()
                 return
             },
@@ -470,7 +470,7 @@ class RecordWrite01Fragment : Fragment() {
             .addToBackStack(null)
             .commit()
 
-
+        binding.nextBtn.isEnabled = true
     }
 
     private fun observeOcrAndFillFields() {

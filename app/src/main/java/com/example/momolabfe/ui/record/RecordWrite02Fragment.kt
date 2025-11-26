@@ -324,7 +324,7 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
         val totalUfText = binding.totalUfEt.text.toString()
         val totalUf = totalUfText.toIntOrNull()
         if (totalUf == null) {
-            Toast.makeText(requireContext(), "제수량 합계를 숫자로 입력해주세요.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "제수량 합계를 입력해주세요.", Toast.LENGTH_SHORT).show()
             enableButtonAndReturn()
             return
         }
@@ -335,10 +335,40 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
         val requestList = mutableListOf<RecordExchangeCreateRequest>()
         for (item in exchanges) {
 
-            if (item.drainVolume <= 0 || item.fillVolume <= 0 || item.fillConcentration <= 0.0) {
+            if (item.drainVolume <= 0) {
                 Toast.makeText(
                     requireContext(),
-                    "${item.exchangeNo}회차 기록을 확인해주세요.",
+                    "${item.exchangeNo}회차 배액량을 입력해주세요.",
+                    Toast.LENGTH_SHORT
+                ).show()
+                enableButtonAndReturn()
+                return
+            }
+
+            if (item.fillVolume <= 0) {
+                Toast.makeText(
+                    requireContext(),
+                    "${item.exchangeNo}회차 주입량을 입력해주세요.",
+                    Toast.LENGTH_SHORT
+                ).show()
+                enableButtonAndReturn()
+                return
+            }
+
+            if (item.fillConcentration <= 0.0) {
+                Toast.makeText(
+                    requireContext(),
+                    "${item.exchangeNo}회차 주입액 농도를 입력해주세요.",
+                    Toast.LENGTH_SHORT
+                ).show()
+                enableButtonAndReturn()
+                return
+            }
+
+            if (item.uf == null) {
+                Toast.makeText(
+                    requireContext(),
+                    "${item.exchangeNo}회차 제수량을 입력해주세요.",
                     Toast.LENGTH_SHORT
                 ).show()
                 enableButtonAndReturn()

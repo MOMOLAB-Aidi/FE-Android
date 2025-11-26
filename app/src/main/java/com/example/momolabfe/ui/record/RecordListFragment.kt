@@ -217,16 +217,20 @@ class RecordListFragment : Fragment() {
                 binding.detailEditBtn.isEnabled = true
                 return@setOnClickListener
             }
-            val fragment = RecordInfoFragment().apply {
-                arguments = Bundle().apply {
-                    putLong("record_id", currentId)
+            try {
+                val fragment = RecordInfoFragment().apply {
+                    arguments = Bundle().apply {
+                        putLong("record_id", currentId)
+                    }
                 }
-            }
 
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.main_frm, fragment)
-                .addToBackStack(null)
-                .commit()
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.main_frm, fragment)
+                    .addToBackStack(null)
+                    .commit()
+            } finally {
+                binding.detailEditBtn.isEnabled = true
+            }
 
         }
 
