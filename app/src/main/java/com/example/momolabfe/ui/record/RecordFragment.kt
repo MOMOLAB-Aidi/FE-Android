@@ -32,15 +32,25 @@ class RecordFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.manualEntryCv.setOnClickListener {
+            val fragment = RecordWrite01Fragment().apply {
+                arguments = Bundle().apply {
+                    putBoolean("fromOcr", false)
+                }
+            }
             parentFragmentManager.beginTransaction()
-                .replace(R.id.main_frm, RecordWrite01Fragment())
+                .replace(R.id.main_frm, fragment)
                 .addToBackStack(null)
                 .commit()
         }
 
         binding.cameraCv.setOnClickListener {
+            val fragment = RecordOcrFragment().apply {
+                arguments = Bundle().apply {
+                    putBoolean("fromOcr", true)
+                }
+            }
             parentFragmentManager.beginTransaction()
-                .replace(R.id.main_frm, RecordOcrFragment())
+                .replace(R.id.main_frm, fragment)
                 .addToBackStack(null)
                 .commit()
         }

@@ -2,7 +2,9 @@ package com.example.momolabfe.ui.record
 
 import android.app.AlertDialog
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -10,18 +12,28 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.EditText
 import android.widget.NumberPicker
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.example.momolabfe.R
-import com.example.momolabfe.data.remote.record.model.RecordExchangeOcrResponse
+import com.example.momolabfe.remote.record.model.OcrRecordExchangeData
 import com.example.momolabfe.databinding.DialogTimePickerBinding
 import com.example.momolabfe.databinding.FragmentRecordWrite02Binding
+import com.example.momolabfe.remote.record.model.RecordCreateRequest
+import com.example.momolabfe.remote.record.model.RecordExchangeCreateRequest
 import com.example.momolabfe.ui.record.adapter.RecordExchangeAdapter
+import com.example.momolabfe.ui.record.data.RecordCommonDraft
 import com.example.momolabfe.ui.record.viewModel.RecordViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import java.time.LocalDate
 import java.time.LocalTime
 import java.util.Locale
 
@@ -36,11 +48,27 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
 
     private val MAX_EXCHANGES = RecordExchangeAdapter.MAX_EXCHANGES
 
+    private val isFromOcr: Boolean by lazy {
+        arguments?.getBoolean("fromOcr", false) ?: false
+    }
+
+    // write01에서 넘긴 공통 정보 받기
+    private val commonDraft: RecordCommonDraft? by lazy {
+        val args = arguments ?: return@lazy null
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            args.getParcelable("record_common", RecordCommonDraft::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            args.getParcelable("record_common")
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentRecordWrite02Binding.inflate(inflater, container, false)
+
         return binding.root
     }
 
@@ -53,9 +81,22 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
         setupRecyclerView()
         fillExchangesFromOcr()
 
+        if (isFromOcr) {
+            downloadOcrImageIfAvailable()
+        } else {
+            binding.ocrImagePreview.visibility = View.GONE
+        }
+
         binding.addExchangeBtn.setOnClickListener {
             addExchange()
         }
+
+        binding.saveBtn.setOnClickListener {
+            binding.saveBtn.isEnabled = false
+            collectDataAndCallApi()
+        }
+
+        setupObservers()
     }
 
     // 어댑터에서 호출되는 콜백 함수 구현
@@ -202,7 +243,7 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
         // 새 항목의 exchangeNo 계산
         val newExchangeNo = currentExchanges.size + 1
 
-        val newExchange = RecordExchangeOcrResponse(
+        val newExchange = OcrRecordExchangeData(
             id = -1, // 임시 ID 할당
             exchangeNo = newExchangeNo,
             exchangeTime = LocalTime.now(),
@@ -218,18 +259,18 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
         binding.exchangeRv.requestLayout()
 
         // 추가된 항목 위치로 스크롤
-        binding.exchangeRv.scrollToPosition(currentExchanges.size - 1)
+        binding.exchangeRv.scrollToPosition(exchangeAdapter.itemCount - 1)
     }
 
     private fun fillExchangesFromOcr() {
         val ocr = viewModel.ocrRecordResult.value
 
         // OCR 결과가 null이거나 exchanges 리스트가 비어있는지 확인
-        val exchanges = ocr?.exchanges.orEmpty().toMutableList()
+        val exchanges = ocr?.ocrData?.exchanges.orEmpty().toMutableList()
 
         if (exchanges.isEmpty()) {
             // 1회차 항목을 생성하여 추가
-            val firstExchange = RecordExchangeOcrResponse(
+            val firstExchange = OcrRecordExchangeData(
                 id = -1, // 임시 ID
                 exchangeNo = 1,
                 exchangeTime = LocalTime.now(),
@@ -249,6 +290,14 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
         }
         updateAddButtonVisibility()
         binding.exchangeRv.requestLayout() // 레이아웃 다시 계산하도록 요청
+
+        if (isFromOcr) {
+            val totalUfFromOcr = ocr?.ocrData?.totalUf
+
+            if (totalUfFromOcr != null) {
+                binding.totalUfEt.setText(totalUfFromOcr.toString())
+            }
+        }
     }
 
     private fun updateAddButtonVisibility() {
@@ -257,6 +306,132 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
             binding.addExchangeBtn.visibility = View.GONE
         } else {
             binding.addExchangeBtn.visibility = View.VISIBLE
+        }
+    }
+
+    private fun collectDataAndCallApi() {
+        fun enableButtonAndReturn() {
+            binding.saveBtn.isEnabled = true
+        }
+
+        val draft = commonDraft
+        if (draft == null) {
+            Toast.makeText(requireContext(), "공통 정보가 없습니다. 처음 화면부터 다시 작성해주세요.", Toast.LENGTH_SHORT).show()
+            enableButtonAndReturn()
+            return
+        }
+
+        val totalUfText = binding.totalUfEt.text.toString()
+        val totalUf = totalUfText.toIntOrNull()
+        if (totalUf == null) {
+            Toast.makeText(requireContext(), "제수량 합계를 입력해주세요.", Toast.LENGTH_SHORT).show()
+            enableButtonAndReturn()
+            return
+        }
+
+        val exchanges = exchangeAdapter.items
+
+        // 각 회차 데이터 유효성 검사 및 DTO 리스트 생성
+        val requestList = mutableListOf<RecordExchangeCreateRequest>()
+        for (item in exchanges) {
+
+            if (item.drainVolume <= 0) {
+                Toast.makeText(
+                    requireContext(),
+                    "${item.exchangeNo}회차 배액량을 입력해주세요.",
+                    Toast.LENGTH_SHORT
+                ).show()
+                enableButtonAndReturn()
+                return
+            }
+
+            if (item.fillVolume <= 0) {
+                Toast.makeText(
+                    requireContext(),
+                    "${item.exchangeNo}회차 주입량을 입력해주세요.",
+                    Toast.LENGTH_SHORT
+                ).show()
+                enableButtonAndReturn()
+                return
+            }
+
+            if (item.fillConcentration <= 0.0) {
+                Toast.makeText(
+                    requireContext(),
+                    "${item.exchangeNo}회차 주입액 농도를 입력해주세요.",
+                    Toast.LENGTH_SHORT
+                ).show()
+                enableButtonAndReturn()
+                return
+            }
+
+            if (item.uf == null) {
+                Toast.makeText(
+                    requireContext(),
+                    "${item.exchangeNo}회차 제수량을 입력해주세요.",
+                    Toast.LENGTH_SHORT
+                ).show()
+                enableButtonAndReturn()
+                return
+            }
+
+            requestList += RecordExchangeCreateRequest(
+                exchangeNo = item.exchangeNo,
+                exchangeTime = item.exchangeTime.format(RecordExchangeAdapter.TIME_FORMATTER),
+                drainVolume = item.drainVolume,
+                fillVolume = item.fillVolume,
+                fillConcentration = item.fillConcentration,
+                uf = item.uf
+            )
+        }
+
+        val recordDate = runCatching { LocalDate.parse(draft.recordDate) }.getOrElse {
+            Toast.makeText(requireContext(), "날짜 형식이 올바르지 않습니다.", Toast.LENGTH_SHORT).show()
+            enableButtonAndReturn()
+            return
+        }
+
+        val fullRequest = RecordCreateRequest(
+            recordDate = recordDate,
+            recordDw = draft.recordDw,
+            weight = draft.weight,
+            systolic = draft.systolic,
+            diastolic = draft.diastolic,
+            fastingGlucose = draft.fastingGlucose,
+            urineCount = draft.urineCount,
+            turbidity = draft.turbidity,
+            notes = draft.notes,
+            totalUf = totalUf,
+            gcsPath = draft.gcsPath,
+            exchanges = requestList
+        )
+
+        viewModel.createRecord(fullRequest)
+    }
+
+    private fun downloadOcrImageIfAvailable() {
+        val ocr = viewModel.ocrRecordResult.value
+
+        val gcsPath = ocr?.gcsPath
+        if (!gcsPath.isNullOrEmpty()) {
+            // gcs path를 사용하여 이미지 다운로드 시작
+            viewModel.downloadOcrImage(gcsPath)
+        }
+    }
+
+    private fun setupObservers() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.recordSuccess.collectLatest {
+                    parentFragmentManager.beginTransaction()
+                        .replace(R.id.main_frm, RecordListFragment())
+                        .commit()
+                }
+            }
+        }
+        viewModel.errorMessage.observe(viewLifecycleOwner) { errorMsg ->
+            Log.e("RECORD_WRITE_02_FRAGMENT", errorMsg.toString())
+            binding.saveBtn.isEnabled = true
         }
     }
 

@@ -56,6 +56,19 @@
                     app:layout_constraintTop_toBottomOf="@id/title_tv"
                     app:layout_constraintBottom_toBottomOf="parent"/>
 
+                <ImageView
+                    android:id="@+id/ocr_image_preview"
+                    android:layout_width="100dp"
+                    android:layout_height="0dp"
+                    android:layout_marginEnd="20dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_thumbnail_sv"
+                    android:padding="0dp"
+                    android:elevation="4dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.recyclerview.widget.RecyclerView
@@ -64,7 +77,8 @@
                 android:layout_height="0dp"
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
-                android:nestedScrollingEnabled="true"
+                android:layout_marginBottom="5dp"
+                android:nestedScrollingEnabled="false"
                 android:orientation="vertical"
                 android:overScrollMode="never"
                 app:layout_constraintStart_toStartOf="@id/title_container"
@@ -91,7 +105,63 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/exchange_rv"
-                app:layout_constraintBottom_toTopOf="@id/save_btn"/>
+                app:layout_constraintBottom_toTopOf="@id/total_uf_cv"/>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/total_uf_cv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="20dp"
+                android:backgroundTint="#EFF6FF"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="0dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/save_btn"
+                app:strokeWidth="0dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:id="@+id/total_uf_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/noto_sans_kr_regular"
+                        android:includeFontPadding="false"
+                        android:text="제수량 합계 (g)"
+                        android:textColor="@color/text_primary"
+                        android:textSize="16sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        app:layout_constraintTop_toTopOf="@id/total_uf_tv"
+                        app:layout_constraintEnd_toEndOf="parent">
+
+                        <EditText
+                            android:id="@+id/total_uf_et"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:background="@color/transparent"
+                            android:hint="제수량 합계를 입력해주세요"
+                            android:inputType="number"
+                            android:textSize="16sp" />
+
+                    </LinearLayout>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/save_btn"

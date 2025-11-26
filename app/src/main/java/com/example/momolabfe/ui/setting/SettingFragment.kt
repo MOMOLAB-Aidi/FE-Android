@@ -9,13 +9,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.example.momolabfe.R
-import com.example.momolabfe.data.remote.auth.LogoutManager
 import com.example.momolabfe.databinding.FragmentSettingBinding
-import com.example.momolabfe.ui.main.HomeFragment
+import com.example.momolabfe.remote.auth.LogoutManager
 import com.example.momolabfe.ui.setting.viewModel.SettingViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
@@ -26,6 +26,7 @@ class SettingFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val DATE_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy년 M월 d일")
+    private val LAST_LOGIN_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH:mm:ss")
 
     private val viewModel: SettingViewModel by viewModels()
 
@@ -62,6 +63,17 @@ class SettingFragment : Fragment() {
                 binding.loginIdTv.text = it.loginId
                 binding.recordStartDateTv.text = it.recordStartDate.format(DATE_FORMATTER)
                 binding.recordPeriodTv.text = "(${it.recordPeriod})"
+
+                val formattedLastLogin = it.lastLoginAt.let { raw ->
+                    runCatching {
+                        val trimmed = raw.substringBefore('.')
+                        val ldt = LocalDateTime.parse(trimmed, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                        ldt.format(LAST_LOGIN_FORMATTER)
+                    }.getOrElse { _ ->
+                        raw // 혹은 null 반환 후 "-" 등 기본 문구 사용
+                    }
+                }
+                binding.lastLoginDataTv.text = formattedLastLogin ?: "-"
             }
         }
 

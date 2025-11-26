@@ -13,7 +13,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.example.momolabfe.R
 import com.example.momolabfe.databinding.ActivityMainBinding
 import com.example.momolabfe.ui.auth.LoginFragment
-import com.example.momolabfe.data.remote.auth.LogoutManager
+import com.example.momolabfe.remote.auth.LogoutManager
 import com.example.momolabfe.ui.consult.ConsultFragment
 import com.example.momolabfe.ui.record.RecordFragment
 import com.example.momolabfe.ui.statistics.StatisticsFragment
@@ -44,6 +44,12 @@ class MainActivity : AppCompatActivity() {
             val bottom = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
             v.setPadding(v.paddingLeft, v.paddingTop, v.paddingRight, bottom)
             insets
+        }
+
+        if (savedInstanceState == null) {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.main_frm, LoginFragment())
+                .commit()
         }
 
         observeLogoutEvent()
@@ -97,11 +103,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun navigateToLoginFragment() {
+        supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+        binding.mainBnv.visibility = View.GONE
+
         supportFragmentManager.beginTransaction()
             .replace(R.id.main_frm, LoginFragment())
-            .commitAllowingStateLoss()
-
-        // 백스택 완전히 제거
-        supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+            .commit()
     }
 }

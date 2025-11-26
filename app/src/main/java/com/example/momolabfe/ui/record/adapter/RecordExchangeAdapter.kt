@@ -4,11 +4,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
+import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.RecyclerView
 import com.example.momolabfe.R
-import com.example.momolabfe.data.remote.record.model.RecordExchangeOcrResponse
+import com.example.momolabfe.remote.record.model.OcrRecordExchangeData
 import com.example.momolabfe.databinding.ItemRecordExchangeBinding
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -20,7 +19,7 @@ class RecordExchangeAdapter :
     // 항목의 확장/축소 상태를 저장하는 리스트
     private var isExpandedList: MutableList<Boolean> = mutableListOf()
 
-    var items: MutableList<RecordExchangeOcrResponse> = mutableListOf()
+    var items: MutableList<OcrRecordExchangeData> = mutableListOf()
         set(value) {
             field = value.toMutableList()
             isExpandedList = MutableList(value.size) { true } // 항목 리스트 크기에 맞춰 확장 상태 리스트 업데이트
@@ -41,6 +40,9 @@ class RecordExchangeAdapter :
     inner class ExchangeViewHolder(
         private val binding: ItemRecordExchangeBinding
     ) : RecyclerView.ViewHolder(binding.root) {
+
+        // 프로그램적으로 setText() 할 때 TextWatcher가 반응하지 않도록 막는 플래그
+        private var isBinding = false
 
         init {
             val clickListener = View.OnClickListener {
@@ -65,9 +67,50 @@ class RecordExchangeAdapter :
                     notifyItemChanged(position)
                 }
             }
+
+            // TextWatcher 들은 init 블록에서 한 번만 등록
+            binding.drainVolumeEt.doAfterTextChanged { text ->
+                if (isBinding) return@doAfterTextChanged
+                val pos = bindingAdapterPosition
+                if (pos == RecyclerView.NO_POSITION) return@doAfterTextChanged
+
+                val value = text?.toString()?.toIntOrNull() ?: 0
+                items[pos] = items[pos].copy(drainVolume = value)
+            }
+
+            binding.fillVolumeEt.doAfterTextChanged { text ->
+                if (isBinding) return@doAfterTextChanged
+                val pos = bindingAdapterPosition
+                if (pos == RecyclerView.NO_POSITION) return@doAfterTextChanged
+
+                val value = text?.toString()?.toIntOrNull() ?: 0
+                items[pos] = items[pos].copy(fillVolume = value)
+            }
+
+            binding.fillConcentrationEt.doAfterTextChanged { text ->
+                if (isBinding) return@doAfterTextChanged
+                val pos = bindingAdapterPosition
+                if (pos == RecyclerView.NO_POSITION) return@doAfterTextChanged
+
+                val value = text?.toString()?.toDoubleOrNull() ?: 0.0
+                items[pos] = items[pos].copy(fillConcentration = value)
+            }
+
+            binding.ufEt.doAfterTextChanged { text ->
+                if (isBinding) return@doAfterTextChanged
+                val pos = bindingAdapterPosition
+                if (pos == RecyclerView.NO_POSITION) return@doAfterTextChanged
+
+                val value = text?.toString()?.toIntOrNull() ?: 0
+                items[pos] = items[pos].copy(uf = value)
+            }
         }
 
-        fun bind(item: RecordExchangeOcrResponse) {
+        fun bind(item: OcrRecordExchangeData) {
+
+            // TextWatcher 트리거를 막기 위해 true
+            isBinding = true
+
             binding.exchangeNoTv.text = "${item.exchangeNo}회차"
 
             val timeText = formatTime(item.exchangeTime)
@@ -80,6 +123,9 @@ class RecordExchangeAdapter :
             binding.ufEt.setText(if (item.uf == 0) "" else item.uf.toString())
 
             updateExpansionState(absoluteAdapterPosition)
+
+            // 바인딩 끝났으니 다시 false
+            isBinding = false
         }
 
         private fun updateExpansionState(position: Int) {
@@ -102,7 +148,7 @@ class RecordExchangeAdapter :
     }
 
     // 새로운 항목을 추가하고 확장 상태를 동기화
-    fun addExchangeItem(item: RecordExchangeOcrResponse) {
+    fun addExchangeItem(item: OcrRecordExchangeData) {
         val newPosition = items.size
 
         items.add(item)

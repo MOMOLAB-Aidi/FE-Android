@@ -1,0 +1,448 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/main_bg"
+    tools:context=".ui.record.RecordInfoFragment">
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scroll_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:fillViewport="true"
+        android:paddingBottom="60dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="60dp"
+            android:orientation="vertical">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/title_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_gradient"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/title_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="20dp"
+                    android:fontFamily="@font/noto_sans_kr_medium"
+                    android:includeFontPadding="false"
+                    android:text="기록 상세"
+                    android:textColor="@color/white"
+                    android:textSize="18sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/content_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    android:fontFamily="@font/noto_sans_kr_regular"
+                    android:includeFontPadding="false"
+                    android:text="2025년 11월 14일 금"
+                    android:textColor="@color/white"
+                    android:textSize="17sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="@id/title_tv"
+                    app:layout_constraintTop_toBottomOf="@id/title_tv" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/edit_btn"
+                    style="@style/Widget.Material3.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:fontFamily="@font/noto_sans_kr_medium"
+                    android:text="수정"
+                    android:textColor="@color/main_1"
+                    android:textSize="14sp"
+                    app:icon="@drawable/ic_write_sv"
+                    app:iconGravity="start"
+                    app:iconTint="@color/main_1"
+                    android:backgroundTint="@color/white"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/common_info_section"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/title_container">
+
+                <View
+                    android:id="@+id/section_indicator_common"
+                    android:layout_width="4dp"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="20dp"
+                    android:background="@color/main_1"
+                    app:layout_constraintBottom_toBottomOf="@id/common_info_title_tv"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/common_info_title_tv" />
+
+                <TextView
+                    android:id="@+id/common_info_title_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:fontFamily="@font/noto_sans_kr_medium"
+                    android:includeFontPadding="false"
+                    android:text="공통 정보"
+                    android:textColor="@color/text_primary"
+                    android:textSize="16sp"
+                    app:layout_constraintStart_toEndOf="@id/section_indicator_common"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/common_info_cv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="20dp"
+                    android:backgroundTint="@color/white"
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="0dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/common_info_title_tv"
+                    app:strokeWidth="0dp">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="20dp">
+
+                        <TextView
+                            android:id="@+id/weight_label_tv"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/noto_sans_kr_regular"
+                            android:includeFontPadding="false"
+                            android:text="체중 (kg)"
+                            android:textColor="@color/text_primary"
+                            android:textSize="14sp"
+                            app:layout_constraintEnd_toStartOf="@id/blood_pressure_label_tv"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:id="@+id/weight_value_tv"
+                            android:layout_width="0dp"
+                            android:layout_height="48dp"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginEnd="10dp"
+                            android:fontFamily="@font/noto_sans_kr_regular"
+                            android:gravity="center_vertical"
+                            android:includeFontPadding="false"
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp"
+                            android:text="56.2"
+                            android:background="#F9F9FA"
+                            android:textColor="@color/secondary_text"
+                            android:textSize="14sp"
+                            app:layout_constraintEnd_toStartOf="@id/blood_pressure_systolic_tv"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/weight_label_tv" />
+
+                        <TextView
+                            android:id="@+id/blood_pressure_label_tv"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:fontFamily="@font/noto_sans_kr_regular"
+                            android:includeFontPadding="false"
+                            android:text="혈압 (mmHg)"
+                            android:textColor="@color/text_primary"
+                            android:textSize="14sp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@id/weight_label_tv"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:id="@+id/blood_pressure_systolic_tv"
+                            android:layout_width="0dp"
+                            android:layout_height="48dp"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginEnd="5dp"
+                            android:fontFamily="@font/noto_sans_kr_regular"
+                            android:gravity="center_vertical"
+                            android:includeFontPadding="false"
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp"
+                            android:text="125"
+                            android:textColor="@color/secondary_text"
+                            android:background="#F9F9FA"
+                            android:textSize="14sp"
+                            app:layout_constraintEnd_toStartOf="@id/blood_pressure_divider_tv"
+                            app:layout_constraintStart_toEndOf="@id/weight_value_tv"
+                            app:layout_constraintTop_toTopOf="@id/weight_value_tv" />
+
+                        <TextView
+                            android:id="@+id/blood_pressure_divider_tv"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/noto_sans_kr_regular"
+                            android:includeFontPadding="false"
+                            android:text="/"
+                            android:textColor="@color/text_primary"
+                            android:textSize="14sp"
+                            app:layout_constraintBottom_toBottomOf="@id/blood_pressure_systolic_tv"
+                            app:layout_constraintEnd_toStartOf="@id/blood_pressure_diastolic_tv"
+                            app:layout_constraintStart_toEndOf="@id/blood_pressure_systolic_tv"
+                            app:layout_constraintTop_toTopOf="@id/blood_pressure_systolic_tv" />
+
+                        <TextView
+                            android:id="@+id/blood_pressure_diastolic_tv"
+                            android:layout_width="0dp"
+                            android:layout_height="48dp"
+                            android:layout_marginStart="5dp"
+                            android:fontFamily="@font/noto_sans_kr_regular"
+                            android:gravity="center_vertical"
+                            android:includeFontPadding="false"
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp"
+                            android:text="78"
+                            android:textColor="@color/secondary_text"
+                            android:background="#F9F9FA"
+                            android:textSize="14sp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@id/blood_pressure_divider_tv"
+                            app:layout_constraintTop_toTopOf="@id/weight_value_tv" />
+
+                        <TextView
+                            android:id="@+id/fasting_glucose_label_tv"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:fontFamily="@font/noto_sans_kr_regular"
+                            android:includeFontPadding="false"
+                            android:text="공복혈당 (mg/dL)"
+                            android:textColor="@color/text_primary"
+                            android:textSize="14sp"
+                            app:layout_constraintEnd_toStartOf="@id/urine_count_label_tv"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/weight_value_tv" />
+
+                        <TextView
+                            android:id="@+id/fasting_glucose_value_tv"
+                            android:layout_width="0dp"
+                            android:layout_height="48dp"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginEnd="10dp"
+                            android:fontFamily="@font/noto_sans_kr_regular"
+                            android:gravity="center_vertical"
+                            android:includeFontPadding="false"
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp"
+                            android:text="134"
+                            android:background="#F9F9FA"
+                            android:textColor="@color/secondary_text"
+                            android:textSize="14sp"
+                            app:layout_constraintEnd_toStartOf="@id/urine_count_value_tv"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/fasting_glucose_label_tv" />
+
+                        <TextView
+                            android:id="@+id/urine_count_label_tv"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:fontFamily="@font/noto_sans_kr_regular"
+                            android:includeFontPadding="false"
+                            android:text="소변 횟수 (회)"
+                            android:textColor="@color/text_primary"
+                            android:textSize="14sp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@id/fasting_glucose_label_tv"
+                            app:layout_constraintTop_toTopOf="@id/fasting_glucose_label_tv" />
+
+                        <TextView
+                            android:id="@+id/urine_count_value_tv"
+                            android:layout_width="0dp"
+                            android:layout_height="48dp"
+                            android:layout_marginStart="10dp"
+                            android:fontFamily="@font/noto_sans_kr_regular"
+                            android:gravity="center_vertical"
+                            android:includeFontPadding="false"
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp"
+                            android:text="4"
+                            android:textColor="@color/secondary_text"
+                            android:background="#F9F9FA"
+                            android:textSize="14sp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@id/fasting_glucose_value_tv"
+                            app:layout_constraintTop_toTopOf="@id/fasting_glucose_value_tv" />
+
+                        <TextView
+                            android:id="@+id/turbidity_label_tv"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:fontFamily="@font/noto_sans_kr_regular"
+                            android:includeFontPadding="false"
+                            android:text="복막액 혼탁"
+                            android:textColor="@color/text_primary"
+                            android:textSize="14sp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/fasting_glucose_value_tv" />
+
+                        <TextView
+                            android:id="@+id/turbidity_value_tv"
+                            android:layout_width="match_parent"
+                            android:layout_height="48dp"
+                            android:layout_marginTop="8dp"
+                            android:fontFamily="@font/noto_sans_kr_regular"
+                            android:gravity="center_vertical"
+                            android:includeFontPadding="false"
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp"
+                            android:text="없음"
+                            android:textColor="@color/secondary_text"
+                            android:textSize="14sp"
+                            android:background="#F9F9FA"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/turbidity_label_tv" />
+
+                        <TextView
+                            android:id="@+id/total_uf_label_tv"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:fontFamily="@font/noto_sans_kr_regular"
+                            android:includeFontPadding="false"
+                            android:text="제수량 합계"
+                            android:textColor="@color/text_primary"
+                            android:textSize="14sp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/turbidity_value_tv" />
+
+                        <TextView
+                            android:id="@+id/total_uf_value_tv"
+                            android:layout_width="match_parent"
+                            android:layout_height="48dp"
+                            android:layout_marginTop="8dp"
+                            android:fontFamily="@font/noto_sans_kr_regular"
+                            android:gravity="center_vertical"
+                            android:includeFontPadding="false"
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp"
+                            android:text="600g"
+                            android:textColor="@color/secondary_text"
+                            android:textSize="14sp"
+                            android:background="#F9F9FA"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/total_uf_label_tv" />
+
+                        <TextView
+                            android:id="@+id/note_label_tv"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:fontFamily="@font/noto_sans_kr_regular"
+                            android:includeFontPadding="false"
+                            android:text="비고"
+                            android:textColor="@color/text_primary"
+                            android:textSize="14sp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/total_uf_value_tv" />
+
+                        <TextView
+                            android:id="@+id/note_value_tv"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:fontFamily="@font/noto_sans_kr_regular"
+                            android:gravity="start|top"
+                            android:includeFontPadding="false"
+                            android:minHeight="80dp"
+                            android:padding="16dp"
+                            android:text="특이사항 없음"
+                            android:textColor="@color/secondary_text"
+                            android:background="#F9F9FA"
+                            android:textSize="14sp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/note_label_tv" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/exchange_info_section"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/common_info_section">
+
+                <View
+                    android:id="@+id/section_indicator_exchange"
+                    android:layout_width="4dp"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="20dp"
+                    android:background="#00C951"
+                    app:layout_constraintBottom_toBottomOf="@id/exchange_info_title_tv"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/exchange_info_title_tv" />
+
+                <TextView
+                    android:id="@+id/exchange_info_title_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:fontFamily="@font/noto_sans_kr_medium"
+                    android:includeFontPadding="false"
+                    android:text="회차별 정보"
+                    android:textColor="@color/text_primary"
+                    android:textSize="16sp"
+                    app:layout_constraintStart_toEndOf="@id/section_indicator_exchange"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/exchange_info_rv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:nestedScrollingEnabled="false"
+                    android:orientation="vertical"
+                    android:overScrollMode="never"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/exchange_info_title_tv"
+                    tools:listitem="@layout/item_exchange_info" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -2,9 +2,11 @@ package com.example.momolabfe.ui.record
 
 import android.app.AlertDialog
 import android.content.res.ColorStateList
+import android.graphics.BitmapFactory
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.util.Log
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -18,13 +20,20 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.example.momolabfe.R
-import com.example.momolabfe.data.remote.record.model.GetCalendarResponse
-import com.example.momolabfe.data.remote.record.model.Turbidity
 import com.example.momolabfe.databinding.DialogCalendarBinding
 import com.example.momolabfe.databinding.FragmentRecordWrite01Binding
+import com.example.momolabfe.remote.record.model.DayWeek
+import com.example.momolabfe.remote.record.model.GetCalendarResponse
+import com.example.momolabfe.remote.record.model.RecordCreateRequest
+import com.example.momolabfe.remote.record.model.Turbidity
+import com.example.momolabfe.ui.record.data.RecordCommonDraft
 import com.example.momolabfe.ui.record.viewModel.RecordViewModel
+import com.example.momolabfe.utils.dpToPx
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.CalendarMonth
@@ -33,6 +42,8 @@ import com.kizitonwose.calendar.core.daysOfWeek
 import com.kizitonwose.calendar.view.CalendarView
 import com.kizitonwose.calendar.view.MonthDayBinder
 import com.kizitonwose.calendar.view.ViewContainer
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
@@ -45,11 +56,11 @@ class RecordWrite01Fragment : Fragment() {
     private val binding get() = _binding!!
 
     private val today: LocalDate = LocalDate.now()
-    private var selectedDate: LocalDate = LocalDate.now()
+    private var selectedDate: LocalDate? = null
 
     private var visibleMonth: YearMonth = YearMonth.now()
     private val headerFormatter = DateTimeFormatter.ofPattern(DATE_PATTERN)
-    private val displayFormatter : DateTimeFormatter =
+    private val displayFormatter: DateTimeFormatter =
         DateTimeFormatter.ofPattern(DATE_DISPLAY_PATTERN, Locale.KOREA)
 
     // 중복 호출 방지용 캐시: 마지막으로 서버에 요청했던 [시작일, 종료일]
@@ -63,13 +74,23 @@ class RecordWrite01Fragment : Fragment() {
     // OCR 값으로 한 번만 채우기 위한 플래그
     private var isOcrApplied = false
 
+    private val isFromOcr: Boolean by lazy {
+        arguments?.getBoolean("fromOcr", false) ?: false
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentRecordWrite01Binding.inflate(inflater, container, false)
 
-        binding.dateEt.setText(selectedDate.format(displayFormatter))
+        if (!isFromOcr) {
+            // 이전 OCR 결과/입력값 초기화
+            clearAllInputs()
+            isOcrApplied = false
+            viewModel.clearOcr()
+        }
+
         return binding.root
     }
 
@@ -78,6 +99,10 @@ class RecordWrite01Fragment : Fragment() {
 
         // 바텀 내비게이션 숨기기
         activity?.findViewById<BottomNavigationView>(R.id.main_bnv)?.visibility = View.GONE
+
+        if (!isOcrApplied) {
+            binding.ocrImagePreview.visibility = View.GONE
+        }
 
         // 최초 가시 월 기준으로 한 번 조회
         visibleMonth = YearMonth.now()
@@ -91,12 +116,11 @@ class RecordWrite01Fragment : Fragment() {
         }
 
         binding.nextBtn.setOnClickListener {
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.main_frm, RecordWrite02Fragment())
-                .addToBackStack(null)
-                .commit()
+            binding.nextBtn.isEnabled = false
+            collectDataAndCallApi()
         }
 
+        setupObservers()
         setupTurbidityCheckboxes()
         observeOcrAndFillFields()
     }
@@ -137,9 +161,9 @@ class RecordWrite01Fragment : Fragment() {
             .setView(dialogBinding.root)
             .create()
 
-        // 캘린더 초기 상태 설정 (현재 선택된 날짜로 시작)
-        var dialogSelectedDate: LocalDate = selectedDate
-        var dialogVisibleMonth: YearMonth = YearMonth.of(selectedDate.year, selectedDate.month)
+        var dialogSelectedDate: LocalDate = selectedDate ?: today
+        var dialogVisibleMonth: YearMonth =
+            YearMonth.of(dialogSelectedDate.year, dialogSelectedDate.month)
 
         // 캘린더 뷰 초기화
         val monthCalendar: CalendarView = dialogBinding.calendarView
@@ -234,7 +258,8 @@ class RecordWrite01Fragment : Fragment() {
                     val hasRecord = eventDates.contains(day.date)
 
                     if (hasRecord) {
-                        Toast.makeText(requireContext(), "해당 날짜에 이미 기록이 존재합니다.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "해당 날짜에 이미 기록이 존재합니다.", Toast.LENGTH_SHORT)
+                            .show()
                         // 기록이 있는 날짜는 선택 상태를 변경하지 않고 종료
                         return@setOnClickListener
                     }
@@ -266,7 +291,7 @@ class RecordWrite01Fragment : Fragment() {
 
         dialogBinding.applyTv.setOnClickListener {
             selectedDate = dialogSelectedDate
-            binding.dateEt.setText(selectedDate.format(displayFormatter))
+            binding.dateEt.setText(dialogSelectedDate.format(displayFormatter))
             dialog.dismiss()
         }
 
@@ -356,35 +381,181 @@ class RecordWrite01Fragment : Fragment() {
         private const val DATE_DISPLAY_PATTERN = "yyyy-MM-dd(E)"
     }
 
-    private fun dpToPx(dp: Int): Int {
-        return (dp * resources.displayMetrics.density).toInt()
+    private fun collectDataAndCallApi() {
+        fun enableButtonAndReturn() {
+            binding.nextBtn.isEnabled = true
+        }
+
+        val weightText = binding.weightEt.text.toString()
+        val systolicText = binding.systolicEt.text.toString()
+        val diastolicText = binding.diastolicEt.text.toString()
+        val fastingGlucoseText = binding.fastingGlucoseEt.text.toString()
+        val urineCountText = binding.urineCountEt.text.toString()
+        val notesText = binding.notesEt.text.toString()
+
+        val selected = selectedDate
+        if (selected == null) {
+            Toast.makeText(requireContext(), "날짜를 선택해주세요.", Toast.LENGTH_SHORT).show()
+            enableButtonAndReturn()
+            return
+        }
+
+        if (weightText.isEmpty() || systolicText.isEmpty() || diastolicText.isEmpty()) {
+            Toast.makeText(requireContext(), "필수 정보를 모두 입력해주세요. (체중, 혈압)", Toast.LENGTH_SHORT).show()
+            enableButtonAndReturn()
+            return
+        }
+
+        val turbidityValue = when {
+            binding.turbidityNCheckbox.isChecked -> Turbidity.NONE
+            binding.turbidityYCheckbox.isChecked -> Turbidity.PRESENT
+            else -> {
+                Toast.makeText(requireContext(), "혼탁도를 선택해주세요.", Toast.LENGTH_SHORT).show()
+                enableButtonAndReturn()
+                return
+            }
+        }
+
+        val recordDwValue = when (selected.dayOfWeek) {
+            DayOfWeek.MONDAY -> DayWeek.MON
+            DayOfWeek.TUESDAY -> DayWeek.TUE
+            DayOfWeek.WEDNESDAY -> DayWeek.WED
+            DayOfWeek.THURSDAY -> DayWeek.THU
+            DayOfWeek.FRIDAY -> DayWeek.FRI
+            DayOfWeek.SATURDAY -> DayWeek.SAT
+            DayOfWeek.SUNDAY -> DayWeek.SUN
+        }
+
+        val draft = RecordCommonDraft(
+            recordDate = selected.toString(),
+            recordDw = recordDwValue,
+            weight = weightText.toDoubleOrNull() ?: run {
+                Toast.makeText(requireContext(), "체중을 올바른 숫자로 입력해주세요.", Toast.LENGTH_SHORT).show()
+                enableButtonAndReturn()
+                return
+            },
+            systolic = systolicText.toIntOrNull() ?: run {
+                Toast.makeText(requireContext(), "최고 혈압을 입력해주세요.", Toast.LENGTH_SHORT).show()
+                enableButtonAndReturn()
+                return
+            },
+            diastolic = diastolicText.toIntOrNull() ?: run {
+                Toast.makeText(requireContext(), "최저 혈압을 입력해주세요.", Toast.LENGTH_SHORT).show()
+                enableButtonAndReturn()
+                 return
+            },
+            fastingGlucose = fastingGlucoseText.toIntOrNull() ?: run {
+                Toast.makeText(requireContext(), "공복 혈당을 입력해주세요.", Toast.LENGTH_SHORT).show()
+                enableButtonAndReturn()
+                return
+            },
+            urineCount = urineCountText.toIntOrNull() ?: run {
+                Toast.makeText(requireContext(), "소변 횟수를 입력해주세요.", Toast.LENGTH_SHORT).show()
+                enableButtonAndReturn()
+                return
+            },
+            turbidity = turbidityValue,
+            notes = notesText.takeIf { it.isNotBlank() }
+        )
+
+        val fragment = RecordWrite02Fragment().apply {
+            arguments = Bundle().apply {
+                putParcelable("record_common", draft)
+                putBoolean("fromOcr", isFromOcr)
+            }
+        }
+
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.main_frm, fragment)
+            .addToBackStack(null)
+            .commit()
+
+        binding.nextBtn.isEnabled = true
     }
 
     private fun observeOcrAndFillFields() {
         viewModel.ocrRecordResult.observe(viewLifecycleOwner) { ocr ->
+            if (!isFromOcr) {
+                binding.ocrImagePreview.visibility = View.GONE
+                return@observe
+            }
+
             // null 이거나 이미 한 번 반영했다면 스킵
-            if (ocr == null || isOcrApplied) return@observe
+            if (ocr == null || isOcrApplied) {
+                binding.ocrImagePreview.visibility = View.GONE
+                return@observe
+            }
 
             isOcrApplied = true  // 다시 덮어쓰지 않도록 플래그 ON
 
-            selectedDate = ocr.recordDate
-            binding.dateEt.setText(ocr.recordDate.format(displayFormatter))
-            binding.weightEt.setText(ocr.weight.toString())
-            binding.systolicEt.setText(ocr.systolic.toString())
-            binding.diastolicEt.setText(ocr.diastolic.toString())
-            binding.fastingGlucoseEt.setText(ocr.fastingGlucose.toString())
-            binding.urineCountEt.setText(ocr.urineCount.toString())
+            selectedDate = ocr.ocrData.recordDate
+            binding.dateEt.setText(ocr.ocrData.recordDate.format(displayFormatter))
+            binding.weightEt.setText(ocr.ocrData.weight.toString())
+            binding.systolicEt.setText(ocr.ocrData.bloodPressure.systolic.toString())
+            binding.diastolicEt.setText(ocr.ocrData.bloodPressure.diastolic.toString())
+            binding.fastingGlucoseEt.setText(ocr.ocrData.fastingGlucose.toString())
+            binding.urineCountEt.setText(ocr.ocrData.urineCount.toString())
 
             binding.turbidityNCheckbox.isChecked = false
             binding.turbidityYCheckbox.isChecked = false
 
-            when (ocr.turbidity) {
+            when (ocr.ocrData.turbidity) {
                 Turbidity.NONE -> binding.turbidityNCheckbox.isChecked = true
                 Turbidity.PRESENT -> binding.turbidityYCheckbox.isChecked = true
             }
 
-            binding.totalUfEt.setText(ocr.totalUf.toString())
-            binding.notesEt.setText(ocr.notes ?: "")
+            binding.notesEt.setText(ocr.ocrData.notes ?: "")
+
+            // gCS Path를 사용하여 이미지 다운로드 시작
+            val gcsPath = ocr.gcsPath
+            if (gcsPath.isNotEmpty()) {
+                viewModel.downloadOcrImage(gcsPath)
+            }
+        }
+    }
+
+    private fun setupObservers() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.ocrImageBytes.collectLatest { imageBytes ->
+                    if (imageBytes != null) {
+                        try {
+                            // ByteArray를 Bitmap으로 변환하여 ImageView에 설정
+                            val bitmap =
+                                BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+                            binding.ocrImagePreview.setImageBitmap(bitmap)
+                            binding.ocrImagePreview.visibility = View.VISIBLE
+                            Log.d("OCR_IMAGE", "OCR 이미지 로드 성공")
+                        } catch (e: Exception) {
+                            Log.e("OCR_IMAGE", "Bitmap 변환 실패: ${e.message}")
+                        }
+                    } else {
+                        if (!isOcrApplied) { // 수기 작성
+                            binding.ocrImagePreview.visibility = View.GONE
+                        }
+                    }
+                }
+            }
+        }
+
+        viewModel.errorMessage.observe(viewLifecycleOwner) { errorMsg ->
+            Log.e("RECORD_WRITE_01_FRAGMENT", errorMsg.toString())
+            binding.nextBtn.isEnabled = true
+        }
+    }
+
+    private fun clearAllInputs() {
+        binding.apply {
+            dateEt.setText("")
+            weightEt.text?.clear()
+            systolicEt.text?.clear()
+            diastolicEt.text?.clear()
+            fastingGlucoseEt.text?.clear()
+            urineCountEt.text?.clear()
+            notesEt.text?.clear()
+
+            turbidityNCheckbox.isChecked = false
+            turbidityYCheckbox.isChecked = false
         }
     }
 
