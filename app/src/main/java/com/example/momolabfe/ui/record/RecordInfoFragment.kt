@@ -55,18 +55,13 @@ class RecordInfoFragment : Fragment() {
 
         binding.editBtn.setOnClickListener {
 
-            // 1순위: 현재 ViewModel에 로드된 record의 id
-            val currentId = viewModel.record.value?.id ?: -1L
-            // 2순위: arguments에서 받은 recordId
-            val finalId = if (currentId != -1L) currentId else recordId
-
-            if (finalId == -1L) {
+            if (recordId == -1L) {
                 return@setOnClickListener
             }
 
             val fragment = RecordEditFragment().apply {
                 arguments = Bundle().apply {
-                    putLong("record_id", finalId)
+                    putLong("record_id", recordId)
                 }
             }
 

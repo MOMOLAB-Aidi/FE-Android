@@ -43,8 +43,6 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
     private var _binding: FragmentRecordWrite02Binding? = null
     private val binding get() = _binding!!
 
-    private var recordId: Long = -1L
-
     private val viewModel: RecordViewModel by activityViewModels()
     private lateinit var exchangeAdapter: RecordExchangeAdapter
 
@@ -71,7 +69,6 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
     ): View {
         _binding = FragmentRecordWrite02Binding.inflate(inflater, container, false)
 
-        recordId = arguments?.getLong("recordId") ?: -1L
         return binding.root
     }
 
@@ -360,7 +357,7 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
 
         val recordDate = runCatching { LocalDate.parse(draft.recordDate) }.getOrElse {
             Toast.makeText(requireContext(), "날짜 형식이 올바르지 않습니다.", Toast.LENGTH_SHORT).show()
-            binding.saveBtn.isEnabled = true
+            enableButtonAndReturn()
             return
         }
 

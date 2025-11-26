@@ -60,6 +60,10 @@ class RecordEditFragment : Fragment() {
         setupTurbidityCheckboxes()
         setupObservers()
 
+        if (recordId != -1L && viewModel.record.value?.id != recordId) {
+            viewModel.getRecord(recordId)
+        }
+
         binding.saveBtn.setOnClickListener {
             binding.saveBtn.isEnabled = false
             edit()
@@ -160,6 +164,7 @@ class RecordEditFragment : Fragment() {
         val finalId = if (currentRecordId != -1L) currentRecordId else recordId
 
         if (finalId == -1L) {
+            binding.saveBtn.isEnabled = true
             return
         }
 

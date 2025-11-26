@@ -89,9 +89,6 @@ class RecordWrite01Fragment : Fragment() {
             clearAllInputs()
             isOcrApplied = false
             viewModel.clearOcr()
-            binding.dateEt.setText("")
-        } else {
-            binding.dateEt.setText("")
         }
 
         return binding.root
