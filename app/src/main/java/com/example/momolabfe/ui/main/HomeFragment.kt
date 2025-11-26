@@ -18,6 +18,7 @@ import com.example.momolabfe.ui.statistics.StatisticsFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import java.text.SimpleDateFormat
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 
@@ -113,9 +114,10 @@ class HomeFragment : Fragment() {
                 val data = weeklyAvgResponse.data
 
                 // 주간 기간 포맷 설정 (yyyy-MM-dd 형식)
-                val rangeFormat = SimpleDateFormat("yyyy-MM-dd", Locale.KOREA)
-                val startDateStr = rangeFormat.format(weeklyAvgResponse.startDate)
-                val endDateStr = rangeFormat.format(weeklyAvgResponse.endDate)
+                val rangeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.KOREA)
+
+                val startDateStr = weeklyAvgResponse.startDate.format(rangeFormatter)
+                val endDateStr = weeklyAvgResponse.endDate.format(rangeFormatter)
 
                 binding.weeklyAvgTv.text = String.format(
                     Locale.KOREA,

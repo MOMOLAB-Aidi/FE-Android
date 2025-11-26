@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.provider.OpenableColumns
 import android.util.Log
+import com.example.momolabfe.BuildConfig
 import com.example.momolabfe.remote.record.model.RecordCreateRequest
 import com.example.momolabfe.remote.record.model.RecordGetResponse
 import com.example.momolabfe.remote.record.model.RecordOcrResponse
@@ -36,7 +37,9 @@ class RecordRepository @Inject constructor(
     // 캘린더 조회
     suspend fun getCalendar(year: Int, month: Int): Result<List<GetCalendarResponse>> = runCatching {
         val response = recordService.getCalendar(year, month)
-        Log.d("Calendar", "HTTP ${response.code()}")
+        if (!response.isSuccessful) {
+            throw ApiException(response.code(), "캘린더 조회 실패: HTTP ${response.code()}")
+        }
         handleApiResponse(response)
     }
 
@@ -44,7 +47,7 @@ class RecordRepository @Inject constructor(
     suspend fun createRecord(request: RecordCreateRequest): Result<Unit> = runCatching {
         val response = recordService.createRecord(request)
         if (!response.isSuccessful) {
-            throw ApiException(response.code(), "HTTP ${response.code()}")
+            throw ApiException(response.code(), "기록 생성 실패: HTTP ${response.code()}")
         }
         Unit
     }
@@ -53,7 +56,7 @@ class RecordRepository @Inject constructor(
     suspend fun updateRecord(recId: Long, request: RecordUpdateRequest): Result<Unit> = runCatching {
         val response = recordService.updateRecord(recId, request)
         if (!response.isSuccessful) {
-            throw ApiException(response.code(), "HTTP ${response.code()}")
+            throw ApiException(response.code(), "기록 수정 실패: HTTP ${response.code()}")
         }
         Unit
     }
@@ -62,7 +65,7 @@ class RecordRepository @Inject constructor(
     suspend fun getRecordList(year: Int, month: Int): Result<List<RecordGetResponse>> = runCatching {
         val response = recordService.getRecordList(year, month)
         if (!response.isSuccessful) {
-            throw ApiException(response.code(), "HTTP ${response.code()}")
+            throw ApiException(response.code(), "전체 기록 조회 실패: HTTP ${response.code()}")
         }
         response.body() ?: throw ApiException(response.code(), "빈 본문")
     }
@@ -71,7 +74,7 @@ class RecordRepository @Inject constructor(
     suspend fun getRecord(recId: Long): Result<RecordGetResponse> = runCatching {
         val response = recordService.getRecord(recId)
         if (!response.isSuccessful) {
-            throw ApiException(response.code(), "HTTP ${response.code()}")
+            throw ApiException(response.code(), "특정 기록 조회 실패: HTTP ${response.code()}")
         }
         response.body() ?: throw ApiException(response.code(), "빈 본문")
     }
@@ -80,7 +83,7 @@ class RecordRepository @Inject constructor(
     suspend fun getRecentRecords(): Result<List<RecordGetResponse>> = runCatching {
         val response = recordService.getRecentRecords()
         if (!response.isSuccessful) {
-            throw ApiException(response.code(), "HTTP ${response.code()}")
+            throw ApiException(response.code(), "최근 3개 기록 조회 실패: HTTP ${response.code()}")
         }
         response.body() ?: throw ApiException(response.code(), "빈 본문")
     }
@@ -89,7 +92,7 @@ class RecordRepository @Inject constructor(
     suspend fun getWeeklyAvgRecords(targetDate: String?): Result<WeeklyAverageResponse> = runCatching {
         val response = recordService.getWeeklyAvgRecords(targetDate)
         if (!response.isSuccessful) {
-            throw ApiException(response.code(), "HTTP ${response.code()}")
+            throw ApiException(response.code(), "주간 평균 기록 조회 실패: HTTP ${response.code()}")
         }
         response.body() ?: throw ApiException(response.code(), "빈 본문")
     }
@@ -98,7 +101,7 @@ class RecordRepository @Inject constructor(
     suspend fun deleteRecord(recId: Long): Result<Unit> = runCatching {
         val response = recordService.deleteRecord(recId)
         if (!response.isSuccessful) {
-            throw ApiException(response.code(), "HTTP ${response.code()}")
+            throw ApiException(response.code(), "특정 기록 삭제 실패: HTTP ${response.code()}")
         }
         Unit
     }
@@ -108,31 +111,20 @@ class RecordRepository @Inject constructor(
         val part = makeFilePartFromUri(appContext, imageUri, partName = "file")
         val response = recordService.recordByOcr(part)
         if (!response.isSuccessful) {
-            throw ApiException(response.code(), "HTTP ${response.code()}")
+            throw ApiException(response.code(), "OCR 텍스트 인식 실패: HTTP ${response.code()}")
         }
         response.body() ?: throw ApiException(response.code(), "빈 본문")
     }
 
     // OCR 이미지 다운로드
-    suspend fun downloadOcrImage(gcsPath: String): Result<ByteArray> {
-        return try {
-            val response = recordService.downloadOcrImage(gcsPath)
+    suspend fun downloadOcrImage(gcsPath: String): Result<ByteArray> = runCatching {
+        val response = recordService.downloadOcrImage(gcsPath)
 
-            if (response.isSuccessful) {
-                // ResponseBody를 ByteArray로 변환
-                val bytes = response.body()?.bytes()
-
-                if (bytes != null) {
-                    // ByteArray를 Result.success로 감싸서 반환
-                    Result.success(bytes)
-                } else {
-                    Result.failure(IOException("서버에서 빈 이미지 데이터를 받았습니다."))
-                }
-            } else {
-                Result.failure(IOException("이미지 다운로드 실패: HTTP ${response.code()} ${response.message()}"))
-            }
-        } catch (e: Exception) {
-            Result.failure(e)
+        if (response.isSuccessful) {
+            response.body()?.bytes()
+                ?: throw IOException("서버에서 빈 이미지 데이터를 받았습니다.")
+        } else {
+            throw IOException("이미지 다운로드 실패: HTTP ${response.code()} ${response.message()}")
         }
     }
 
@@ -174,10 +166,11 @@ class RecordRepository @Inject constructor(
                 android.graphics.BitmapFactory.decodeStream(input)
             } ?: error("이미지 파일을 열 수 없습니다: $uri")
 
-            val bos = ByteArrayOutputStream()
-            bmp.compress(Bitmap.CompressFormat.JPEG, 90, bos)
-            bmp.recycle() // 메모리 해제
-            val jpegBytes = bos.toByteArray()
+            val jpegBytes = ByteArrayOutputStream().use { bos ->
+                bmp.compress(Bitmap.CompressFormat.JPEG, 90, bos)
+                bmp.recycle() // 메모리 해제
+                bos.toByteArray()
+            }
             val jpegBody = jpegBytes.toRequestBody("image/jpeg".toMediaType())
             val safeName = ensureJpegName(fileName)
             MultipartBody.Part.createFormData(partName, safeName, jpegBody)

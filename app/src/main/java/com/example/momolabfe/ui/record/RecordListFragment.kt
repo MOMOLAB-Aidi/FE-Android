@@ -62,6 +62,7 @@ class RecordListFragment : Fragment() {
     private val viewModel: RecordViewModel by activityViewModels()
 
     private var monthRecordList: List<RecordGetResponse> = emptyList()
+    private var selectedRecordId: Long? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -181,9 +182,11 @@ class RecordListFragment : Fragment() {
                     }
 
                     if (target != null) {
+                        selectedRecordId = target.id
                         showDetailViews()
                         viewModel.getRecord(target.id)
                     } else {
+                        selectedRecordId = null
                         hideDetailViews()
                         clearRecordViews()
                         adapter.updateList(emptyList())
@@ -208,9 +211,9 @@ class RecordListFragment : Fragment() {
 
         binding.detailEditBtn.setOnClickListener {
             binding.detailEditBtn.isEnabled = false
-            val currentId = viewModel.record.value?.id ?: -1L
+            val currentId = selectedRecordId
 
-            if (currentId == -1L) {
+            if (currentId == null) {
                 binding.detailEditBtn.isEnabled = true
                 return@setOnClickListener
             }
@@ -228,8 +231,8 @@ class RecordListFragment : Fragment() {
         }
 
         binding.deleteBtn.setOnClickListener {
-            val currentId = viewModel.record.value?.id ?: -1L
-            if (currentId == -1L) {
+            val currentId = selectedRecordId
+            if (currentId == null) {
                 Log.e("RECORD_LIST_FRAGMENT", "삭제할 recordId가 없습니다.")
                 return@setOnClickListener
             }
@@ -328,9 +331,11 @@ class RecordListFragment : Fragment() {
                 rec.recordDate == selectedDate
             }
             if (target != null) {
+                selectedRecordId = target.id
                 showDetailViews()
                 viewModel.getRecord(target.id)
             } else {
+                selectedRecordId = null
                 hideDetailViews()
                 clearRecordViews()
                 adapter.updateList(emptyList())
@@ -340,6 +345,7 @@ class RecordListFragment : Fragment() {
         // 단일 기록 조회 결과
         viewModel.record.observe(viewLifecycleOwner) { recordItem ->
             if (recordItem != null) {
+                selectedRecordId = recordItem.id
                 showDetailViews()
 
                 binding.selectedDateDisplayTv.text =
@@ -358,6 +364,7 @@ class RecordListFragment : Fragment() {
                 binding.exchangeDetailRv.visibility =
                     if (recordItem.exchanges.isEmpty()) View.GONE else View.VISIBLE
             } else {
+                selectedRecordId = null
                 hideDetailViews()
                 clearRecordViews()
                 adapter.updateList(emptyList())

@@ -5,7 +5,6 @@ import android.content.SharedPreferences
 import com.example.momolabfe.remote.auth.repository.PreferenceRepository
 import com.example.momolabfe.remote.auth.repository.SharedPreferencesRepository
 import com.example.momolabfe.remote.auth.service.AuthService
-import com.example.momolabfe.remote.record.service.RecordService
 import com.example.momolabfe.remote.user.service.UserService
 import dagger.Module
 import dagger.Provides
@@ -25,13 +24,6 @@ annotation class AuthApiForLogout
 class ApiModule {
 
     // 인증이 필요한 API들 - @AuthRetrofit 사용할 것
-    @Provides
-    @Singleton
-    fun provideRecordApi(@AuthRetrofit springRetrofit: Retrofit,
-                         @PythonRetrofit pythonRetrofit: Retrofit)
-    : RecordService {
-        return object : RecordService(springRetrofit, pythonRetrofit) {}
-    }
 
     @Provides
     @Singleton

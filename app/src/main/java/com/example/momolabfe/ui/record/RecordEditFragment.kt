@@ -1,10 +1,13 @@
 package com.example.momolabfe.ui.record
 
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CompoundButton
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
@@ -54,6 +57,7 @@ class RecordEditFragment : Fragment() {
         adapter = RecordExchangeInfoAdapter(emptyList())
         binding.exchangeInfoRv.adapter = adapter
 
+        setupTurbidityCheckboxes()
         setupObservers()
 
         binding.saveBtn.setOnClickListener {
@@ -64,6 +68,37 @@ class RecordEditFragment : Fragment() {
         binding.cancelBtn.setOnClickListener {
             parentFragmentManager.popBackStack()
         }
+    }
+
+    private fun setupTurbidityCheckboxes() {
+        // 초기 상태 색상 적용
+        val initialNChecked = binding.turbidityNCheckbox.isChecked
+        setCheckBoxTint(binding.turbidityNCheckbox, initialNChecked)
+
+        val initialYChecked = binding.turbidityYCheckbox.isChecked
+        setCheckBoxTint(binding.turbidityYCheckbox, initialYChecked)
+
+        binding.turbidityNCheckbox.setOnCheckedChangeListener { checkBox, isChecked ->
+            setCheckBoxTint(checkBox, isChecked)
+            if (isChecked) {
+                binding.turbidityYCheckbox.isChecked = false
+            }
+        }
+
+        binding.turbidityYCheckbox.setOnCheckedChangeListener { checkBox, isChecked ->
+            setCheckBoxTint(checkBox, isChecked)
+            if (isChecked) {
+                binding.turbidityNCheckbox.isChecked = false
+            }
+        }
+    }
+
+    private fun setCheckBoxTint(checkBox: CompoundButton, isChecked: Boolean) {
+        val color = ContextCompat.getColor(
+            requireContext(),
+            if (isChecked) R.color.text_primary else R.color.gray
+        )
+        checkBox.buttonTintList = ColorStateList.valueOf(color)
     }
 
     private fun getRecordRequest(): RecordUpdateRequest {
@@ -161,6 +196,10 @@ class RecordEditFragment : Fragment() {
                 }
             }
 
+            // 체크 상태 바꾼 뒤 색상도 동기화
+            setCheckBoxTint(binding.turbidityNCheckbox, binding.turbidityNCheckbox.isChecked)
+            setCheckBoxTint(binding.turbidityYCheckbox, binding.turbidityYCheckbox.isChecked)
+
             // 회차 리스트 세팅
             val exchanges: List<RecordExchangeGetResponse> = record.exchanges
             adapter.updateList(exchanges)
@@ -170,7 +209,7 @@ class RecordEditFragment : Fragment() {
                 launch {
                     viewModel.recordSuccess.collect {
                         Log.d("RECORD_EDIT_FRAGMENT", "기록이 성공적으로 수정되었습니다.")
-                        navigateToRecordInfo()
+                        parentFragmentManager.popBackStack()
                     }
                 }
             }
@@ -205,28 +244,6 @@ class RecordEditFragment : Fragment() {
             DayWeek.SUN -> "일"
             else -> ""
         }
-    }
-
-    private fun navigateToRecordInfo() {
-        // 1순위: 현재 ViewModel에 로드된 record의 id
-        val idFromVm = viewModel.record.value?.id ?: -1L
-        // 2순위: arguments 에서 받은 recordId
-        val finalId = if (idFromVm != -1L) idFromVm else recordId
-
-        if (finalId == -1L) {
-            Log.e("RECORD_EDIT_FRAGMENT", "navigateToRecordInfo: 유효한 recordId가 없어 이동 불가")
-            return
-        }
-
-        val fragment = RecordInfoFragment().apply {
-            arguments = Bundle().apply {
-                putLong("record_id", finalId)
-            }
-        }
-
-        parentFragmentManager.beginTransaction()
-            .replace(R.id.main_frm, fragment)
-            .commit()
     }
 
     override fun onDestroyView() {

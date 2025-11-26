@@ -23,7 +23,9 @@ import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class RecordService @Inject constructor (
     @AuthRetrofit springRetrofit: Retrofit,
     @PythonRetrofit pythonRetrofit: Retrofit

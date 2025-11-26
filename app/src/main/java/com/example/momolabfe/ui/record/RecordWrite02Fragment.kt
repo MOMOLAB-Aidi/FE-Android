@@ -293,6 +293,14 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
         }
         updateAddButtonVisibility()
         binding.exchangeRv.requestLayout() // 레이아웃 다시 계산하도록 요청
+
+        if (isFromOcr) {
+            val totalUfFromOcr = ocr?.ocrData?.totalUf
+
+            if (totalUfFromOcr != null) {
+                binding.totalUfEt.setText(totalUfFromOcr.toString())
+            }
+        }
     }
 
     private fun updateAddButtonVisibility() {
@@ -305,10 +313,14 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
     }
 
     private fun collectDataAndCallApi() {
+        fun enableButtonAndReturn() {
+            binding.saveBtn.isEnabled = true
+        }
 
         val draft = commonDraft
         if (draft == null) {
             Toast.makeText(requireContext(), "공통 정보가 없습니다. 처음 화면부터 다시 작성해주세요.", Toast.LENGTH_SHORT).show()
+            enableButtonAndReturn()
             return
         }
 
@@ -316,6 +328,7 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
         val totalUf = totalUfText.toIntOrNull()
         if (totalUf == null) {
             Toast.makeText(requireContext(), "제수량 합계를 숫자로 입력해주세요.", Toast.LENGTH_SHORT).show()
+            enableButtonAndReturn()
             return
         }
 
@@ -331,6 +344,7 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
                     "${item.exchangeNo}회차 기록을 확인해주세요.",
                     Toast.LENGTH_SHORT
                 ).show()
+                enableButtonAndReturn()
                 return
             }
 
@@ -344,8 +358,14 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
             )
         }
 
+        val recordDate = runCatching { LocalDate.parse(draft.recordDate) }.getOrElse {
+            Toast.makeText(requireContext(), "날짜 형식이 올바르지 않습니다.", Toast.LENGTH_SHORT).show()
+            binding.saveBtn.isEnabled = true
+            return
+        }
+
         val fullRequest = RecordCreateRequest(
-            recordDate = LocalDate.parse(draft.recordDate),
+            recordDate = recordDate,
             recordDw = draft.recordDw,
             weight = draft.weight,
             systolic = draft.systolic,

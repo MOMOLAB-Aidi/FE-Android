@@ -385,6 +385,10 @@ class RecordWrite01Fragment : Fragment() {
     }
 
     private fun collectDataAndCallApi() {
+        fun enableButtonAndReturn() {
+            binding.nextBtn.isEnabled = true
+        }
+
         val weightText = binding.weightEt.text.toString()
         val systolicText = binding.systolicEt.text.toString()
         val diastolicText = binding.diastolicEt.text.toString()
@@ -395,12 +399,13 @@ class RecordWrite01Fragment : Fragment() {
         val selected = selectedDate
         if (selected == null) {
             Toast.makeText(requireContext(), "날짜를 선택해주세요.", Toast.LENGTH_SHORT).show()
+            enableButtonAndReturn()
             return
         }
 
         if (weightText.isEmpty() || systolicText.isEmpty() || diastolicText.isEmpty()) {
-            Toast.makeText(requireContext(), "필수 정보를 모두 입력해주세요. (체중, 혈압)", Toast.LENGTH_SHORT)
-                .show()
+            Toast.makeText(requireContext(), "필수 정보를 모두 입력해주세요. (체중, 혈압)", Toast.LENGTH_SHORT).show()
+            enableButtonAndReturn()
             return
         }
 
@@ -409,6 +414,7 @@ class RecordWrite01Fragment : Fragment() {
             binding.turbidityYCheckbox.isChecked -> Turbidity.PRESENT
             else -> {
                 Toast.makeText(requireContext(), "혼탁도를 선택해주세요.", Toast.LENGTH_SHORT).show()
+                enableButtonAndReturn()
                 return
             }
         }
@@ -424,26 +430,31 @@ class RecordWrite01Fragment : Fragment() {
         }
 
         val draft = RecordCommonDraft(
-            recordDate = selectedDate.toString(),
+            recordDate = selected.toString(),
             recordDw = recordDwValue,
             weight = weightText.toDoubleOrNull() ?: run {
                 Toast.makeText(requireContext(), "체중을 올바른 숫자로 입력해주세요.", Toast.LENGTH_SHORT).show()
+                enableButtonAndReturn()
                 return
             },
             systolic = systolicText.toIntOrNull() ?: run {
                 Toast.makeText(requireContext(), "최고 혈압을 올바른 숫자로 입력해주세요.", Toast.LENGTH_SHORT).show()
+                enableButtonAndReturn()
                 return
             },
             diastolic = diastolicText.toIntOrNull() ?: run {
                 Toast.makeText(requireContext(), "최저 혈압을 올바른 숫자로 입력해주세요.", Toast.LENGTH_SHORT).show()
+                enableButtonAndReturn()
                  return
             },
             fastingGlucose = fastingGlucoseText.toIntOrNull() ?: run {
                 Toast.makeText(requireContext(), "공복 혈당을 올바른 숫자로 입력해주세요.", Toast.LENGTH_SHORT).show()
+                enableButtonAndReturn()
                 return
             },
             urineCount = urineCountText.toIntOrNull() ?: run {
                 Toast.makeText(requireContext(), "소변 횟수를 올바른 숫자로 입력해주세요.", Toast.LENGTH_SHORT).show()
+                enableButtonAndReturn()
                 return
             },
             turbidity = turbidityValue,
@@ -453,6 +464,7 @@ class RecordWrite01Fragment : Fragment() {
         val fragment = RecordWrite02Fragment().apply {
             arguments = Bundle().apply {
                 putParcelable("record_common", draft)
+                putBoolean("fromOcr", isFromOcr)
             }
         }
 

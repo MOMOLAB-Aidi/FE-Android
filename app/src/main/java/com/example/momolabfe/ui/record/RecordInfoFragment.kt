@@ -9,10 +9,12 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.example.momolabfe.R
 import com.example.momolabfe.databinding.FragmentRecordInfoBinding
+import com.example.momolabfe.remote.record.model.DayWeek
 import com.example.momolabfe.remote.record.model.Turbidity
 import com.example.momolabfe.ui.record.adapter.RecordExchangeInfoAdapter
 import com.example.momolabfe.ui.record.viewModel.RecordViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import java.time.LocalDate
 
 class RecordInfoFragment : Fragment() {
 
@@ -78,6 +80,7 @@ class RecordInfoFragment : Fragment() {
     private fun setupObservers() {
         viewModel.record.observe(viewLifecycleOwner) { recordItem ->
             if (recordItem != null) {
+                binding.contentTv.text = formatRecordDate(recordItem.recordDate, recordItem.recordDw)
                 binding.weightValueTv.text = recordItem.weight.toString()
                 binding.bloodPressureSystolicTv.text = recordItem.systolic.toString()
                 binding.bloodPressureDiastolicTv.text = recordItem.diastolic.toString()
@@ -100,6 +103,31 @@ class RecordInfoFragment : Fragment() {
 
         viewModel.errorMessage.observe(viewLifecycleOwner) { errorMsg ->
             Log.e("RECORD_INFO_FRAGMENT", errorMsg.toString())
+        }
+    }
+
+    private fun formatRecordDate(date: LocalDate?, dw: DayWeek?): String {
+        if (date == null) return ""
+
+        val year = date.year
+        val month = date.monthValue
+        val day = date.dayOfMonth
+        val dayKorean = convertDayWeekToKorean(dw)
+
+        // 예: 2025년 11월 14일 금
+        return "${year}년 ${month}월 ${day}일 $dayKorean"
+    }
+
+    private fun convertDayWeekToKorean(dw: DayWeek?): String {
+        return when (dw) {
+            DayWeek.MON -> "월"
+            DayWeek.TUE -> "화"
+            DayWeek.WED -> "수"
+            DayWeek.THU -> "목"
+            DayWeek.FRI -> "금"
+            DayWeek.SAT -> "토"
+            DayWeek.SUN -> "일"
+            else -> ""
         }
     }
 
