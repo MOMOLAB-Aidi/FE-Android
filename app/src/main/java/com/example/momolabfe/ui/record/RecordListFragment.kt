@@ -207,9 +207,11 @@ class RecordListFragment : Fragment() {
         setupObservers()
 
         binding.detailEditBtn.setOnClickListener {
+            binding.detailEditBtn.isEnabled = false
             val currentId = viewModel.record.value?.id ?: -1L
 
             if (currentId == -1L) {
+                binding.detailEditBtn.isEnabled = true
                 return@setOnClickListener
             }
             val fragment = RecordInfoFragment().apply {

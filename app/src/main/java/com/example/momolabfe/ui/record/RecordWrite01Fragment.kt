@@ -119,6 +119,7 @@ class RecordWrite01Fragment : Fragment() {
         }
 
         binding.nextBtn.setOnClickListener {
+            binding.nextBtn.isEnabled = false
             collectDataAndCallApi()
         }
 
@@ -420,14 +421,10 @@ class RecordWrite01Fragment : Fragment() {
             DayOfWeek.FRIDAY -> DayWeek.FRI
             DayOfWeek.SATURDAY -> DayWeek.SAT
             DayOfWeek.SUNDAY -> DayWeek.SUN
-            else -> {
-                Toast.makeText(requireContext(), "요일 정보를 가져올 수 없습니다.", Toast.LENGTH_SHORT).show()
-                return
-            }
         }
 
         val draft = RecordCommonDraft(
-            recordDate = selected,
+            recordDate = selectedDate.toString(),
             recordDw = recordDwValue,
             weight = weightText.toDoubleOrNull() ?: run {
                 Toast.makeText(requireContext(), "체중을 올바른 숫자로 입력해주세요.", Toast.LENGTH_SHORT).show()
@@ -509,7 +506,6 @@ class RecordWrite01Fragment : Fragment() {
     }
 
     private fun setupObservers() {
-
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.ocrImageBytes.collectLatest { imageBytes ->
@@ -535,6 +531,7 @@ class RecordWrite01Fragment : Fragment() {
 
         viewModel.errorMessage.observe(viewLifecycleOwner) { errorMsg ->
             Log.e("RECORD_WRITE_01_FRAGMENT", errorMsg.toString())
+            binding.nextBtn.isEnabled = true
         }
     }
 

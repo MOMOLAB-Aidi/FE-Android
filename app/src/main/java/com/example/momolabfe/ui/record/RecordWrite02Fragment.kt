@@ -33,6 +33,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import java.time.LocalTime
 import java.util.Locale
 
@@ -261,7 +262,7 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
         binding.exchangeRv.requestLayout()
 
         // 추가된 항목 위치로 스크롤
-        binding.exchangeRv.scrollToPosition(currentExchanges.size - 1)
+        binding.exchangeRv.scrollToPosition(exchangeAdapter.itemCount - 1)
     }
 
     private fun fillExchangesFromOcr() {
@@ -344,7 +345,7 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
         }
 
         val fullRequest = RecordCreateRequest(
-            recordDate = draft.recordDate,
+            recordDate = LocalDate.parse(draft.recordDate),
             recordDw = draft.recordDw,
             weight = draft.weight,
             systolic = draft.systolic,

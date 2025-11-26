@@ -36,7 +36,7 @@ class RecordRepository @Inject constructor(
     // 캘린더 조회
     suspend fun getCalendar(year: Int, month: Int): Result<List<GetCalendarResponse>> = runCatching {
         val response = recordService.getCalendar(year, month)
-        Log.d("Calendar", "response = ${response.body()}")
+        Log.d("Calendar", "HTTP ${response.code()}")
         handleApiResponse(response)
     }
 

@@ -4,12 +4,11 @@ import android.os.Parcelable
 import com.example.momolabfe.remote.record.model.DayWeek
 import com.example.momolabfe.remote.record.model.Turbidity
 import kotlinx.parcelize.Parcelize
-import java.time.LocalDate
 
 // 화면 간 전달용
 @Parcelize
 data class RecordCommonDraft(
-    val recordDate: LocalDate,
+    val recordDate: String,
     val recordDw: DayWeek,
     val weight: Double,
     val systolic: Int,
