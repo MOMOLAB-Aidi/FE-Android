@@ -1,6 +1,8 @@
 package com.example.momolabfe.remote.consult.repository
 
 import com.example.momolabfe.remote.consult.data.ChatRequest
+import com.example.momolabfe.remote.consult.data.SessionEndRequest
+import com.example.momolabfe.remote.consult.data.SessionEndResponse
 import com.example.momolabfe.remote.consult.data.StartConsultResponse
 import com.example.momolabfe.remote.consult.service.ConsultService
 import com.example.momolabfe.utils.ApiException
@@ -44,5 +46,14 @@ class ConsultRepository @Inject constructor(
                 emit(line) // 여기서 한 줄씩 Flow로 흘려보냄
             }
         }
+    }
+
+    // 상담 종료
+    suspend fun endConsult(request: SessionEndRequest): Result<SessionEndResponse> = runCatching {
+        val response = consultService.endConsult(request)
+        if (!response.isSuccessful) {
+            throw ApiException(response.code(), "상담 종료 실패: HTTP ${response.code()}")
+        }
+        response.body() ?: throw ApiException(response.code(), "빈 본문")
     }
 }
