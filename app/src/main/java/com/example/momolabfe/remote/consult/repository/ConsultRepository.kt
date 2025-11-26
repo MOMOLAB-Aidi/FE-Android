@@ -32,6 +32,7 @@ class ConsultRepository @Inject constructor(
         if (!response.isSuccessful) {
             throw ApiException(response.code(), "에이전트 대화 실패: HTTP ${response.code()}")
         }
+
         val body: ResponseBody = response.body()
             ?: throw ApiException(
                 response.code(),
@@ -39,14 +40,20 @@ class ConsultRepository @Inject constructor(
             )
 
         body.use { responseBody ->
-            val source = responseBody.source()
+            val source = responseBody.source()   // .buffer() 안 써도 이미 BufferedSource
 
             while (!source.exhausted()) {
+                // 👉 백엔드에서 chunk + "\n" 을 보내니까 line 단위로 읽기 가능
                 val line = source.readUtf8Line() ?: break
-                emit(line) // 여기서 한 줄씩 Flow로 흘려보냄
+
+                // 디버그
+                // Log.d("ConsultRepository", "chunk line = $line")
+
+                emit(line)
             }
         }
     }
+
 
     // 상담 종료
     suspend fun endConsult(request: SessionEndRequest): Result<SessionEndResponse> = runCatching {

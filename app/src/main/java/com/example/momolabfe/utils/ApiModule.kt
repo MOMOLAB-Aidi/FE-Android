@@ -47,7 +47,7 @@ class ApiModule {
 
     @Provides
     @Singleton
-    fun provideConsultApi(@AuthRetrofit retrofit: Retrofit): ConsultService {
+    fun provideConsultApi(@PythonRetrofit retrofit: Retrofit): ConsultService {
         return retrofit.create(ConsultService::class.java)
     }
 

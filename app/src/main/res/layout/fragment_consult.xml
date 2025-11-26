@@ -101,63 +101,18 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <ImageView
-                android:id="@+id/agent_iv"
-                android:layout_width="wrap_content"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/chat_rv"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="30dp"
-                android:src="@drawable/ic_robot_agent_sv"
-                app:layout_constraintStart_toStartOf="@id/title_container"
-                app:layout_constraintTop_toBottomOf="@id/title_container" />
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/agent_cv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="10dp"
-                android:layout_marginStart="20dp"
-                android:backgroundTint="@color/white"
-                app:cardCornerRadius="10dp"
-                app:cardElevation="1dp"
-                app:layout_constraintStart_toEndOf="@id/agent_iv"
-                app:layout_constraintTop_toTopOf="@id/agent_iv"
-                app:strokeWidth="0dp">
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/white"
-                    android:padding="5dp">
-
-                    <TextView
-                        android:id="@+id/agent_tv"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:fontFamily="@font/noto_sans_kr_regular"
-                        android:includeFontPadding="false"
-                        android:text="안녕하세요! 복막투석 AI 상담사입니다. \n투석 관리, 일반 지침, 건강 상태 등에 대해 \n무엇이든 물어보세요."
-                        android:textColor="@color/secondary_text"
-                        android:textSize="15sp"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <TextView
-                        android:id="@+id/time_tv"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
-                        android:fontFamily="@font/noto_sans_kr_regular"
-                        android:includeFontPadding="false"
-                        android:text="오후 07:37"
-                        android:textColor="@color/secondary_text"
-                        android:textSize="14sp"
-                        app:layout_constraintStart_toStartOf="@id/agent_tv"
-                        app:layout_constraintTop_toBottomOf="@id/agent_tv" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-            </com.google.android.material.card.MaterialCardView>
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="20dp"
+                android:nestedScrollingEnabled="false"
+                app:layout_constraintTop_toBottomOf="@id/title_container"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/item_chat_agent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
@@ -275,12 +230,12 @@
             android:inputType="textMultiLine|textCapSentences"
             android:maxLines="4"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/send_button"
+            app:layout_constraintEnd_toStartOf="@id/send_btn"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
 
         <ImageButton
-            android:id="@+id/send_button"
+            android:id="@+id/send_btn"
             android:layout_width="35dp"
             android:layout_height="35dp"
             android:layout_marginStart="8dp"
