@@ -2,6 +2,8 @@ package com.example.momolabfe.ui.consult.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.TextView
+import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -59,7 +61,7 @@ class ChatAdapter :
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: ChatMessage) {
-            binding.agentMsgTv.text = item.text
+            setMarkdownBold(binding.agentMsgTv, item.text)
         }
     }
 
@@ -70,5 +72,15 @@ class ChatAdapter :
         fun bind(item: ChatMessage) {
             binding.userMsgTv.text = item.text
         }
+    }
+
+    private fun setMarkdownBold(textView: TextView, raw: String) {
+        // 볼드체 변환
+        val withBold = raw.replace(Regex("\\*\\*(.+?)\\*\\*"), "<b>$1</b>")
+
+        // 줄바꿈도 HTML로 변환
+        val html = withBold.replace("\n", "<br>")
+
+        textView.text = HtmlCompat.fromHtml(html, HtmlCompat.FROM_HTML_MODE_LEGACY)
     }
 }
