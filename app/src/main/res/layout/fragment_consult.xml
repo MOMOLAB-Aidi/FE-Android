@@ -227,6 +227,8 @@
             android:background="@drawable/ic_send_sv"
             android:contentDescription="전송"
             android:src="@drawable/ic_send_sv"
+            android:enabled="false"
+            android:alpha="0.5"
             app:layout_constraintBottom_toBottomOf="@id/message_input"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/message_input"

@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -49,6 +50,7 @@ class ConsultFragment : Fragment() {
         setupRecyclerView()
         setupObservers()
         showQuickQuestions()
+        setupSendButtonState()
 
         // 처음 진입 시 세션 없으면 상담 세션 생성
         if (currentSessionId == null) {
@@ -58,11 +60,6 @@ class ConsultFragment : Fragment() {
         binding.sendBtn.setOnClickListener {
 
             val message = binding.messageInput.text.toString().trim()
-
-            if (message.isBlank()) {
-                Toast.makeText(requireContext(), "내용을 입력해주세요.", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
 
             val sessionId = currentSessionId
             if (sessionId.isNullOrBlank()) {
@@ -114,6 +111,23 @@ class ConsultFragment : Fragment() {
             adapter = chatAdapter
             // 리스트가 길어져도 항상 아래쪽이 기준이 되게
             (layoutManager as? LinearLayoutManager)?.stackFromEnd = true
+        }
+    }
+
+    private fun setupSendButtonState() {
+        fun updateState(text: CharSequence?) {
+            val hasText = !text.isNullOrBlank()
+
+            binding.sendBtn.isEnabled = hasText
+            binding.sendBtn.alpha = if (hasText) 1f else 0.5f
+        }
+
+        // 초기 상태 세팅
+        updateState(binding.messageInput.text)
+
+        // 텍스트 변경 감지
+        binding.messageInput.addTextChangedListener { text ->
+            updateState(text)
         }
     }
 
