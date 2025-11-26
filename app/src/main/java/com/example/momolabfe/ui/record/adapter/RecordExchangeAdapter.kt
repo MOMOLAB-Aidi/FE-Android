@@ -7,7 +7,7 @@ import android.widget.EditText
 import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.RecyclerView
 import com.example.momolabfe.R
-import com.example.momolabfe.remote.record.model.OcrRecordExchangeData
+import com.example.momolabfe.remote.record.data.OcrRecordExchangeData
 import com.example.momolabfe.databinding.ItemRecordExchangeBinding
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter

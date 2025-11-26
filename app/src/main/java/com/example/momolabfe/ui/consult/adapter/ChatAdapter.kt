@@ -75,12 +75,23 @@ class ChatAdapter :
     }
 
     private fun setMarkdownBold(textView: TextView, raw: String) {
-        // 볼드체 변환
-        val withBold = raw.replace(Regex("\\*\\*(.+?)\\*\\*"), "<b>$1</b>")
+        var text = raw
 
-        // 줄바꿈도 HTML로 변환
-        val html = withBold.replace("\n", "<br>")
+        // **강조** → <b>강조</b>
+        text = text.replace(Regex("\\*\\*(.+?)\\*\\*")) { match ->
+            "<b>${match.groupValues[1]}</b>"
+        }
 
+        // *강조* → <b>강조</b>
+        // 앞뒤에 * 이 하나 더 붙어 있는 경우(즉 **강조**)는 제외
+        text = text.replace(
+            Regex("(?<!\\*)\\*(?!\\*)(.+?)(?<!\\*)\\*(?!\\*)")
+        ) { match ->
+            "<b>${match.groupValues[1]}</b>"
+        }
+
+        // 줄바꿈 처리
+        val html = text.replace("\n", "<br>")
         textView.text = HtmlCompat.fromHtml(html, HtmlCompat.FROM_HTML_MODE_LEGACY)
     }
 }

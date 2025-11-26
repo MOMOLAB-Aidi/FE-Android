@@ -126,7 +126,12 @@ class ConsultFragment : Fragment() {
         viewModel.messages.observe(viewLifecycleOwner) { list ->
             chatAdapter.submitList(list)
             if (list.isNotEmpty()) {
-                binding.chatRv.scrollToPosition(list.size - 1)
+                binding.chatRv.post {
+                    binding.chatRv.scrollToPosition(list.size - 1)
+                }
+                binding.chatRv.postDelayed({
+                    binding.chatRv.scrollToPosition(list.size - 1)
+                }, 50)
             }
         }
 

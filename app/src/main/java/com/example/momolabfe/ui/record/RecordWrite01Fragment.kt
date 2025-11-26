@@ -27,10 +27,9 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.example.momolabfe.R
 import com.example.momolabfe.databinding.DialogCalendarBinding
 import com.example.momolabfe.databinding.FragmentRecordWrite01Binding
-import com.example.momolabfe.remote.record.model.DayWeek
-import com.example.momolabfe.remote.record.model.GetCalendarResponse
-import com.example.momolabfe.remote.record.model.RecordCreateRequest
-import com.example.momolabfe.remote.record.model.Turbidity
+import com.example.momolabfe.remote.record.data.DayWeek
+import com.example.momolabfe.remote.record.data.GetCalendarResponse
+import com.example.momolabfe.remote.record.data.Turbidity
 import com.example.momolabfe.ui.record.data.RecordCommonDraft
 import com.example.momolabfe.ui.record.viewModel.RecordViewModel
 import com.example.momolabfe.utils.dpToPx

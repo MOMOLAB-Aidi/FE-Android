@@ -1,4 +1,4 @@
-package com.example.momolabfe.remote.record.model
+package com.example.momolabfe.remote.record.data
 
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable

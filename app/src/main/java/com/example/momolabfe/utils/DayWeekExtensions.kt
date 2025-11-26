@@ -1,6 +1,6 @@
 package com.example.momolabfe.utils
 
-import com.example.momolabfe.remote.record.model.DayWeek
+import com.example.momolabfe.remote.record.data.DayWeek
 import java.time.DayOfWeek
 
 fun weekdayShortKorean(dow: DayOfWeek): String = when (dow) {

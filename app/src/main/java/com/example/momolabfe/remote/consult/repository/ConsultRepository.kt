@@ -65,4 +65,7 @@ class ConsultRepository @Inject constructor(
         }
         response.body() ?: throw ApiException(response.code(), "빈 본문")
     }
+
+//    // 전체 상담 기록 목록 조회
+//    suspend fun getConsultList
 }
