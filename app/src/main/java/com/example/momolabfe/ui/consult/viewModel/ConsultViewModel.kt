@@ -39,7 +39,7 @@ class ConsultViewModel @Inject constructor(
 
     // ChatMessage 고유 id 생성용 시퀀스
     private var nextMessageId: Long = 0L
-    private fun nextId(): Long = ++nextMessageId
+    private fun nextId(): Long = nextMessageId++
 
     // 공통 메시지 추가 함수
     private fun addMessageInternal(text: String, isUser: Boolean) {
@@ -119,6 +119,7 @@ class ConsultViewModel @Inject constructor(
             // 마지막이 에이전트 말풍선이면 내용만 갱신 (id 유지!)
             val last = current.last()
             current[current.lastIndex] = last.copy(text = fullText)
+            _messages.value = current
         } else {
             // 마지막이 사용자이거나 리스트가 비어 있으면 새 에이전트 말풍선 추가
             current.add(

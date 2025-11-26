@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.momolabfe.R
 import com.example.momolabfe.databinding.FragmentConsultBinding
 import com.example.momolabfe.remote.consult.data.ChatRequest
@@ -47,6 +48,7 @@ class ConsultFragment : Fragment() {
 
         setupRecyclerView()
         setupObservers()
+        showQuickQuestions()
 
         // 처음 진입 시 세션 없으면 상담 세션 생성
         if (currentSessionId == null) {
@@ -68,6 +70,8 @@ class ConsultFragment : Fragment() {
                 return@setOnClickListener
             }
 
+            hideQuickQuestions()
+
             // 환자가 보낸 메시지를 오른쪽 말풍선으로 먼저 추가
             viewModel.appendUserMessage(message)
 
@@ -87,6 +91,7 @@ class ConsultFragment : Fragment() {
             endCurrentSessionIfNeeded()
             viewModel.resetMessages()
             viewModel.startConsult()
+            showQuickQuestions()
         }
 
         // Chip 빠른 질문
@@ -107,22 +112,21 @@ class ConsultFragment : Fragment() {
     private fun setupRecyclerView() {
         binding.chatRv.apply {
             adapter = chatAdapter
+            // 리스트가 길어져도 항상 아래쪽이 기준이 되게
+            (layoutManager as? LinearLayoutManager)?.stackFromEnd = true
         }
     }
 
     private fun setupObservers() {
         viewModel.startConsult.observe(viewLifecycleOwner) { response ->
             currentSessionId = response.sessionId
-
             viewModel.resetMessages() // 새 세션이면 이전 채팅 비우기
         }
 
         viewModel.messages.observe(viewLifecycleOwner) { list ->
             chatAdapter.submitList(list)
             if (list.isNotEmpty()) {
-                binding.chatRv.post {
-                    binding.chatRv.scrollToPosition(list.size - 1)
-                }
+                binding.chatRv.scrollToPosition(list.size - 1)
             }
         }
 
@@ -146,6 +150,18 @@ class ConsultFragment : Fragment() {
 
         // 클라이언트 쪽 상태 초기화
         currentSessionId = null
+    }
+
+    // 빠른 질문 영역 숨기기
+    private fun hideQuickQuestions() {
+        binding.quickQuestionLabel.visibility = View.GONE
+        binding.quickQuestionGroup.visibility = View.GONE
+    }
+
+    // 빠른 질문 영역 보이기 (새 상담 등에서 사용)
+    private fun showQuickQuestions() {
+        binding.quickQuestionLabel.visibility = View.VISIBLE
+        binding.quickQuestionGroup.visibility = View.VISIBLE
     }
 
     override fun onDestroyView() {
