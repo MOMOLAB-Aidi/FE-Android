@@ -1,5 +1,6 @@
 package com.example.momolabfe.ui.consult.adapter
 
+import android.graphics.Paint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -26,7 +27,7 @@ class ConsultHistoryAdapter(
         }
 
         private val INPUT_FORMATTER: DateTimeFormatter =
-            DateTimeFormatter.ISO_LOCAL_DATE_TIME  // "2025-11-19T17:22:00" 형태 가정
+            DateTimeFormatter.ISO_LOCAL_DATE_TIME
 
         private val DATE_FORMATTER: DateTimeFormatter =
             DateTimeFormatter.ofPattern("yyyy년 MM월 dd일", Locale.KOREA)
@@ -40,21 +41,21 @@ class ConsultHistoryAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: GetConsultResponse) {
-            // 제목 (지금은 고정 문구, 원하면 "상담 #1" 같은 걸로 바꿀 수 있음)
-            binding.titleTv.text = "새로운 상담"
+            val title = item.firstUserQuestion
 
-            // 날짜/시간 표시
+            binding.titleTv.apply {
+                text = title
+                paintFlags = paintFlags or Paint.UNDERLINE_TEXT_FLAG
+            }
+
             binding.dateTv.text = formatStartedAt(item.startedAt)
 
-            // 메시지 개수 표시: "• 1개 메시지"
             binding.messageCountTv.text = "• ${item.messageCount}개 메시지"
 
-            // 카드 전체 클릭 → 해당 세션 열기 등
-            binding.root.setOnClickListener {
+            binding.titleTv.setOnClickListener {
                 onClick(item)
             }
 
-            // 삭제 아이콘 클릭
             binding.deleteIv.setOnClickListener {
                 onDelete(item)
             }
