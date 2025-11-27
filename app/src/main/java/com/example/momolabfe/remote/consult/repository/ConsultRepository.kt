@@ -85,4 +85,13 @@ class ConsultRepository @Inject constructor(
         }
         response.body() ?: throw ApiException(response.code(), "빈 본문")
     }
+
+    // 특정 세션 상담 기록 삭제
+    suspend fun deleteConsult(sessionId: String): Result<Unit> = runCatching {
+        val response = consultService.deleteConsult(sessionId)
+        if (!response.isSuccessful) {
+            throw ApiException(response.code(), "특정 세션 상담 기록 삭제 실패: HTTP ${response.code()}")
+        }
+        Unit
+    }
 }
