@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="20dp"
+    android:layout_marginTop="10dp"
     android:backgroundTint="@color/white"
     app:cardCornerRadius="10dp"
     app:cardElevation="0dp">
@@ -20,8 +20,9 @@
             android:layout_marginStart="20dp"
             android:layout_marginTop="20dp"
             android:text="새로운 상담"
-            android:textColor="@color/secondary_text"
+            android:textColor="@color/text_primary"
             android:textSize="15sp"
+            android:textStyle="bold"
             android:fontFamily="@font/noto_sans_kr_regular"
             android:includeFontPadding="false"
             app:layout_constraintStart_toStartOf="parent"
@@ -41,13 +42,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
+            android:layout_marginBottom="20dp"
             android:text="2025년 11월 19일\n오후 17:22"
             android:textColor="@color/secondary_text"
             android:textSize="12sp"
             android:fontFamily="@font/noto_sans_kr_regular"
             android:includeFontPadding="false"
             app:layout_constraintStart_toEndOf="@id/date_iv"
-            app:layout_constraintTop_toTopOf="@id/date_iv"/>
+            app:layout_constraintTop_toTopOf="@id/date_iv"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
         <TextView
             android:id="@+id/message_count_tv"
@@ -59,7 +62,7 @@
             android:textSize="12sp"
             android:fontFamily="@font/noto_sans_kr_regular"
             android:includeFontPadding="false"
-            app:layout_constraintTop_toTopOf="@id/date_iv"
+            app:layout_constraintTop_toTopOf="@id/date_tv"
             app:layout_constraintEnd_toEndOf="@id/delete_iv"/>
 
         <ImageView
@@ -68,7 +71,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="20dp"
             android:src="@drawable/ic_trash_gray_sv"
-            app:layout_constraintTop_toTopOf="@id/title_tv"
+            app:layout_constraintTop_toTopOf="@id/date_tv"
             app:layout_constraintEnd_toEndOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

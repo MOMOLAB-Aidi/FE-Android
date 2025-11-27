@@ -31,5 +31,5 @@ interface ConsultService {
     suspend fun getConsultList(@Query("skip") skip: Int, @Query("limit") limit: Int): Response<List<GetConsultResponse>>
 
     @GET("/api/v1/consults/history/{session_id}")
-    suspend fun getConsult(@Path("session_id") sessionId: String): Response<ConsultDetailResponse>
+    suspend fun getConsult(@Path("session_id") sessionId: String): Response<List<ConsultDetailResponse>>
 }

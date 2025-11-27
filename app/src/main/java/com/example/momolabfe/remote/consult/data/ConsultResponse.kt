@@ -15,7 +15,8 @@ data class SessionEndResponse (
 data class GetConsultResponse (
     @SerializedName("session_id") val sessionId: String,
     @SerializedName("started_at") val startedAt: String,
-    @SerializedName("message_count") val messageCount: Int
+    @SerializedName("message_count") val messageCount: Int,
+    @SerializedName("first_user_question") val firstUserQuestion: String
 )
 
 data class ConsultDetailResponse (
