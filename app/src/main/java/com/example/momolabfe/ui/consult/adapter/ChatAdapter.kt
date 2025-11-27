@@ -66,6 +66,14 @@ class ChatAdapter :
         }
     }
 
+    // 애니메이션 정리
+    override fun onViewRecycled(holder: RecyclerView.ViewHolder) {
+        super.onViewRecycled(holder)
+        if (holder is AgentViewHolder) {
+            holder.itemView.findViewById<TextView>(R.id.agent_msg_tv)?.clearAnimation()
+        }
+    }
+
     inner class AgentViewHolder(
         private val binding: ItemChatAgentBinding
     ) : RecyclerView.ViewHolder(binding.root) {

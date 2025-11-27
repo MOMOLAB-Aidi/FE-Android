@@ -101,16 +101,16 @@ class ConsultFragment : Fragment() {
 
         // Chip 빠른 질문
         binding.chip1.setOnClickListener {
-            setQuickQuestionAndSend("제수량이 잘 안 나와요")
+            setQuickQuestion("제수량이 잘 안 나와요")
         }
         binding.chip2.setOnClickListener {
-            setQuickQuestionAndSend("식단 관리하는 방법")
+            setQuickQuestion("식단 관리하는 방법")
         }
         binding.chip3.setOnClickListener {
-            setQuickQuestionAndSend("복통이 있어요")
+            setQuickQuestion("복통이 있어요")
         }
         binding.chip4.setOnClickListener {
-            setQuickQuestionAndSend("혈압이 높아요")
+            setQuickQuestion("혈압이 높아요")
         }
     }
 
@@ -157,6 +157,11 @@ class ConsultFragment : Fragment() {
                 }
                 lastItemCount = newSize
             }
+
+            // 스트리밍 완료 시 버튼 상태 복원
+            if (!viewModel.isStreamingNow()) {
+                setupSendButtonState()
+            }
         }
 
         viewModel.errorMessage.observe(viewLifecycleOwner) { errorMsg ->
@@ -167,7 +172,7 @@ class ConsultFragment : Fragment() {
         }
     }
 
-    private fun setQuickQuestionAndSend(text: String) {
+    private fun setQuickQuestion(text: String) {
         binding.messageInput.setText(text)
         binding.messageInput.setSelection(text.length)
     }
