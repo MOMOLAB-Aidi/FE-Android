@@ -168,4 +168,8 @@ class ConsultViewModel @Inject constructor(
         nextMessageId = 0L
         isStreaming = false
     }
+
+    fun clearError() {
+        _errorMessage.value = null
+    }
 }

@@ -1,6 +1,5 @@
 package com.example.momolabfe.remote.consult.repository
 
-import android.util.Log
 import com.example.momolabfe.remote.consult.data.ChatRequest
 import com.example.momolabfe.remote.consult.data.SessionEndRequest
 import com.example.momolabfe.remote.consult.data.SessionEndResponse

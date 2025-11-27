@@ -1,7 +1,9 @@
 package com.example.momolabfe.ui.consult.adapter
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.TextView
 import androidx.core.text.HtmlCompat
@@ -15,6 +17,13 @@ import com.example.momolabfe.ui.consult.data.ChatMessage
 
 class ChatAdapter :
     ListAdapter<ChatMessage, RecyclerView.ViewHolder>(DiffCallback) {
+
+    private var typingAnimation: Animation? = null
+    private fun getTypingAnimation(context: Context): Animation {
+        return typingAnimation ?: AnimationUtils.loadAnimation(context, R.anim.typing_blink).also {
+            typingAnimation = it
+        }
+    }
 
     companion object {
         private const val TYPE_AGENT = 0
@@ -65,12 +74,7 @@ class ChatAdapter :
             if (item.isTyping) {
                 // 타이핑 인디케이터 + 애니메이션 효과
                 binding.agentMsgTv.text = "• • •"
-
-                val anim = AnimationUtils.loadAnimation(
-                    binding.root.context,
-                    R.anim.typing_blink
-                )
-                binding.agentMsgTv.startAnimation(anim)
+                binding.agentMsgTv.startAnimation(getTypingAnimation(binding.root.context))
             } else {
                 // 애니메이션 제거 + 실제 응답 표시
                 binding.agentMsgTv.clearAnimation()
@@ -89,7 +93,11 @@ class ChatAdapter :
     }
 
     private fun setMarkdownBold(textView: TextView, raw: String) {
+        // HTML 특수문자 이스케이프
         var text = raw
+            .replace("&", "&amp;")
+            .replace("<", "&lt;")
+            .replace(">", "&gt;")
 
         // **강조** → <b>강조</b>
         text = text.replace(Regex("\\*\\*(.+?)\\*\\*")) { match ->

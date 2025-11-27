@@ -25,7 +25,7 @@ class ConsultFragment : Fragment() {
 
     private val viewModel: ConsultViewModel by activityViewModels()
 
-    // 발급받은 세션 ID 저장
+    // 발급받은 세션 ID 관리
     private var currentSessionId: String? = null
 
     private val chatAdapter by lazy { ChatAdapter() }
@@ -161,7 +161,8 @@ class ConsultFragment : Fragment() {
 
         viewModel.errorMessage.observe(viewLifecycleOwner) { errorMsg ->
             if (errorMsg != null) {
-                Log.e("CONSULT_FRAGMENT", errorMsg)
+                Toast.makeText(requireContext(), errorMsg, Toast.LENGTH_SHORT).show()
+                viewModel.clearError()
             }
         }
     }

@@ -128,6 +128,7 @@ class RecordInfoFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        activity?.findViewById<BottomNavigationView>(R.id.main_bnv)?.visibility = View.VISIBLE // 가시성 복원
         _binding = null
     }
 }
