@@ -33,10 +33,10 @@ class ConsultFragment : Fragment() {
 
     // 발급받은 세션 ID 관리
     private var currentSessionId: String? = null
-
     private val chatAdapter by lazy { ChatAdapter() }
 
     private var lastItemCount: Int = 0 // 마지막 아이템 개수 기억
+    private var historyDialog: Dialog? = null // 다이얼로그 생명주기 관리 용도
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -210,7 +210,9 @@ class ConsultFragment : Fragment() {
     }
 
     private fun showConsultHistoryDialog() {
+        historyDialog?.dismiss()
         val dialog = Dialog(requireContext())
+        historyDialog = dialog
         val inflater = LayoutInflater.from(requireContext())
         val view = inflater.inflate(R.layout.dialog_consult_history, null)
 
@@ -252,8 +254,6 @@ class ConsultFragment : Fragment() {
             itemAnimator = null
         }
 
-        // 중복 observe 방지
-        viewModel.history.removeObservers(viewLifecycleOwner)
         viewModel.history.observe(viewLifecycleOwner) { list ->
             if (dialog.isShowing) {
                 historyAdapter.submitList(list)
@@ -275,6 +275,8 @@ class ConsultFragment : Fragment() {
 
     override fun onDestroyView() {
         endCurrentSessionIfNeeded()
+        historyDialog?.dismiss()
+        historyDialog = null
         super.onDestroyView()
         _binding = null
     }
