@@ -1,6 +1,7 @@
 package com.example.momolabfe.remote.consult.repository
 
 import com.example.momolabfe.remote.consult.data.ChatRequest
+import com.example.momolabfe.remote.consult.data.ConsultDetailResponse
 import com.example.momolabfe.remote.consult.data.GetConsultResponse
 import com.example.momolabfe.remote.consult.data.SessionEndRequest
 import com.example.momolabfe.remote.consult.data.SessionEndResponse
@@ -72,6 +73,15 @@ class ConsultRepository @Inject constructor(
         val response = consultService.getConsultList(skip, limit)
         if (!response.isSuccessful) {
             throw ApiException(response.code(), "상담 기록 목록 조회 실패: HTTP ${response.code()}")
+        }
+        response.body() ?: throw ApiException(response.code(), "빈 본문")
+    }
+
+    // 특정 상담 기록 상세 조회
+    suspend fun getConsult(sessionId: String): Result<List<ConsultDetailResponse>> = runCatching {
+        val response = consultService.getConsult(sessionId)
+        if (!response.isSuccessful) {
+            throw ApiException(response.code(), "상담 기록 상세 조회 실패: HTTP ${response.code()}")
         }
         response.body() ?: throw ApiException(response.code(), "빈 본문")
     }

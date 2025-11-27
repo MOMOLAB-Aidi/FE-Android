@@ -5,7 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.momolabfe.remote.consult.data.ChatRequest
+import com.example.momolabfe.remote.consult.data.ConsultDetailResponse
 import com.example.momolabfe.remote.consult.data.GetConsultResponse
+import com.example.momolabfe.remote.consult.data.MessageRole
 import com.example.momolabfe.remote.consult.data.SessionEndRequest
 import com.example.momolabfe.remote.consult.data.SessionEndResponse
 import com.example.momolabfe.remote.consult.data.StartConsultResponse
@@ -31,6 +33,9 @@ class ConsultViewModel @Inject constructor(
 
     private val _history = MutableLiveData<List<GetConsultResponse>>()
     val history: LiveData<List<GetConsultResponse>> get() = _history
+
+    private val _consult = MutableLiveData<List<ConsultDetailResponse>>()
+    val consult: LiveData<List<ConsultDetailResponse>> get() = _consult
 
     // 에이전트 답변(스트리밍으로 누적)
     private val _agentMessage = MutableLiveData<String>()
@@ -111,6 +116,31 @@ class ConsultViewModel @Inject constructor(
                 _history.value = list
             }.onFailure { e ->
                 _errorMessage.value = e.localizedMessage ?: "상담 기록을 불러오지 못했습니다."
+            }
+        }
+    }
+
+    // 특정 상담 기록 상세 조회
+    fun getConsult(sessionId: String) {
+        viewModelScope.launch {
+            val result = consultRepository.getConsult(sessionId)
+            result.onSuccess { detailList ->
+                _consult.value = detailList
+
+                resetMessages()
+
+                // 서버에서 온 role 기준으로 ChatMessage 변환
+                val mapped = detailList.map { detail ->
+                    ChatMessage(
+                        id = nextId(),
+                        text = detail.content,
+                        isUser = detail.role == MessageRole.USER
+                    )
+                }
+
+                _messages.value = mapped
+            }.onFailure { e ->
+                _errorMessage.value = e.localizedMessage ?: "특정 상담 기록 상세 조회에 실패했습니다."
             }
         }
     }

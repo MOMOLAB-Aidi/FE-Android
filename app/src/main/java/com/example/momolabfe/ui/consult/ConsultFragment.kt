@@ -238,20 +238,12 @@ class ConsultFragment : Fragment() {
         val historyRv = view.findViewById<RecyclerView>(R.id.consult_history_rv)
         val historyAdapter = ConsultHistoryAdapter(
             onClick = { item ->
-                // TODO: 세션 상세 열기. 일단은 토스트만.
-                Toast.makeText(
-                    requireContext(),
-                    "세션 ${item.sessionId} 선택됨",
-                    Toast.LENGTH_SHORT
-                ).show()
+                dialog.dismiss()
+                hideQuickQuestions()
+                viewModel.getConsult(item.sessionId)
             },
             onDelete = { item ->
                 // TODO: 삭제 API 연동 예정
-                Toast.makeText(
-                    requireContext(),
-                    "삭제 준비 중 (${item.sessionId})",
-                    Toast.LENGTH_SHORT
-                ).show()
             }
         )
 
