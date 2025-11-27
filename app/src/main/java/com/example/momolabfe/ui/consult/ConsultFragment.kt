@@ -1,22 +1,29 @@
 package com.example.momolabfe.ui.consult
 
+import android.app.Dialog
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.momolabfe.R
 import com.example.momolabfe.databinding.FragmentConsultBinding
 import com.example.momolabfe.remote.consult.data.ChatRequest
 import com.example.momolabfe.remote.consult.data.SessionEndRequest
 import com.example.momolabfe.ui.consult.adapter.ChatAdapter
+import com.example.momolabfe.ui.consult.adapter.ConsultHistoryAdapter
 import com.example.momolabfe.ui.consult.viewModel.ConsultViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import androidx.core.graphics.drawable.toDrawable
 
 class ConsultFragment : Fragment() {
 
@@ -32,6 +39,7 @@ class ConsultFragment : Fragment() {
 
     private var lastItemCount: Int = 0 // 마지막 아이템 개수 기억
     private var sendButtonTextWatcher: TextWatcher? = null
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -58,6 +66,10 @@ class ConsultFragment : Fragment() {
         // 처음 진입 시 세션 없으면 상담 세션 생성
         if (currentSessionId == null) {
             viewModel.startConsult()
+        }
+
+        binding.historyIv.setOnClickListener {
+            showConsultHistoryDialog()
         }
 
         binding.sendBtn.setOnClickListener {
@@ -200,6 +212,64 @@ class ConsultFragment : Fragment() {
     private fun showQuickQuestions() {
         binding.quickQuestionLabel.visibility = View.VISIBLE
         binding.quickQuestionGroup.visibility = View.VISIBLE
+    }
+
+    private fun showConsultHistoryDialog() {
+        val dialog = Dialog(requireContext())
+        val inflater = LayoutInflater.from(requireContext())
+        val view = inflater.inflate(R.layout.dialog_consult_history, null)
+
+        dialog.setContentView(view)
+
+        // 배경 둥근 모서리가 잘 보이도록 투명 처리
+        dialog.window?.setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
+        dialog.window?.setLayout(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+
+        // 닫기 버튼
+        val closeIv = view.findViewById<ImageView>(R.id.close_iv)
+        closeIv.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        val historyRv = view.findViewById<RecyclerView>(R.id.consult_history_rv)
+        val historyAdapter = ConsultHistoryAdapter(
+            onClick = { item ->
+                // TODO: 세션 상세 열기. 일단은 토스트만.
+                Toast.makeText(
+                    requireContext(),
+                    "세션 ${item.sessionId} 선택됨",
+                    Toast.LENGTH_SHORT
+                ).show()
+            },
+            onDelete = { item ->
+                // TODO: 삭제 API 연동 예정
+                Toast.makeText(
+                    requireContext(),
+                    "삭제 준비 중 (${item.sessionId})",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        )
+
+        historyRv.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = historyAdapter
+            itemAnimator = null
+        }
+
+        // 중복 observe 방지
+        viewModel.history.removeObservers(viewLifecycleOwner)
+        viewModel.history.observe(viewLifecycleOwner) { list ->
+            if (dialog.isShowing) {
+                historyAdapter.submitList(list)
+            }
+        }
+
+        viewModel.getConsultList(skip = 0, limit = 50)
+        dialog.show()
     }
 
     override fun onDestroyView() {
