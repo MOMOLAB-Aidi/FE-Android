@@ -1,7 +1,7 @@
 package com.example.momolabfe.ui.consult
 
 import android.os.Bundle
-import android.util.Log
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -31,6 +31,7 @@ class ConsultFragment : Fragment() {
     private val chatAdapter by lazy { ChatAdapter() }
 
     private var lastItemCount: Int = 0 // 마지막 아이템 개수 기억
+    private var sendButtonTextWatcher: TextWatcher? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -136,8 +137,10 @@ class ConsultFragment : Fragment() {
         updateState(binding.messageInput.text)
 
         // 텍스트 변경 감지
-        binding.messageInput.addTextChangedListener { text ->
-            updateState(text)
+        if (sendButtonTextWatcher == null) {
+            sendButtonTextWatcher = binding.messageInput.addTextChangedListener { text ->
+                updateState(text)
+            }
         }
     }
 
