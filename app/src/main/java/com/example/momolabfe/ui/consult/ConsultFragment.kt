@@ -2,7 +2,6 @@ package com.example.momolabfe.ui.consult
 
 import android.app.Dialog
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -239,8 +238,13 @@ class ConsultFragment : Fragment() {
         val historyAdapter = ConsultHistoryAdapter(
             onClick = { item ->
                 dialog.dismiss()
-                hideQuickQuestions()
-                viewModel.getConsult(item.sessionId)
+
+                val fragment = ConsultHistoryDetailFragment.newInstance(item.sessionId)
+
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.main_frm, fragment)
+                    .addToBackStack(null)
+                    .commit()
             },
             onDelete = { item ->
                 // TODO: 삭제 API 연동 예정
