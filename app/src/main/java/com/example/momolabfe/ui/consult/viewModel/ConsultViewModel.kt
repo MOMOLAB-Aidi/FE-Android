@@ -14,6 +14,9 @@ import com.example.momolabfe.remote.consult.data.StartConsultResponse
 import com.example.momolabfe.remote.consult.repository.ConsultRepository
 import com.example.momolabfe.ui.consult.data.ChatMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -36,6 +39,9 @@ class ConsultViewModel @Inject constructor(
 
     private val _consult = MutableLiveData<List<ConsultDetailResponse>>()
     val consult: LiveData<List<ConsultDetailResponse>> get() = _consult
+
+    private val _deleteSuccess = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+    val deleteSuccess: SharedFlow<Unit> = _deleteSuccess.asSharedFlow()
 
     // 에이전트 답변(스트리밍으로 누적)
     private val _agentMessage = MutableLiveData<String>()
@@ -141,6 +147,22 @@ class ConsultViewModel @Inject constructor(
                 _messages.value = mapped
             }.onFailure { e ->
                 _errorMessage.value = e.localizedMessage ?: "특정 상담 기록 상세 조회에 실패했습니다."
+            }
+        }
+    }
+
+    // 특정 세션 상담 기록 삭제
+    fun deleteConsult(sessionId: String) {
+        viewModelScope.launch {
+            val result = consultRepository.deleteConsult(sessionId)
+            result.onSuccess {
+                // 리스트 갱신
+                val current = _history.value.orEmpty()
+                _history.value = current.filterNot { it.sessionId == sessionId }
+
+                _deleteSuccess.tryEmit(Unit)
+            }.onFailure { e ->
+                _errorMessage.value = e.localizedMessage ?: "특정 세션 상담 기록 삭제에 실패했습니다."
             }
         }
     }
