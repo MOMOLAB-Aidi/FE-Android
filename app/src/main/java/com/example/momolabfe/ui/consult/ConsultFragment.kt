@@ -30,6 +30,8 @@ class ConsultFragment : Fragment() {
 
     private val chatAdapter by lazy { ChatAdapter() }
 
+    private var lastItemCount: Int = 0 // 마지막 아이템 개수 기억
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -115,8 +117,10 @@ class ConsultFragment : Fragment() {
     private fun setupRecyclerView() {
         binding.chatRv.apply {
             adapter = chatAdapter
-            // 리스트가 길어져도 항상 아래쪽이 기준이 되게
-            (layoutManager as? LinearLayoutManager)?.stackFromEnd = true
+            layoutManager = LinearLayoutManager(requireContext()).apply {
+                stackFromEnd = true   // 항상 아래 기준
+            }
+            itemAnimator = null
         }
     }
 
@@ -143,14 +147,14 @@ class ConsultFragment : Fragment() {
         }
 
         viewModel.messages.observe(viewLifecycleOwner) { list ->
-            chatAdapter.submitList(list)
-            if (list.isNotEmpty()) {
-                binding.chatRv.post {
-                    binding.chatRv.scrollToPosition(list.size - 1)
+            val newSize = list.size
+
+            chatAdapter.submitList(list) {
+                // 새 말풍선이 추가된 경우에만 스크롤
+                if (newSize > lastItemCount && newSize > 0) {
+                    binding.chatRv.scrollToPosition(newSize - 1)
                 }
-                binding.chatRv.postDelayed({
-                    binding.chatRv.scrollToPosition(list.size - 1)
-                }, 50)
+                lastItemCount = newSize
             }
         }
 

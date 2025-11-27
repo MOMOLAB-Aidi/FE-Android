@@ -1,5 +1,6 @@
 package com.example.momolabfe.remote.consult.repository
 
+import android.util.Log
 import com.example.momolabfe.remote.consult.data.ChatRequest
 import com.example.momolabfe.remote.consult.data.SessionEndRequest
 import com.example.momolabfe.remote.consult.data.SessionEndResponse
@@ -49,8 +50,8 @@ class ConsultRepository @Inject constructor(
                     // 백엔드에서 chunk + "\n" 으로 내려줌
                     val line = source.readUtf8Line() ?: break
 
-                    // 한 줄(chunk)씩 내보내기
                     emit(line)
+                    kotlinx.coroutines.delay(100)
                 }
             }
         }

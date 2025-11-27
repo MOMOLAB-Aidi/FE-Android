@@ -62,11 +62,9 @@ class ChatAdapter :
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: ChatMessage) {
-            binding.agentMsgTv.clearAnimation()
-
-            // 타이핑 인디케이터 + 효과 적용
             if (item.isTyping) {
-                binding.agentMsgTv.text = "•••"
+                // 타이핑 인디케이터 + 애니메이션 효과
+                binding.agentMsgTv.text = "• • •"
 
                 val anim = AnimationUtils.loadAnimation(
                     binding.root.context,
@@ -74,6 +72,8 @@ class ChatAdapter :
                 )
                 binding.agentMsgTv.startAnimation(anim)
             } else {
+                // 애니메이션 제거 + 실제 응답 표시
+                binding.agentMsgTv.clearAnimation()
                 setMarkdownBold(binding.agentMsgTv, item.text)
             }
         }

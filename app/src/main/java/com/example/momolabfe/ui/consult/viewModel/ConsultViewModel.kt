@@ -45,9 +45,6 @@ class ConsultViewModel @Inject constructor(
     private var isStreaming: Boolean = false
     fun isStreamingNow(): Boolean = isStreaming
 
-    // 지금 스트리밍으로 채우고 있는 에이전트 말풍선 id
-    private var streamingMessageId: Long? = null
-
     // 상담 시작
     fun startConsult() {
         viewModelScope.launch {
@@ -77,18 +74,16 @@ class ConsultViewModel @Inject constructor(
             showAgentTyping()
 
             try {
+                // chunk 들어올 때마다 버퍼 누적 + 그 버퍼로 마지막 에이전트 말풍선 갱신
                 consultRepository.chatStream(request)
                     .collect { chunk ->
                         buffer += chunk
                         updateAgentStreamingMessage(buffer)
                     }
-            } catch (e: ApiException) {
-                _errorMessage.value = e.localizedMessage ?: "에이전트 대화 중 오류가 발생했습니다."
             } catch (e: Exception) {
-                _errorMessage.value = e.localizedMessage ?: "알 수 없는 오류가 발생했습니다."
+                _errorMessage.value = e.localizedMessage ?: "에이전트 대화 중 오류가 발생했습니다."
             } finally {
                 isStreaming = false
-                streamingMessageId = null
             }
         }
     }
@@ -107,14 +102,13 @@ class ConsultViewModel @Inject constructor(
 
 
     // 공통 메시지 추가 함수
-    private fun addMessageInternal(text: String, isUser: Boolean, isTyping: Boolean = false) {
+    private fun addMessageInternal(text: String, isUser: Boolean) {
         val current = _messages.value.orEmpty().toMutableList()
         current.add(
             ChatMessage(
                 id = nextId(),
                 text = text,
                 isUser = isUser,
-                isTyping = isTyping
             )
         )
         _messages.value = current
@@ -130,13 +124,12 @@ class ConsultViewModel @Inject constructor(
         addMessageInternal(text, isUser = false)
     }
 
-    // 에이전트 타이핑 말풍선
     private fun showAgentTyping() {
         val current = _messages.value.orEmpty().toMutableList()
         current.add(
             ChatMessage(
                 id = nextId(),
-                text = "입력 중...",
+                text = "입력 중...",   // 처음에는 인디케이터 텍스트만
                 isUser = false,
                 isTyping = true
             )
@@ -144,7 +137,7 @@ class ConsultViewModel @Inject constructor(
         _messages.value = current
     }
 
-    // 응답 갱신
+    // 스트리밍 중 실시간 텍스트 갱신
     private fun updateAgentStreamingMessage(fullText: String) {
         val current = _messages.value.orEmpty().toMutableList()
 
@@ -152,7 +145,7 @@ class ConsultViewModel @Inject constructor(
             val last = current.last()
             current[current.lastIndex] = last.copy(
                 text = fullText,
-                isTyping = false // 여기서 애니메이션 OFF
+                isTyping = false
             )
         } else {
             // 에이전트 말풍선이 없으면 새로 하나 생성
@@ -174,7 +167,6 @@ class ConsultViewModel @Inject constructor(
         _messages.value = emptyList()
         _agentMessage.value = ""
         nextMessageId = 0L
-        streamingMessageId = null
         isStreaming = false
     }
 }
