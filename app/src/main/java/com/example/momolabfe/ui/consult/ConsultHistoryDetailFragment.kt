@@ -17,6 +17,12 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class ConsultHistoryDetailFragment : Fragment() {
 
+    private var _binding: FragmentConsultHistoryDetailBinding? = null
+    private val binding get() = _binding!!
+
+    private val viewModel: ConsultViewModel by activityViewModels()
+    private val chatAdapter by lazy { ChatAdapter() }
+
     companion object {
         private const val ARG_SESSION_ID = "session_id"
 
@@ -26,12 +32,6 @@ class ConsultHistoryDetailFragment : Fragment() {
             }
         }
     }
-
-    private var _binding: FragmentConsultHistoryDetailBinding? = null
-    private val binding get() = _binding!!
-
-    private val viewModel: ConsultViewModel by activityViewModels()
-    private val chatAdapter by lazy { ChatAdapter() }
 
     override fun onCreateView(
         inflater: LayoutInflater,

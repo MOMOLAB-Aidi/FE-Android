@@ -62,8 +62,7 @@
             android:textSize="12sp"
             android:fontFamily="@font/noto_sans_kr_regular"
             android:includeFontPadding="false"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="@id/date_tv"
             app:layout_constraintEnd_toEndOf="@id/delete_iv"/>
 
         <ImageView
@@ -72,8 +71,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="20dp"
             android:src="@drawable/ic_trash_gray_sv"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="@id/date_tv"
             app:layout_constraintEnd_toEndOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
