@@ -244,7 +244,7 @@ class ConsultFragment : Fragment() {
                     .commit()
             },
             onDelete = { item ->
-                // TODO: 삭제 API 연동 예정
+                viewModel.deleteConsult(item.sessionId)
             }
         )
 

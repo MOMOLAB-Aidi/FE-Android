@@ -156,6 +156,10 @@ class ConsultViewModel @Inject constructor(
         viewModelScope.launch {
             val result = consultRepository.deleteConsult(sessionId)
             result.onSuccess {
+                // 리스트 갱신
+                val current = _history.value.orEmpty()
+                _history.value = current.filterNot { it.sessionId == sessionId }
+
                 _deleteSuccess.tryEmit(Unit)
             }.onFailure { e ->
                 _errorMessage.value = e.localizedMessage ?: "특정 세션 상담 기록 삭제에 실패했습니다."
