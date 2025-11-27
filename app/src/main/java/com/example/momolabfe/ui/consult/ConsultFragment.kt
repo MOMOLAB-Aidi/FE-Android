@@ -24,6 +24,7 @@ import com.example.momolabfe.ui.consult.adapter.ConsultHistoryAdapter
 import com.example.momolabfe.ui.consult.viewModel.ConsultViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.core.graphics.drawable.toDrawable
+import com.example.momolabfe.utils.dpToPx
 
 class ConsultFragment : Fragment() {
 
@@ -270,6 +271,15 @@ class ConsultFragment : Fragment() {
 
         viewModel.getConsultList(skip = 0, limit = 50)
         dialog.show()
+
+        // 양옆 여백 + 높이 설정
+        val metrics = resources.displayMetrics
+        val screenWidth = metrics.widthPixels
+        val horizontalMarginPx = dpToPx(20) * 2
+        val dialogWidth = screenWidth - horizontalMarginPx
+        val dialogHeight = dpToPx(380)
+
+        dialog.window?.setLayout(dialogWidth, dialogHeight)
     }
 
     override fun onDestroyView() {
