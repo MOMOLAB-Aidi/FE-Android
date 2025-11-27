@@ -2,11 +2,13 @@ package com.example.momolabfe.ui.consult.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.TextView
 import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.momolabfe.R
 import com.example.momolabfe.databinding.ItemChatAgentBinding
 import com.example.momolabfe.databinding.ItemChatUserBinding
 import com.example.momolabfe.ui.consult.data.ChatMessage
@@ -20,7 +22,6 @@ class ChatAdapter :
 
         object DiffCallback : DiffUtil.ItemCallback<ChatMessage>() {
             override fun areItemsTheSame(oldItem: ChatMessage, newItem: ChatMessage): Boolean {
-                // 간단하게는 equals 기준으로
                 return oldItem.id == newItem.id
             }
 
@@ -61,7 +62,20 @@ class ChatAdapter :
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: ChatMessage) {
-            setMarkdownBold(binding.agentMsgTv, item.text)
+            binding.agentMsgTv.clearAnimation()
+
+            // 타이핑 인디케이터 + 효과 적용
+            if (item.isTyping) {
+                binding.agentMsgTv.text = "•••"
+
+                val anim = AnimationUtils.loadAnimation(
+                    binding.root.context,
+                    R.anim.typing_blink
+                )
+                binding.agentMsgTv.startAnimation(anim)
+            } else {
+                setMarkdownBold(binding.agentMsgTv, item.text)
+            }
         }
     }
 

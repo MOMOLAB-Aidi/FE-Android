@@ -61,6 +61,12 @@ class ConsultFragment : Fragment() {
 
             val message = binding.messageInput.text.toString().trim()
 
+            // 스트리밍 중이면 막기
+            if (viewModel.isStreamingNow()) {
+                Toast.makeText(requireContext(), "이전 답변을 생성 중입니다.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
             val sessionId = currentSessionId
             if (sessionId.isNullOrBlank()) {
                 Toast.makeText(requireContext(), "상담 세션이 없습니다. 잠시 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
@@ -77,11 +83,11 @@ class ConsultFragment : Fragment() {
                 message = message
             )
 
-            // 채팅 스트리밍 시작
-            viewModel.chatStream(request)
+            binding.sendBtn.isEnabled = false // 전송 버튼 잠깐 비활성화
 
-            // 입력창 비우기
-            binding.messageInput.text?.clear()
+            viewModel.chatStream(request) // 채팅 스트리밍 시작
+
+            binding.messageInput.text?.clear() // 입력창 비우기
         }
 
         binding.plusIv.setOnClickListener {
@@ -134,7 +140,6 @@ class ConsultFragment : Fragment() {
     private fun setupObservers() {
         viewModel.startConsult.observe(viewLifecycleOwner) { response ->
             currentSessionId = response.sessionId
-            viewModel.resetMessages() // 새 세션이면 이전 채팅 비우기
         }
 
         viewModel.messages.observe(viewLifecycleOwner) { list ->
