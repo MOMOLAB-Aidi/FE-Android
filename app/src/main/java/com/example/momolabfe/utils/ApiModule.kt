@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import com.example.momolabfe.remote.auth.repository.PreferenceRepository
 import com.example.momolabfe.remote.auth.repository.SharedPreferencesRepository
 import com.example.momolabfe.remote.auth.service.AuthService
+import com.example.momolabfe.remote.consult.service.ConsultService
 import com.example.momolabfe.remote.user.service.UserService
 import dagger.Module
 import dagger.Provides
@@ -42,6 +43,12 @@ class ApiModule {
     @NoAuthRetrofit
     fun provideNoAuthServiceForInterceptor(@NoAuthRetrofit retrofit: Retrofit): AuthService {
         return retrofit.create(AuthService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideConsultApi(@PythonRetrofit retrofit: Retrofit): ConsultService {
+        return retrofit.create(ConsultService::class.java)
     }
 
     // 로그아웃 용도

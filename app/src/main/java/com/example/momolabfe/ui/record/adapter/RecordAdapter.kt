@@ -7,7 +7,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.momolabfe.R
 import com.example.momolabfe.databinding.ItemRecordListBinding
-import com.example.momolabfe.remote.record.model.RecordGetResponse
+import com.example.momolabfe.remote.record.data.RecordGetResponse
 import com.example.momolabfe.ui.record.RecordInfoFragment
 
 class RecordAdapter(
