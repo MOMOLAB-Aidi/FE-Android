@@ -34,6 +34,8 @@ class ConsultHistoryAdapter(
 
         private val TIME_FORMATTER: DateTimeFormatter =
             DateTimeFormatter.ofPattern("a hh:mm", Locale.KOREA)
+
+        private const val MAX_TITLE_LENGTH = 20
     }
 
     inner class HistoryViewHolder(
@@ -41,10 +43,17 @@ class ConsultHistoryAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: GetConsultResponse) {
-            val title = item.firstUserQuestion
+            val rawTitle = item.firstUserQuestion.ifBlank { "새로운 상담" }
+
+            val displayTitle = if (rawTitle.length > MAX_TITLE_LENGTH) {
+                rawTitle.take(MAX_TITLE_LENGTH) + "…" // 20자 + …
+            } else {
+                rawTitle
+            }
 
             binding.titleTv.apply {
-                text = title
+                text = displayTitle
+
                 paintFlags = paintFlags or Paint.UNDERLINE_TEXT_FLAG
             }
 

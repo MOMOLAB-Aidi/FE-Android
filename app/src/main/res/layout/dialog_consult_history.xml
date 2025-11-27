@@ -10,7 +10,7 @@
         android:id="@+id/consult_history_iv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="30dp"
+        android:layout_marginStart="20dp"
         android:layout_marginTop="30dp"
         android:src="@drawable/ic_history_black_sv"
         app:layout_constraintStart_toStartOf="parent"
@@ -33,7 +33,7 @@
         android:id="@+id/close_iv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="30dp"
+        android:layout_marginEnd="20dp"
         android:src="@drawable/ic_close_gray_sv"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/consult_history_title_tv" />
