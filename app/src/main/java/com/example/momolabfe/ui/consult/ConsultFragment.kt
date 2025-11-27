@@ -144,6 +144,7 @@ class ConsultFragment : Fragment() {
     private fun setupObservers() {
         viewModel.startConsult.observe(viewLifecycleOwner) { response ->
             currentSessionId = response.sessionId
+            viewModel.resetMessages()
         }
 
         viewModel.messages.observe(viewLifecycleOwner) { list ->

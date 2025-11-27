@@ -10,7 +10,6 @@ import com.example.momolabfe.remote.consult.data.SessionEndResponse
 import com.example.momolabfe.remote.consult.data.StartConsultResponse
 import com.example.momolabfe.remote.consult.repository.ConsultRepository
 import com.example.momolabfe.ui.consult.data.ChatMessage
-import com.example.momolabfe.utils.ApiException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
