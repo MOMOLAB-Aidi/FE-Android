@@ -14,10 +14,9 @@ import com.example.momolabfe.ui.record.RecordListFragment
 import com.example.momolabfe.ui.record.adapter.RecentRecordAdapter
 import com.example.momolabfe.ui.record.viewModel.RecordViewModel
 import com.example.momolabfe.ui.setting.SettingFragment
-import com.example.momolabfe.ui.statistics.StatisticsFragment
+import com.example.momolabfe.ui.stats.StatsFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import java.text.SimpleDateFormat
-import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
@@ -83,7 +82,7 @@ class HomeFragment : Fragment() {
 
         binding.detailStatisticsBtn.setOnClickListener {
             parentFragmentManager.beginTransaction()
-                .replace(R.id.main_frm, StatisticsFragment())
+                .replace(R.id.main_frm, StatsFragment())
                 .addToBackStack(null)
                 .commit()
         }

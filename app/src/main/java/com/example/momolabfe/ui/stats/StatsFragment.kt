@@ -1,4 +1,4 @@
-package com.example.momolabfe.ui.statistics
+package com.example.momolabfe.ui.stats
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,7 +9,7 @@ import com.example.momolabfe.R
 import com.example.momolabfe.databinding.FragmentStatisticsBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
-class StatisticsFragment : Fragment() {
+class StatsFragment : Fragment() {
 
     private var _binding: FragmentStatisticsBinding? = null
     private val binding get() = _binding!!
