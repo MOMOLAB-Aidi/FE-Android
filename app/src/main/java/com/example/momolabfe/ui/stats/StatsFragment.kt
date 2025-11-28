@@ -25,6 +25,7 @@ import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 class StatsFragment : Fragment() {
 
@@ -77,7 +78,7 @@ class StatsFragment : Fragment() {
         if (validWeights.isNotEmpty()) {
             val avgWeight = validWeights.average().toFloat()
             binding.weeklyAvgWeightContentTv.text =
-                String.format("체중: %.1fkg", avgWeight)
+                String.format(Locale.getDefault(), "체중: %.1fkg", avgWeight)
         } else {
             binding.weeklyAvgWeightContentTv.text = "체중 기록 없음"
         }
@@ -86,22 +87,18 @@ class StatsFragment : Fragment() {
         if (validUfs.isNotEmpty()) {
             val avgUf = validUfs.average()
             binding.weeklyAvgUfContentTv.text =
-                String.format("%.0fg/일", avgUf)
+                String.format(Locale.getDefault(), "%.0fg/일", avgUf)
         } else {
             binding.weeklyAvgUfContentTv.text = "제수량 기록 없음"
         }
 
         val bp = stats.bpSummary
         binding.bpAvgValueTv.text = if (bp.avgSystolic != null && bp.avgDiastolic != null) {
-            String.format("%.0f/%.0f mmHg", bp.avgSystolic, bp.avgDiastolic)
+            String.format(Locale.getDefault(), "%.0f/%.0f mmHg", bp.avgSystolic, bp.avgDiastolic)
         } else "기록 없음"
 
         binding.bpMaxValueTv.text = if (bp.maxSystolic != null && bp.maxDiastolic != null) {
             "${bp.maxSystolic}/${bp.maxDiastolic} mmHg"
-        } else "기록 없음"
-
-        binding.bpMinValueTv.text = if (bp.minSystolic != null && bp.minDiastolic != null) {
-            "${bp.minSystolic}/${bp.minDiastolic} mmHg"
         } else "기록 없음"
 
         val minSys = bp.minSystolic
@@ -120,7 +117,7 @@ class StatsFragment : Fragment() {
             setupWeightChart(binding.weightChart, labels, weightsForChart)
         } else {
             binding.weightChart.clear()
-            binding.weightChart.setNoDataText("체중 기록이 없습니다.")
+            binding.weightChart.setNoDataText(getString(R.string.no_weight_data))
         }
 
         // 제수량은 날짜 기준으로 항상 7개 막대를 그리고, 값이 없으면 0으로 처리
@@ -128,7 +125,7 @@ class StatsFragment : Fragment() {
             setupUfChart(binding.ufChart, labels, ufsForChart)
         } else {
             binding.ufChart.clear()
-            binding.ufChart.setNoDataText("제수량 기록이 없습니다.")
+            binding.ufChart.setNoDataText(getString(R.string.no_uf_data))
         }
     }
 
@@ -165,7 +162,7 @@ class StatsFragment : Fragment() {
             valueFormatter = object : ValueFormatter() {
                 override fun getPointLabel(entry: Entry?): String {
                     if (entry == null) return ""
-                    return String.format("%.1f", entry.y)
+                    return String.format(Locale.getDefault(), "%.1f", entry.y)
                 }
             }
         }
