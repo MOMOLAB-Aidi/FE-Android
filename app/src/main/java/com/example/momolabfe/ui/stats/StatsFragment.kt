@@ -99,13 +99,13 @@ class StatsFragment : Fragment() {
         } else "기록 없음"
 
         binding.bpMaxValueTv.text = if (bp.maxSystolic != null && bp.maxDiastolic != null) {
-            "${bp.maxSystolic}/${bp.maxDiastolic} mmHg"
+            String.format(Locale.getDefault(), "%d/%d mmHg", bp.maxSystolic, bp.maxDiastolic)
         } else "기록 없음"
 
         val minSys = bp.minSystolic
         val minDia = bp.minDiastolic
         binding.bpMinValueTv.text = if (minSys != null && minDia != null) {
-            "$minSys/$minDia mmHg"
+            String.format(Locale.getDefault(), "%d/%d mmHg", minSys, minDia)
         } else {
             "기록 없음"
         }
