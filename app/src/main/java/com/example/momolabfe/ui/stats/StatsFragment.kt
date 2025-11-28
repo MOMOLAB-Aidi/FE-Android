@@ -8,6 +8,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.momolabfe.R
 import com.example.momolabfe.databinding.FragmentStatsBinding
+import com.example.momolabfe.ui.stats.renderer.RoundedBarChartRenderer
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
@@ -39,7 +40,7 @@ class StatsFragment : Fragment() {
         // TODO: 나중에 API 응답으로 교체
         val labels = listOf("11/08", "11/09", "11/10", "11/11", "11/12", "11/13", "11/14")
         val weights = listOf(58.7f, 58.3f, 57.9f, 57.6f, 57.1f, 56.8f, 56.2f)
-        val ufs = listOf(420f, 560f, 380f, 470f, 610f, 390f, 520f)
+        val ufs = listOf(-420f, 560f, 380f, 470f, 610f, 390f, 520f)
 
         setupWeightChart(binding.weightChart, labels, weights)
         setupUfChart(binding.ufChart, labels, ufs)
@@ -104,14 +105,25 @@ class StatsFragment : Fragment() {
         ufs: List<Float>
     ) {
 
-        // 1. 부호 그대로 넣기
-        val entries = ufs.mapIndexed { index, uf ->
-            BarEntry(index.toFloat(), uf)
+        // 1. Entry 만들기
+        val entries = mutableListOf<BarEntry>()
+        val colors = mutableListOf<Int>()
+
+        // 양수 or 음수 색상 다르게 적용
+        ufs.forEachIndexed { index, uf ->
+            entries += BarEntry(index.toFloat(), uf)
+
+            val c = if (uf >= 0f) {
+                ContextCompat.getColor(chart.context, R.color.uf_positive_graph)
+            } else {
+                ContextCompat.getColor(chart.context, R.color.uf_negative_graph)
+            }
+            colors += c
         }
 
         val dataSet = BarDataSet(entries, "").apply {
             setDrawValues(false)
-            color = ContextCompat.getColor(chart.context, R.color.uf_graph)
+            setColors(colors)
         }
 
         chart.data = BarData(dataSet).apply {
@@ -150,6 +162,13 @@ class StatsFragment : Fragment() {
         chart.description.isEnabled = false
         chart.legend.isEnabled = false
         chart.setTouchEnabled(false)
+
+        // 모서리 둥글게
+        chart.renderer = RoundedBarChartRenderer(
+            chart,
+            chart.animator,
+            chart.viewPortHandler
+        )
 
         chart.invalidate()
     }

@@ -26,5 +26,6 @@
     <color name="dot">#5989F3</color>
 
     <color name="weight_graph">#3B82F6</color>
-    <color name="uf_graph">#6366F1</color>
+    <color name="uf_positive_graph">#6366F1</color>
+    <color name="uf_negative_graph">#E05C63</color>
 </resources>
