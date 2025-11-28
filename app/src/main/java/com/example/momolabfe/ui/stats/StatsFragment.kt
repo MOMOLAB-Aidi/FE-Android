@@ -26,6 +26,7 @@ import com.github.mikephil.charting.formatter.ValueFormatter
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+import kotlin.math.roundToInt
 
 class StatsFragment : Fragment() {
 
@@ -46,8 +47,8 @@ class StatsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // 기본 no-data 문구 세팅
-        binding.weightChart.setNoDataText("체중 기록이 없습니다.")
-        binding.ufChart.setNoDataText("제수량 기록이 없습니다.")
+        binding.weightChart.setNoDataText(getString(R.string.no_weight_data))
+        binding.ufChart.setNoDataText(getString(R.string.no_uf_data))
 
         setupObservers()
         viewModel.getLast7Days()
@@ -68,7 +69,7 @@ class StatsFragment : Fragment() {
     // 통계 응답을 UI에 바인딩
     private fun bindStats(stats: Last7DaysStats) {
         val points = stats.points
-        val dateFormatter = DateTimeFormatter.ofPattern("MM/dd")
+        val dateFormatter = DateTimeFormatter.ofPattern("MM/dd", Locale.getDefault())
 
         val labels = points.map { p ->
             p.recordDate.format(dateFormatter)
@@ -120,7 +121,7 @@ class StatsFragment : Fragment() {
             binding.weightChart.setNoDataText(getString(R.string.no_weight_data))
         }
 
-        // 제수량은 날짜 기준으로 항상 7개 막대를 그리고, 값이 없으면 0으로 처리
+        // 제수량 데이터가 1개 이상 있을 때만 그래프 세팅
         if (ufsForChart.any { it != null }) {
             setupUfChart(binding.ufChart, labels, ufsForChart)
         } else {
@@ -134,15 +135,16 @@ class StatsFragment : Fragment() {
         labels: List<String>,
         weights: List<Float?>
     ) {
-        // 1. Entry 만들기
+        // 1. 값 있는 날만 Entry 생성
         val entries = mutableListOf<Entry>()
+        val nonNullWeights = mutableListOf<Float>()
+
         weights.forEachIndexed { index, w ->
             if (w != null) {
                 entries += Entry(index.toFloat(), w)
+                nonNullWeights += w
             }
         }
-
-        val yValues = entries.map { it.y }
 
         val dataSet = LineDataSet(entries, "").apply {
             setDrawCircles(true)
@@ -175,15 +177,18 @@ class StatsFragment : Fragment() {
             granularity = 1f
             setDrawGridLines(false)
 
-            // labels 개수에 맞춰 0 ~ size-1 범위로 강제
+            // 라벨은 항상 7개 강제
             axisMinimum = -0.5f
             axisMaximum = labels.size - 0.5f
             setLabelCount(labels.size, /*force=*/true)
 
             valueFormatter = object : ValueFormatter() {
                 override fun getFormattedValue(value: Float): String {
-                    val index = value.toInt()
-                    return labels.getOrNull(index) ?: ""
+                    // 소수점 반올림 + 안전 범위 제한
+                    val index = value.roundToInt()
+                        .coerceIn(0, labels.lastIndex)
+
+                    return labels[index]
                 }
             }
         }
@@ -215,28 +220,26 @@ class StatsFragment : Fragment() {
         // 1. Entry 만들기
         val entries = mutableListOf<BarEntry>()
         val colors = mutableListOf<Int>()
-        val nonNullUfs = mutableListOf<Float>() // min/max 계산용
+        val nullIndexSet = mutableSetOf<Int>() // null이었던 인덱스 저장
 
         // 양수 or 음수 색상 다르게 적용
         ufs.forEachIndexed { index, uf ->
-            if (uf != null) {
-                entries += BarEntry(index.toFloat(), uf)
-                nonNullUfs += uf
 
-                val c = if (uf >= 0f) {
-                    ContextCompat.getColor(chart.context, R.color.uf_positive_graph)
-                } else {
-                    ContextCompat.getColor(chart.context, R.color.uf_negative_graph)
-                }
-                colors += c
+            val value = uf ?: 0f // Entry는 7개 유지 (null = 0)
+
+            entries += BarEntry(index.toFloat(), value)
+
+            val color = if (uf == null) {
+                // null → 투명하게
+                nullIndexSet += index
+                ContextCompat.getColor(chart.context, R.color.transparent)
+            } else if (uf >= 0f) {
+                ContextCompat.getColor(chart.context, R.color.uf_positive_graph)
+            } else {
+                ContextCompat.getColor(chart.context, R.color.uf_negative_graph)
             }
-        }
 
-        // 표시할 값이 하나도 없으면 no-data 처리
-        if (entries.isEmpty()) {
-            chart.clear()
-            chart.setNoDataText("제수량 기록이 없습니다.")
-            return
+            colors += color
         }
 
         val dataSet = BarDataSet(entries, "").apply {
@@ -244,6 +247,20 @@ class StatsFragment : Fragment() {
             setColors(colors)
             valueTextSize = 10f
             valueTextColor = ContextCompat.getColor(chart.context, R.color.text_primary)
+
+            // null이었던 인덱스에는 라벨 출력 안 함
+            valueFormatter = object : ValueFormatter() {
+                override fun getBarLabel(barEntry: BarEntry?): String {
+                    if (barEntry == null) return ""
+
+                    val idx = barEntry.x.toInt()
+
+                    // 원래 uf가 null이었던 날이면 라벨 숨김
+                    if (nullIndexSet.contains(idx)) return ""
+
+                    return String.format(Locale.getDefault(), "%.0f", barEntry.y)
+                }
+            }
         }
 
         chart.data = BarData(dataSet).apply {
@@ -257,15 +274,17 @@ class StatsFragment : Fragment() {
             setDrawGridLines(false)
             setDrawAxisLine(false)
 
-            // labels 길이에 맞춰 0 ~ size-1 까지 라벨을 강제로 모두 찍도록
+            // 라벨은 항상 7개 강제
             axisMinimum = -0.5f
             axisMaximum = labels.size - 0.5f
             setLabelCount(labels.size, /*force=*/true)
 
             valueFormatter = object : ValueFormatter() {
                 override fun getFormattedValue(value: Float): String {
-                    val index = value.toInt()
-                    return labels.getOrNull(index) ?: ""
+                    // 소수점 반올림 + 안전 범위 제한
+                    val index = value.roundToInt()
+                        .coerceIn(0, labels.lastIndex)
+                    return labels[index]
                 }
             }
         }
@@ -292,8 +311,7 @@ class StatsFragment : Fragment() {
                 chart.viewPortHandler
             )
         }
-        chart.notifyDataSetChanged()
-
+        chart.notifyDataSetChanged() // 내부 버퍼 재계산
         chart.invalidate()
     }
 

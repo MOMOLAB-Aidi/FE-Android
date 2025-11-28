@@ -67,6 +67,11 @@ class RoundedBarChartRenderer(
             if (!mViewPortHandler.isInBoundsRight(left)) break
 
             val entryIndex = j / 4
+            if (entryIndex < 0 || entryIndex >= dataSet.entryCount) {
+                j += 4
+                continue
+            }
+
             val entry = dataSet.getEntryForIndex(entryIndex) as BarEntry
             val isNegative = entry.y < 0f    // y값으로 음수/양수 판정
 
