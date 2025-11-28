@@ -19,6 +19,13 @@ class RoundedBarChartRenderer(
 ) : BarChartRenderer(chart, animator, viewPortHandler) {
 
     override fun drawDataSet(c: Canvas, dataSet: IBarDataSet, index: Int) {
+
+        // NPE / index 방어
+        val buffers = mBarBuffers ?: return
+        if (index < 0 || index >= buffers.size) return
+
+        val barBuffer = mBarBuffers[index]
+
         val trans = mChart.getTransformer(dataSet.axisDependency)
 
         mBarBorderPaint.color = dataSet.barBorderColor
@@ -30,7 +37,6 @@ class RoundedBarChartRenderer(
         val phaseX = mAnimator.phaseX
         val phaseY = mAnimator.phaseY
 
-        val barBuffer = mBarBuffers[index]
         barBuffer.setPhases(phaseX, phaseY)
         barBuffer.setDataSet(index)
         barBuffer.setInverted(mChart.isInverted(dataSet.axisDependency))
