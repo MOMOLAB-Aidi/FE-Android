@@ -92,4 +92,7 @@ dependencies {
     // glide
     implementation ("com.github.bumptech.glide:glide:4.15.1")
     ksp("com.github.bumptech.glide:ksp:4.15.1")
+
+    // MPAndroidChart
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 }
