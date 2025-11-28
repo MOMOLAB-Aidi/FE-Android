@@ -207,7 +207,6 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
-                    <!-- 여기 추가: MPAndroidChart LineChart -->
                     <com.github.mikephil.charting.charts.LineChart
                         android:id="@+id/weight_chart"
                         android:layout_width="0dp"
@@ -257,7 +256,6 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
-                    <!-- MPAndroidChart BarChart -->
                     <com.github.mikephil.charting.charts.BarChart
                         android:id="@+id/uf_chart"
                         android:layout_width="0dp"
@@ -269,6 +267,123 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/bp_statistics_cv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:backgroundTint="@color/white"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="1dp"
+                app:layout_constraintStart_toStartOf="@id/weight_statistics_cv"
+                app:layout_constraintTop_toBottomOf="@id/uf_statistics_cv"
+                app:strokeWidth="0dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:padding="5dp">
+
+                    <TextView
+                        android:id="@+id/bp_statistics_title_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="5dp"
+                        android:fontFamily="@font/noto_sans_kr_regular"
+                        android:includeFontPadding="false"
+                        android:text="혈압 통계"
+                        android:textColor="@color/text_primary"
+                        android:textSize="15sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/bp_avg_tv"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:layout_marginTop="20dp"
+                        android:fontFamily="@font/noto_sans_kr_regular"
+                        android:gravity="center_vertical"
+                        android:includeFontPadding="false"
+                        android:text="평균 혈압"
+                        android:textColor="@color/text_primary"
+                        android:textSize="14sp"
+                        app:layout_constraintStart_toStartOf="@id/bp_statistics_title_tv"
+                        app:layout_constraintTop_toBottomOf="@id/bp_statistics_title_tv"/>
+
+                    <TextView
+                        android:id="@+id/bp_avg_value_tv"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:layout_marginEnd="20dp"
+                        android:fontFamily="@font/noto_sans_kr_regular"
+                        android:gravity="center_vertical"
+                        android:includeFontPadding="false"
+                        android:text="127/81 mmHg"
+                        android:textColor="@color/secondary_text"
+                        android:textSize="14sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/bp_avg_tv"/>
+
+                    <TextView
+                        android:id="@+id/bp_max_tv"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:fontFamily="@font/noto_sans_kr_regular"
+                        android:gravity="center_vertical"
+                        android:includeFontPadding="false"
+                        android:text="최고"
+                        android:textColor="@color/text_primary"
+                        android:textSize="14sp"
+                        app:layout_constraintStart_toStartOf="@id/bp_statistics_title_tv"
+                        app:layout_constraintTop_toBottomOf="@id/bp_avg_tv"/>
+
+                    <TextView
+                        android:id="@+id/bp_max_value_tv"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:fontFamily="@font/noto_sans_kr_regular"
+                        android:gravity="center_vertical"
+                        android:includeFontPadding="false"
+                        android:text="132/86 mmHg"
+                        android:textColor="@color/secondary_text"
+                        android:textSize="14sp"
+                        app:layout_constraintEnd_toEndOf="@id/bp_avg_value_tv"
+                        app:layout_constraintTop_toTopOf="@id/bp_max_tv"/>
+
+                    <TextView
+                        android:id="@+id/bp_min_tv"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:fontFamily="@font/noto_sans_kr_regular"
+                        android:gravity="center_vertical"
+                        android:includeFontPadding="false"
+                        android:text="최저"
+                        android:textColor="@color/text_primary"
+                        android:textSize="14sp"
+                        app:layout_constraintStart_toStartOf="@id/bp_statistics_title_tv"
+                        app:layout_constraintTop_toBottomOf="@id/bp_max_tv"/>
+
+                    <TextView
+                        android:id="@+id/bp_min_value_tv"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:fontFamily="@font/noto_sans_kr_regular"
+                        android:gravity="center_vertical"
+                        android:includeFontPadding="false"
+                        android:text="122/75 mmHg"
+                        android:textColor="@color/secondary_text"
+                        android:textSize="14sp"
+                        app:layout_constraintEnd_toEndOf="@id/bp_max_value_tv"
+                        app:layout_constraintTop_toTopOf="@id/bp_min_tv"/>
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.card.MaterialCardView>
