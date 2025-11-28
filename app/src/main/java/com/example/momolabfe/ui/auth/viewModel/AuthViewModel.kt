@@ -4,8 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.momolabfe.remote.auth.data.LoginRequest
-import com.example.momolabfe.remote.auth.data.TokenResponse
+import com.example.momolabfe.remote.auth.model.LoginRequest
+import com.example.momolabfe.remote.auth.model.TokenResponse
 import com.example.momolabfe.remote.auth.repository.AuthRepository
 import com.example.momolabfe.remote.auth.repository.PreferenceRepository
 import com.example.momolabfe.utils.TokenManager

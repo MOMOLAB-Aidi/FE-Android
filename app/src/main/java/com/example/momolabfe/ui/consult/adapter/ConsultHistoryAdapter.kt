@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.momolabfe.databinding.ItemConsultHistoryBinding
-import com.example.momolabfe.remote.consult.data.GetConsultResponse
+import com.example.momolabfe.remote.consult.model.GetConsultResponse
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale

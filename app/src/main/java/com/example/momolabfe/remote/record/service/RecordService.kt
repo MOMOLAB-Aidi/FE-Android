@@ -1,11 +1,11 @@
 package com.example.momolabfe.remote.record.service
 
-import com.example.momolabfe.remote.record.data.GetCalendarResponse
-import com.example.momolabfe.remote.record.data.RecordCreateRequest
-import com.example.momolabfe.remote.record.data.RecordGetResponse
-import com.example.momolabfe.remote.record.data.RecordOcrResponse
-import com.example.momolabfe.remote.record.data.RecordUpdateRequest
-import com.example.momolabfe.remote.record.data.WeeklyAverageResponse
+import com.example.momolabfe.remote.record.model.GetCalendarResponse
+import com.example.momolabfe.remote.record.model.RecordCreateRequest
+import com.example.momolabfe.remote.record.model.RecordGetResponse
+import com.example.momolabfe.remote.record.model.RecordOcrResponse
+import com.example.momolabfe.remote.record.model.RecordUpdateRequest
+import com.example.momolabfe.remote.record.model.WeeklyAverageResponse
 import com.example.momolabfe.utils.ApiResponse
 import com.example.momolabfe.utils.AuthRetrofit
 import com.example.momolabfe.utils.PythonRetrofit

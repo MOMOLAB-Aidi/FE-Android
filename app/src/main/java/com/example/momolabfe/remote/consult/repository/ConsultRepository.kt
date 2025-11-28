@@ -1,11 +1,11 @@
 package com.example.momolabfe.remote.consult.repository
 
-import com.example.momolabfe.remote.consult.data.ChatRequest
-import com.example.momolabfe.remote.consult.data.ConsultDetailResponse
-import com.example.momolabfe.remote.consult.data.GetConsultResponse
-import com.example.momolabfe.remote.consult.data.SessionEndRequest
-import com.example.momolabfe.remote.consult.data.SessionEndResponse
-import com.example.momolabfe.remote.consult.data.StartConsultResponse
+import com.example.momolabfe.remote.consult.model.ChatRequest
+import com.example.momolabfe.remote.consult.model.ConsultDetailResponse
+import com.example.momolabfe.remote.consult.model.GetConsultResponse
+import com.example.momolabfe.remote.consult.model.SessionEndRequest
+import com.example.momolabfe.remote.consult.model.SessionEndResponse
+import com.example.momolabfe.remote.consult.model.StartConsultResponse
 import com.example.momolabfe.remote.consult.service.ConsultService
 import com.example.momolabfe.utils.ApiException
 import kotlinx.coroutines.Dispatchers

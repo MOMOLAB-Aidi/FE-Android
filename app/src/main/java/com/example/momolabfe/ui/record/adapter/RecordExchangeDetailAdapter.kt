@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.momolabfe.databinding.ItemExchangeDetailBinding
-import com.example.momolabfe.remote.record.data.RecordExchangeGetResponse
+import com.example.momolabfe.remote.record.model.RecordExchangeGetResponse
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 

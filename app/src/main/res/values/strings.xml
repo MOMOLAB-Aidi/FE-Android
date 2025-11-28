@@ -1,8 +1,7 @@
 <resources>
     <string name="app_name">에이디</string>
-    <string name="content_desc_captured_image">촬영된 이미지</string>
-    <string name="btn_open_camera">카메라 열기</string>
-    <string name="camera_hint">문서가 잘 보이도록 화면을 채워주세요\n그림자가 보이지 않도록 해주세요</string>
     <string name="password_forget_text"><u>비밀번호를 잊으셨나요?</u></string>
     <string name="agent_welcome_message">안녕하세요! 복막투석 AI 상담사입니다. \n투석 관리, 일반 지침, 건강 상태 등에 대해 \n무엇이든 물어보세요.</string>
+    <string name="no_weight_data">체중 기록이 없습니다.</string>
+    <string name="no_uf_data">제수량 기록이 없습니다.</string>
 </resources>

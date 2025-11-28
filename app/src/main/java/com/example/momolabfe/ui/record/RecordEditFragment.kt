@@ -15,11 +15,11 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.momolabfe.R
 import com.example.momolabfe.databinding.FragmentRecordEditBinding
-import com.example.momolabfe.remote.record.data.DayWeek
-import com.example.momolabfe.remote.record.data.RecordExchangeGetResponse
-import com.example.momolabfe.remote.record.data.RecordExchangeUpdateRequest
-import com.example.momolabfe.remote.record.data.RecordUpdateRequest
-import com.example.momolabfe.remote.record.data.Turbidity
+import com.example.momolabfe.remote.record.model.DayWeek
+import com.example.momolabfe.remote.record.model.RecordExchangeGetResponse
+import com.example.momolabfe.remote.record.model.RecordExchangeUpdateRequest
+import com.example.momolabfe.remote.record.model.RecordUpdateRequest
+import com.example.momolabfe.remote.record.model.Turbidity
 import com.example.momolabfe.ui.record.adapter.RecordExchangeInfoAdapter
 import com.example.momolabfe.ui.record.viewModel.RecordViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView

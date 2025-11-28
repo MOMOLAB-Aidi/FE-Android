@@ -6,6 +6,7 @@ import com.example.momolabfe.remote.auth.repository.PreferenceRepository
 import com.example.momolabfe.remote.auth.repository.SharedPreferencesRepository
 import com.example.momolabfe.remote.auth.service.AuthService
 import com.example.momolabfe.remote.consult.service.ConsultService
+import com.example.momolabfe.remote.stats.service.StatsService
 import com.example.momolabfe.remote.user.service.UserService
 import dagger.Module
 import dagger.Provides
@@ -49,6 +50,12 @@ class ApiModule {
     @Singleton
     fun provideConsultApi(@PythonRetrofit retrofit: Retrofit): ConsultService {
         return retrofit.create(ConsultService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideStatsApi(@PythonRetrofit retrofit: Retrofit): StatsService {
+        return retrofit.create(StatsService::class.java)
     }
 
     // 로그아웃 용도

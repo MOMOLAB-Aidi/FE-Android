@@ -2,7 +2,7 @@ package com.example.momolabfe.utils
 
 import android.util.Log
 import com.example.momolabfe.remote.auth.LogoutManager
-import com.example.momolabfe.remote.auth.data.TokenRequest
+import com.example.momolabfe.remote.auth.model.TokenRequest
 import com.example.momolabfe.remote.auth.service.AuthService
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken

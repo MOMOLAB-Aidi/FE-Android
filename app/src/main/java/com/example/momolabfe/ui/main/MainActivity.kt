@@ -16,7 +16,7 @@ import com.example.momolabfe.ui.auth.LoginFragment
 import com.example.momolabfe.remote.auth.LogoutManager
 import com.example.momolabfe.ui.consult.ConsultFragment
 import com.example.momolabfe.ui.record.RecordFragment
-import com.example.momolabfe.ui.statistics.StatisticsFragment
+import com.example.momolabfe.ui.stats.StatsFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -83,7 +83,7 @@ class MainActivity : AppCompatActivity() {
 
                 R.id.fragment_statistics -> {
                     supportFragmentManager.beginTransaction()
-                        .replace(R.id.main_frm, StatisticsFragment())
+                        .replace(R.id.main_frm, StatsFragment())
                         .commitAllowingStateLoss()
                     return@setOnItemSelectedListener true
                 }
