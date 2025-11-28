@@ -188,19 +188,32 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
         }
     }
 
-    private fun applyDialogWindow(dialog: AlertDialog) {
-        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+    private fun applyDialogWindow(
+        dialog: AlertDialog,
+        transparentBackground: Boolean = false
+    ) {
+        if (transparentBackground) {
+            dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        }
+
         dialog.setOnShowListener {
             dialog.window?.let { window ->
                 val layoutParams = window.attributes
                 layoutParams.width = (resources.displayMetrics.widthPixels * 0.9).toInt()
                 layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
                 layoutParams.gravity = Gravity.CENTER
-                layoutParams.dimAmount = 0.5f
+                layoutParams.dimAmount = 0.8f
                 window.attributes = layoutParams
-                window.setDimAmount(0.5f)
+                window.setDimAmount(0.8f)
                 window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
             }
+
+            // 버튼 텍스트 색상
+            val positiveColor = ContextCompat.getColor(requireContext(), R.color.text_primary)
+            val negativeColor = ContextCompat.getColor(requireContext(), R.color.secondary_text)
+
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.setTextColor(positiveColor)
+            dialog.getButton(AlertDialog.BUTTON_NEGATIVE)?.setTextColor(negativeColor)
         }
     }
 
@@ -391,22 +404,33 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
             return
         }
 
-        val fullRequest = RecordCreateRequest(
-            recordDate = recordDate,
-            recordDw = draft.recordDw,
-            weight = draft.weight,
-            systolic = draft.systolic,
-            diastolic = draft.diastolic,
-            fastingGlucose = draft.fastingGlucose,
-            urineCount = draft.urineCount,
-            turbidity = draft.turbidity,
-            notes = draft.notes,
+        // 제수량 검증
+        validateUfAndShowDialogIfNeeded(
             totalUf = totalUf,
-            gcsPath = draft.gcsPath,
-            exchanges = requestList
+            exchanges = exchanges,
+            onProceed = {
+                // 팝업에서 [예] 선택하거나, 불일치 없을 때 호출
+                val fullRequest = RecordCreateRequest(
+                    recordDate = recordDate,
+                    recordDw = draft.recordDw,
+                    weight = draft.weight,
+                    systolic = draft.systolic,
+                    diastolic = draft.diastolic,
+                    fastingGlucose = draft.fastingGlucose,
+                    urineCount = draft.urineCount,
+                    turbidity = draft.turbidity,
+                    notes = draft.notes,
+                    totalUf = totalUf,
+                    gcsPath = draft.gcsPath,
+                    exchanges = requestList
+                )
+                viewModel.createRecord(fullRequest)
+            },
+            onCancel = {
+                // 팝업에서 [아니오] 눌렀을 때 → 저장 취소
+                enableButtonAndReturn()
+            }
         )
-
-        viewModel.createRecord(fullRequest)
     }
 
     private fun downloadOcrImageIfAvailable() {
@@ -433,6 +457,73 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
             Log.e("RECORD_WRITE_02_FRAGMENT", errorMsg.toString())
             binding.saveBtn.isEnabled = true
         }
+    }
+
+    /**
+     * 제수량 검증 후, 불일치가 있으면 경고 팝업을 띄우고
+     * - onProceed: 그대로 저장
+     * - onCancel: 수정하도록 저장 취소
+     */
+    private fun validateUfAndShowDialogIfNeeded(
+        totalUf: Int,
+        exchanges: List<OcrRecordExchangeData>,
+        onProceed: () -> Unit,
+        onCancel: () -> Unit
+    ) {
+        var hasPerExchangeMismatch = false
+        var hasTotalMismatch = false
+
+        var sumUf = 0
+
+        exchanges.forEach { item ->
+            val uf = item.uf ?: 0
+            sumUf += uf
+
+            val calculatedUf = item.drainVolume - item.fillVolume
+            if (uf != calculatedUf) {
+                hasPerExchangeMismatch = true
+            }
+        }
+
+        if (sumUf != totalUf) {
+            hasTotalMismatch = true
+        }
+
+        // 둘 다 없으면 바로 저장 진행
+        if (!hasPerExchangeMismatch && !hasTotalMismatch) {
+            onProceed()
+            return
+        }
+
+        // 경고 메시지 구성
+        val messageBuilder = StringBuilder().apply {
+            append("입력한 제수량과 계산된 제수량이 다릅니다.\n\n")
+            if (hasPerExchangeMismatch) {
+                append("- 일부 회차: (배액량 - 주입량) 값이 회차별 제수량과 다릅니다.\n")
+            }
+            if (hasTotalMismatch) {
+                append("- 제수량 합계: 회차별 제수량을 모두 더한 값이 제수량 합계와 다릅니다.\n")
+            }
+            append("\n그래도 이대로 저장하시겠습니까?")
+        }
+
+        val dialog = AlertDialog.Builder(requireContext(), R.style.RoundedAlertDialog)
+            .setTitle("제수량 확인")
+            .setMessage(messageBuilder.toString())
+            .setNegativeButton("아니오") { d, _ ->
+                d.dismiss()
+                onCancel()
+            }
+            .setPositiveButton("예") { d, _ ->
+                d.dismiss()
+                onProceed()
+            }
+            .setCancelable(false)
+            .create()
+
+        applyDialogWindow(dialog)
+
+        dialog.show()
     }
 
     override fun onDestroyView() {
