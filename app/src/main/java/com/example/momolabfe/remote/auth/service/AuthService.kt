@@ -1,9 +1,9 @@
 package com.example.momolabfe.remote.auth.service
 
-import com.example.momolabfe.remote.auth.data.LoginRequest
-import com.example.momolabfe.remote.auth.data.LoginResponse
-import com.example.momolabfe.remote.auth.data.TokenResponse
-import com.example.momolabfe.remote.auth.data.TokenRequest
+import com.example.momolabfe.remote.auth.model.LoginRequest
+import com.example.momolabfe.remote.auth.model.LoginResponse
+import com.example.momolabfe.remote.auth.model.TokenResponse
+import com.example.momolabfe.remote.auth.model.TokenRequest
 import com.example.momolabfe.utils.ApiResponse
 import retrofit2.Response
 import retrofit2.http.Body

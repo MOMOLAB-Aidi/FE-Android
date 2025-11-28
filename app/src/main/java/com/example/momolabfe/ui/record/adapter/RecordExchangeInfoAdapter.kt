@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.momolabfe.databinding.ItemExchangeInfoBinding
-import com.example.momolabfe.remote.record.data.RecordExchangeGetResponse
+import com.example.momolabfe.remote.record.model.RecordExchangeGetResponse
 
 class RecordExchangeInfoAdapter(
     private var exchangeList: List<RecordExchangeGetResponse>

@@ -15,8 +15,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.momolabfe.R
 import com.example.momolabfe.databinding.FragmentConsultBinding
-import com.example.momolabfe.remote.consult.data.ChatRequest
-import com.example.momolabfe.remote.consult.data.SessionEndRequest
+import com.example.momolabfe.remote.consult.model.ChatRequest
+import com.example.momolabfe.remote.consult.model.SessionEndRequest
 import com.example.momolabfe.ui.consult.adapter.ChatAdapter
 import com.example.momolabfe.ui.consult.adapter.ConsultHistoryAdapter
 import com.example.momolabfe.ui.consult.viewModel.ConsultViewModel

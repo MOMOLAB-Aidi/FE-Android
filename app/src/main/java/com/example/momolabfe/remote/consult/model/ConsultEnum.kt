@@ -1,4 +1,4 @@
-package com.example.momolabfe.remote.consult.data
+package com.example.momolabfe.remote.consult.model
 
 import com.google.gson.annotations.SerializedName
 

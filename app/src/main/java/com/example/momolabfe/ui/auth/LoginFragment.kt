@@ -16,16 +16,14 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.momolabfe.R
-import com.example.momolabfe.remote.auth.data.LoginRequest
+import com.example.momolabfe.remote.auth.model.LoginRequest
 import com.example.momolabfe.databinding.FragmentLoginBinding
 import com.example.momolabfe.ui.auth.viewModel.AuthViewModel
 import com.example.momolabfe.ui.main.HomeFragment
-import com.example.momolabfe.utils.TokenManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class LoginFragment : Fragment() {

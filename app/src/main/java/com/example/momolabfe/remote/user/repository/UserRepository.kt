@@ -1,7 +1,7 @@
 package com.example.momolabfe.remote.user.repository
 
 import android.util.Log
-import com.example.momolabfe.remote.user.data.MyPageResponse
+import com.example.momolabfe.remote.user.model.MyPageResponse
 import com.example.momolabfe.remote.user.service.UserService
 import com.example.momolabfe.utils.handleApiResponse
 import javax.inject.Inject

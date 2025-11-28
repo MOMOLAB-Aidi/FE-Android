@@ -1,8 +1,8 @@
 package com.example.momolabfe.remote.auth.repository
 
 import android.util.Log
-import com.example.momolabfe.remote.auth.data.LoginRequest
-import com.example.momolabfe.remote.auth.data.LoginResponse
+import com.example.momolabfe.remote.auth.model.LoginRequest
+import com.example.momolabfe.remote.auth.model.LoginResponse
 import com.example.momolabfe.remote.auth.service.AuthService
 import com.example.momolabfe.utils.NoAuthRetrofit
 import com.example.momolabfe.utils.handleApiResponse

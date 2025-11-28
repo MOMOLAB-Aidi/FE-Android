@@ -17,8 +17,8 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import com.example.momolabfe.R
 import com.example.momolabfe.databinding.FragmentRecordListBinding
-import com.example.momolabfe.remote.record.data.GetCalendarResponse
-import com.example.momolabfe.remote.record.data.RecordGetResponse
+import com.example.momolabfe.remote.record.model.GetCalendarResponse
+import com.example.momolabfe.remote.record.model.RecordGetResponse
 import com.example.momolabfe.ui.record.adapter.RecordExchangeDetailAdapter
 import com.example.momolabfe.ui.record.viewModel.RecordViewModel
 import com.example.momolabfe.utils.dpToPx

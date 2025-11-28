@@ -21,11 +21,11 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.momolabfe.R
-import com.example.momolabfe.remote.record.data.OcrRecordExchangeData
+import com.example.momolabfe.remote.record.model.OcrRecordExchangeData
 import com.example.momolabfe.databinding.DialogTimePickerBinding
 import com.example.momolabfe.databinding.FragmentRecordWrite02Binding
-import com.example.momolabfe.remote.record.data.RecordCreateRequest
-import com.example.momolabfe.remote.record.data.RecordExchangeCreateRequest
+import com.example.momolabfe.remote.record.model.RecordCreateRequest
+import com.example.momolabfe.remote.record.model.RecordExchangeCreateRequest
 import com.example.momolabfe.ui.record.adapter.RecordExchangeAdapter
 import com.example.momolabfe.ui.record.data.RecordCommonDraft
 import com.example.momolabfe.ui.record.viewModel.RecordViewModel

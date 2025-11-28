@@ -12,7 +12,7 @@ import com.example.momolabfe.databinding.FragmentConsultHistoryDetailBinding
 import com.example.momolabfe.ui.consult.adapter.ChatAdapter
 import com.example.momolabfe.ui.consult.data.ChatMessage
 import com.example.momolabfe.ui.consult.viewModel.ConsultViewModel
-import com.example.momolabfe.remote.consult.data.MessageRole
+import com.example.momolabfe.remote.consult.model.MessageRole
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class ConsultHistoryDetailFragment : Fragment() {
