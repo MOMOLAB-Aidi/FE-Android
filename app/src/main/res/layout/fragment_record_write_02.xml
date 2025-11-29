@@ -154,7 +154,7 @@
                             android:layout_weight="1"
                             android:background="@color/transparent"
                             android:hint="제수량 합계를 입력해주세요"
-                            android:inputType="number"
+                            android:inputType="numberSigned"
                             android:textSize="16sp" />
 
                     </LinearLayout>

@@ -5,11 +5,13 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.example.momolabfe.R
 import com.example.momolabfe.databinding.FragmentRecordInfoBinding
 import com.example.momolabfe.remote.record.model.DayWeek
+import com.example.momolabfe.remote.record.model.RecordGetResponse
 import com.example.momolabfe.remote.record.model.Turbidity
 import com.example.momolabfe.ui.record.adapter.RecordExchangeInfoAdapter
 import com.example.momolabfe.ui.record.viewModel.RecordViewModel
@@ -44,7 +46,7 @@ class RecordInfoFragment : Fragment() {
         // 바텀 내비게이션 숨기기
         activity?.findViewById<BottomNavigationView>(R.id.main_bnv)?.visibility = View.GONE
 
-        adapter = RecordExchangeInfoAdapter(emptyList())
+        adapter = RecordExchangeInfoAdapter(emptyList(), highlightMismatch = true)
         binding.exchangeInfoRv.adapter = adapter
 
         if (recordId != -1L) {
@@ -93,6 +95,8 @@ class RecordInfoFragment : Fragment() {
 
                 // 회차별 정보 바인딩
                 adapter.updateList(recordItem.exchanges)
+
+                applyUfValidation(recordItem)
             }
         }
 
@@ -123,6 +127,37 @@ class RecordInfoFragment : Fragment() {
             DayWeek.SAT -> "토"
             DayWeek.SUN -> "일"
             else -> ""
+        }
+    }
+
+    // 제수량 검증 + 색상 적용
+    private fun applyUfValidation(recordItem: RecordGetResponse) {
+        val exchanges = recordItem.exchanges
+
+        var sumUf = 0
+        var hasPerExchangeMismatch = false
+
+        for (item in exchanges) {
+            val uf = item.uf
+            sumUf += uf
+
+            val calculatedUf = item.drainVolume - item.fillVolume
+            if (item.uf != null && item.uf != calculatedUf) {
+                hasPerExchangeMismatch = true
+            }
+        }
+
+        val hasTotalMismatch = (sumUf != recordItem.totalUf)
+
+        // 기본 / 에러 색상
+        val normalColor = ContextCompat.getColor(requireContext(), R.color.text_primary)
+        val errorColor = ContextCompat.getColor(requireContext(), R.color.red)
+
+        // 둘 중 하나라도 불일치면 합계 텍스트를 빨간색으로
+        if (hasPerExchangeMismatch || hasTotalMismatch) {
+            binding.totalUfValueTv.setTextColor(errorColor)
+        } else {
+            binding.totalUfValueTv.setTextColor(normalColor)
         }
     }
 
