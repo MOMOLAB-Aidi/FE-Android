@@ -345,7 +345,7 @@
                             android:layout_marginTop="20dp"
                             android:fontFamily="@font/noto_sans_kr_regular"
                             android:includeFontPadding="false"
-                            android:text="제수량 합계"
+                            android:text="제수량 합계 (g)"
                             android:textColor="@color/text_primary"
                             android:textSize="14sp"
                             app:layout_constraintStart_toStartOf="parent"
@@ -361,7 +361,8 @@
                             android:includeFontPadding="false"
                             android:paddingStart="16dp"
                             android:paddingEnd="16dp"
-                            android:hint="600g"
+                            android:hint="600"
+                            android:inputType="numberSigned"
                             android:textColor="@color/secondary_text"
                             android:textSize="14sp"
                             android:background="#F9F9FA"
@@ -396,6 +397,10 @@
                             android:textColor="@color/secondary_text"
                             android:background="#F9F9FA"
                             android:textSize="14sp"
+                            android:inputType="textMultiLine"
+                            android:maxLines="4"
+                            android:overScrollMode="ifContentScrolls"
+                            android:scrollbars="vertical"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@id/note_label_tv" />
@@ -452,7 +457,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/exchange_info_title_tv"
-                    tools:listitem="@layout/item_exchange_info" />
+                    tools:listitem="@layout/item_exchange_edit" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -1,30 +1,40 @@
 package com.example.momolabfe.ui.record
 
+import android.app.AlertDialog
+import android.content.Context
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.CompoundButton
+import android.widget.EditText
+import android.widget.NumberPicker
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.momolabfe.R
+import com.example.momolabfe.databinding.DialogTimePickerBinding
 import com.example.momolabfe.databinding.FragmentRecordEditBinding
 import com.example.momolabfe.remote.record.model.DayWeek
 import com.example.momolabfe.remote.record.model.RecordExchangeGetResponse
 import com.example.momolabfe.remote.record.model.RecordExchangeUpdateRequest
 import com.example.momolabfe.remote.record.model.RecordUpdateRequest
 import com.example.momolabfe.remote.record.model.Turbidity
-import com.example.momolabfe.ui.record.adapter.RecordExchangeInfoAdapter
+import com.example.momolabfe.ui.record.adapter.RecordExchangeEditAdapter
 import com.example.momolabfe.ui.record.viewModel.RecordViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.time.LocalTime
+import java.util.Locale
 
 class RecordEditFragment : Fragment() {
 
@@ -35,7 +45,7 @@ class RecordEditFragment : Fragment() {
 
     private val viewModel: RecordViewModel by activityViewModels()
 
-    private lateinit var adapter: RecordExchangeInfoAdapter
+    private lateinit var adapter: RecordExchangeEditAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -54,7 +64,13 @@ class RecordEditFragment : Fragment() {
         // 바텀 내비게이션 숨기기
         activity?.findViewById<BottomNavigationView>(R.id.main_bnv)?.visibility = View.GONE
 
-        adapter = RecordExchangeInfoAdapter(emptyList())
+        adapter = RecordExchangeEditAdapter().apply {
+            onTimePickerClickListener = object : RecordExchangeEditAdapter.OnTimePickerClickListener {
+                override fun onTimePickerClick(position: Int, targetEditText: EditText) {
+                    showTimePickerDialog(position)
+                }
+            }
+        }
         binding.exchangeInfoRv.adapter = adapter
 
         setupTurbidityCheckboxes()
@@ -120,14 +136,11 @@ class RecordEditFragment : Fragment() {
             else -> null
         }
 
-        val totalUf = binding.totalUfValueEt.text.toString()
-            .filter { it.isDigit() }
-            .toIntOrNull()
+        val totalUf = binding.totalUfValueEt.text.toString().toIntOrNull()
 
         val notes = binding.noteValueEt.text.toString().ifBlank { null }
 
-        val currentExchangeList: List<RecordExchangeGetResponse> =
-            adapter.getItems()
+        val currentExchangeList = adapter.items
 
         val exchanges = currentExchangeList.map { item ->
             RecordExchangeUpdateRequest(
@@ -206,8 +219,18 @@ class RecordEditFragment : Fragment() {
             setCheckBoxTint(binding.turbidityYCheckbox, binding.turbidityYCheckbox.isChecked)
 
             // 회차 리스트 세팅
-            val exchanges: List<RecordExchangeGetResponse> = record.exchanges
-            adapter.updateList(exchanges)
+            val exchangesForEdit = record.exchanges.map { item ->
+                RecordExchangeGetResponse(
+                    id = item.id,
+                    exchangeNo = item.exchangeNo,
+                    exchangeTime = item.exchangeTime,
+                    drainVolume = item.drainVolume,
+                    fillConcentration = item.fillConcentration,
+                    fillVolume = item.fillVolume,
+                    uf = item.uf
+                )
+            }
+            adapter.updateList(exchangesForEdit)
         }
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -248,6 +271,117 @@ class RecordEditFragment : Fragment() {
             DayWeek.SAT -> "토"
             DayWeek.SUN -> "일"
             else -> ""
+        }
+    }
+
+    private fun showTimePickerDialog(position: Int) {
+        val dialogBinding = DialogTimePickerBinding.inflate(layoutInflater)
+
+        val dialog = AlertDialog.Builder(requireContext(), R.style.RoundedAlertDialog)
+            .setView(dialogBinding.root)
+            .create()
+
+        setupPickersInDialog(dialogBinding)
+
+        dialogBinding.applyTv.setOnClickListener {
+            applySelectedTime(dialogBinding, position)
+            dialog.dismiss()
+        }
+
+        dialogBinding.cancelTv.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        applyDialogWindow(dialog)
+        dialog.show()
+    }
+
+    private fun setupPickersInDialog(dialogBinding: DialogTimePickerBinding) {
+        dialogBinding.ampmPickerNp.apply {
+            minValue = 0
+            maxValue = 1
+            displayedValues = arrayOf("오전", "오후")
+            wrapSelectorWheel = false
+            post { applyTextStyleToNumberPicker(this, requireContext()) }
+        }
+
+        dialogBinding.hourPickerNp.apply {
+            minValue = 1
+            maxValue = 12
+            wrapSelectorWheel = true
+            value = 12
+            post { applyTextStyleToNumberPicker(this, requireContext()) }
+        }
+
+        dialogBinding.minutePickerNp.apply {
+            minValue = 0
+            maxValue = 5
+            displayedValues = arrayOf("00", "10", "20", "30", "40", "50")
+            wrapSelectorWheel = true
+            post { applyTextStyleToNumberPicker(this, requireContext()) }
+        }
+    }
+
+    private fun applySelectedTime(dialogBinding: DialogTimePickerBinding, position: Int) {
+        val ampmPicker = dialogBinding.ampmPickerNp
+        val hourPicker = dialogBinding.hourPickerNp
+        val minutePicker = dialogBinding.minutePickerNp
+
+        val ampm = ampmPicker.value
+        val hour12 = hourPicker.value
+        val minute = arrayOf("00", "10", "20", "30", "40", "50")[minutePicker.value]
+
+        val hour24 = convertTo24Hour(ampm, hour12)
+        val timeText = String.format(Locale.KOREA, "%02d:%s", hour24, minute)
+
+        val currentList = adapter.items
+        if (position >= 0 && position < currentList.size) {
+            val updated = currentList[position].copy(
+                exchangeTime = LocalTime.parse(timeText, RecordExchangeEditAdapter.TIME_FORMATTER)
+            )
+            currentList[position] = updated
+            adapter.notifyItemChanged(position)
+        }
+    }
+
+    private fun convertTo24Hour(ampm: Int, hour12: Int): Int {
+        return when {
+            ampm == 0 && hour12 == 12 -> 0
+            ampm == 0 -> hour12
+            ampm == 1 && hour12 == 12 -> 12
+            else -> hour12 + 12
+        }
+    }
+
+    private fun applyDialogWindow(dialog: AlertDialog) {
+        dialog.setOnShowListener {
+            dialog.window?.let { window ->
+                val layoutParams = window.attributes
+                layoutParams.width = (resources.displayMetrics.widthPixels * 0.9).toInt()
+                layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
+                layoutParams.gravity = Gravity.CENTER
+                layoutParams.dimAmount = 0.8f
+                window.attributes = layoutParams
+                window.setDimAmount(0.8f)
+                window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+            }
+        }
+    }
+
+    private fun applyTextStyleToNumberPicker(picker: NumberPicker, context: Context) {
+        try {
+            val count = picker.childCount
+            for (i in 0 until count) {
+                val child = picker.getChildAt(i)
+                if (child is EditText) {
+                    child.setTextColor(ContextCompat.getColor(context, R.color.text_primary))
+                    child.textSize = 15f
+                    child.typeface = ResourcesCompat.getFont(context, R.font.noto_sans_kr_regular)
+                    child.includeFontPadding = false
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 

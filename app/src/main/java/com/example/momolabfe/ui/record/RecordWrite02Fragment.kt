@@ -459,11 +459,7 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
         }
     }
 
-    /**
-     * 제수량 검증 후, 불일치가 있으면 경고 팝업을 띄우고
-     * - onProceed: 그대로 저장
-     * - onCancel: 수정하도록 저장 취소
-     */
+    // 제수량 검증 후 일치하지 않으면 경고 팝업창 표시
     private fun validateUfAndShowDialogIfNeeded(
         totalUf: Int,
         exchanges: List<OcrRecordExchangeData>,
@@ -476,7 +472,7 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
         var sumUf = 0
 
         exchanges.forEach { item ->
-            val uf = item.uf ?: 0
+            val uf = item.uf
             sumUf += uf
 
             val calculatedUf = item.drainVolume - item.fillVolume

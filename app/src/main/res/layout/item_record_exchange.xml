@@ -295,7 +295,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:background="@color/transparent"
-                        android:hint="제수량을 입력하세요 (예: 100)"
+                        android:hint="제수량을 입력하세요 (예: -100)"
                         android:inputType="numberSigned"
                         android:textSize="16sp" />
 
