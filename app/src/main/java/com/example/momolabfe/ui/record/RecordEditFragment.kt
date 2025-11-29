@@ -13,6 +13,7 @@ import android.view.WindowManager
 import android.widget.CompoundButton
 import android.widget.EditText
 import android.widget.NumberPicker
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
@@ -121,7 +122,7 @@ class RecordEditFragment : Fragment() {
         checkBox.buttonTintList = ColorStateList.valueOf(color)
     }
 
-    private fun getRecordRequest(): RecordUpdateRequest {
+    private fun getRecordRequest(): RecordUpdateRequest? {
         val currentRecord = viewModel.record.value
 
         val weight = binding.weightValueEt.text.toString().toDoubleOrNull()
@@ -137,10 +138,120 @@ class RecordEditFragment : Fragment() {
         }
 
         val totalUf = binding.totalUfValueEt.text.toString().toIntOrNull()
-
         val notes = binding.noteValueEt.text.toString().ifBlank { null }
 
+        weight?.let {
+            if (it < 20.0 || it > 300.0) {
+                Toast.makeText(
+                    requireContext(),
+                    "체중은 20.0 ~ 300.0 kg 사이로 입력해주세요. (현재: $it)",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return null
+            }
+        }
+
+        systolic?.let {
+            if (it < 70 || it > 240) {
+                Toast.makeText(
+                    requireContext(),
+                    "수축기 혈압은 70 ~ 240 mmHg 사이로 입력해주세요. (현재: $it)",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return null
+            }
+        }
+
+        diastolic?.let {
+            if (it < 40 || it > 160) {
+                Toast.makeText(
+                    requireContext(),
+                    "이완기 혈압은 40 ~ 160 mmHg 사이로 입력해주세요. (현재: $it)",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return null
+            }
+        }
+
+        fastingGlucose?.let {
+            if (it < 40 || it > 600) {
+                Toast.makeText(
+                    requireContext(),
+                    "공복 혈당은 40 ~ 600 mg/dL 사이로 입력해주세요. (현재: $it)",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return null
+            }
+        }
+
+        urineCount?.let {
+            if (it < 0 || it > 50) {
+                Toast.makeText(
+                    requireContext(),
+                    "하루 소변 횟수는 0 ~ 50회 사이로 입력해주세요. (현재: $it)",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return null
+            }
+        }
+
+        totalUf?.let {
+            if (it < -5000 || it > 5000) {
+                Toast.makeText(
+                    requireContext(),
+                    "제수량 합계는 -5000 ~ 5000 g 사이로 입력해주세요. (현재: $it)",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return null
+            }
+        }
+
         val currentExchangeList = adapter.items
+
+        currentExchangeList.forEach { item ->
+            val no = item.exchangeNo
+
+            // 배액량
+            if (item.drainVolume < 0 || item.drainVolume > 6000) {
+                Toast.makeText(
+                    requireContext(),
+                    "${no}회차 배액량은 0 ~ 6000 g 사이로 입력해주세요. (현재: ${item.drainVolume})",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return null
+            }
+
+            // 주입량
+            if (item.fillVolume < 0 || item.fillVolume > 6000) {
+                Toast.makeText(
+                    requireContext(),
+                    "${no}회차 주입액 중량은 0 ~ 6000 g 사이로 입력해주세요. (현재: ${item.fillVolume})",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return null
+            }
+
+            // 주입액 농도
+            if (item.fillConcentration < 0.0 || item.fillConcentration > 100.0) {
+                Toast.makeText(
+                    requireContext(),
+                    "${no}회차 주입액 농도는 0.0 ~ 100.0 % 사이로 입력해주세요. (현재: ${item.fillConcentration})",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return null
+            }
+
+            // 제수량
+            val uf = item.uf
+            if (uf < -500 || uf > 500) {
+                Toast.makeText(
+                    requireContext(),
+                    "${no}회차 제수량은 -500 ~ 500 g 사이로 입력해주세요. (현재: $uf)",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return null
+            }
+        }
 
         val exchanges = currentExchangeList.map { item ->
             RecordExchangeUpdateRequest(
@@ -154,7 +265,7 @@ class RecordEditFragment : Fragment() {
         }.takeIf { it.isNotEmpty() }
 
         return RecordUpdateRequest(
-            recordDate = currentRecord?.recordDate,   // 수정하지 않으면 기존 값 유지
+            recordDate = currentRecord?.recordDate,
             recordDw = currentRecord?.recordDw,
             weight = weight,
             systolic = systolic,
@@ -185,6 +296,11 @@ class RecordEditFragment : Fragment() {
         recordId = finalId
 
         val request = getRecordRequest()
+        if (request == null) {
+            binding.saveBtn.isEnabled = true
+            return
+        }
+
         viewModel.updateRecord(finalId, request)
     }
 

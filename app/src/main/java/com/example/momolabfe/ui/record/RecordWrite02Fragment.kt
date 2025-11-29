@@ -342,6 +342,16 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
             return
         }
 
+        if (totalUf < -5000 || totalUf > 5000) {
+            Toast.makeText(
+                requireContext(),
+                "제수량 합계는 -5000 ~ 5000 g 사이로 입력해주세요. (현재: $totalUf)",
+                Toast.LENGTH_SHORT
+            ).show()
+            enableButtonAndReturn()
+            return
+        }
+
         val exchanges = exchangeAdapter.items
 
         // 각 회차 데이터 유효성 검사 및 DTO 리스트 생성
@@ -382,6 +392,46 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
                 Toast.makeText(
                     requireContext(),
                     "${item.exchangeNo}회차 제수량을 입력해주세요.",
+                    Toast.LENGTH_SHORT
+                ).show()
+                enableButtonAndReturn()
+                return
+            }
+
+            if (item.drainVolume < 0 || item.drainVolume > 6000) {
+                Toast.makeText(
+                    requireContext(),
+                    "${item.exchangeNo}회차 배액량은 0 ~ 6000 g 사이로 입력해주세요. (현재: ${item.drainVolume})",
+                    Toast.LENGTH_SHORT
+                ).show()
+                enableButtonAndReturn()
+                return
+            }
+
+            if (item.fillVolume < 0 || item.fillVolume > 6000) {
+                Toast.makeText(
+                    requireContext(),
+                    "${item.exchangeNo}회차 주입량은 0 ~ 6000 g 사이로 입력해주세요. (현재: ${item.fillVolume})",
+                    Toast.LENGTH_SHORT
+                ).show()
+                enableButtonAndReturn()
+                return
+            }
+
+            if (item.fillConcentration < 0.0 || item.fillConcentration > 100.0) {
+                Toast.makeText(
+                    requireContext(),
+                    "${item.exchangeNo}회차 주입액 농도는 0.0 ~ 100.0 % 사이로 입력해주세요. (현재: ${item.fillConcentration})",
+                    Toast.LENGTH_SHORT
+                ).show()
+                enableButtonAndReturn()
+                return
+            }
+
+            if (item.uf < -500 || item.uf > 500) {
+                Toast.makeText(
+                    requireContext(),
+                    "${item.exchangeNo}회차 제수량은 -500 ~ 500 g 사이로 입력해주세요. (현재: ${item.uf})",
                     Toast.LENGTH_SHORT
                 ).show()
                 enableButtonAndReturn()

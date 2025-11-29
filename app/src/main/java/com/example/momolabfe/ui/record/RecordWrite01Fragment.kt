@@ -425,34 +425,94 @@ class RecordWrite01Fragment : Fragment() {
             DayOfWeek.SUNDAY -> DayWeek.SUN
         }
 
+        val weight = weightText.toDoubleOrNull() ?: run {
+            Toast.makeText(requireContext(), "체중을 올바른 숫자로 입력해주세요.", Toast.LENGTH_SHORT).show()
+            enableButtonAndReturn()
+            return
+        }
+
+        val systolic = systolicText.toIntOrNull() ?: run {
+            Toast.makeText(requireContext(), "최고 혈압을 올바른 숫자로 입력해주세요.", Toast.LENGTH_SHORT).show()
+            enableButtonAndReturn()
+            return
+        }
+
+        val diastolic = diastolicText.toIntOrNull() ?: run {
+            Toast.makeText(requireContext(), "최저 혈압을 올바른 숫자로 입력해주세요.", Toast.LENGTH_SHORT).show()
+            enableButtonAndReturn()
+            return
+        }
+
+        val fastingGlucose = fastingGlucoseText.toIntOrNull() ?: run {
+            Toast.makeText(requireContext(), "공복 혈당을 올바른 숫자로 입력해주세요.", Toast.LENGTH_SHORT).show()
+            enableButtonAndReturn()
+            return
+        }
+
+        val urineCount = urineCountText.toIntOrNull() ?: run {
+            Toast.makeText(requireContext(), "소변 횟수를 올바른 숫자로 입력해주세요.", Toast.LENGTH_SHORT).show()
+            enableButtonAndReturn()
+            return
+        }
+
+        if (weight < 20.0 || weight > 300.0) {
+            Toast.makeText(
+                requireContext(),
+                "체중은 20.0 ~ 300.0 kg 사이로 입력해주세요. (현재: $weight)",
+                Toast.LENGTH_SHORT
+            ).show()
+            enableButtonAndReturn()
+            return
+        }
+
+        if (systolic < 70 || systolic > 240) {
+            Toast.makeText(
+                requireContext(),
+                "최고 혈압은 70 ~ 240 mmHg 사이로 입력해주세요. (현재: $systolic)",
+                Toast.LENGTH_SHORT
+            ).show()
+            enableButtonAndReturn()
+            return
+        }
+
+        if (diastolic < 40 || diastolic > 160) {
+            Toast.makeText(
+                requireContext(),
+                "최저 혈압은 40 ~ 160 mmHg 사이로 입력해주세요. (현재: $diastolic)",
+                Toast.LENGTH_SHORT
+            ).show()
+            enableButtonAndReturn()
+            return
+        }
+
+        if (fastingGlucose < 40 || fastingGlucose > 600) {
+            Toast.makeText(
+                requireContext(),
+                "공복 혈당은 40 ~ 600 mg/dL 사이로 입력해주세요. (현재: $fastingGlucose)",
+                Toast.LENGTH_SHORT
+            ).show()
+            enableButtonAndReturn()
+            return
+        }
+
+        if (urineCount < 0 || urineCount > 50) {
+            Toast.makeText(
+                requireContext(),
+                "소변 횟수는 0 ~ 50회 사이로 입력해주세요. (현재: $urineCount)",
+                Toast.LENGTH_SHORT
+            ).show()
+            enableButtonAndReturn()
+            return
+        }
+
         val draft = RecordCommonDraft(
             recordDate = selected.toString(),
             recordDw = recordDwValue,
-            weight = weightText.toDoubleOrNull() ?: run {
-                Toast.makeText(requireContext(), "체중을 올바른 숫자로 입력해주세요.", Toast.LENGTH_SHORT).show()
-                enableButtonAndReturn()
-                return
-            },
-            systolic = systolicText.toIntOrNull() ?: run {
-                Toast.makeText(requireContext(), "최고 혈압을 입력해주세요.", Toast.LENGTH_SHORT).show()
-                enableButtonAndReturn()
-                return
-            },
-            diastolic = diastolicText.toIntOrNull() ?: run {
-                Toast.makeText(requireContext(), "최저 혈압을 입력해주세요.", Toast.LENGTH_SHORT).show()
-                enableButtonAndReturn()
-                 return
-            },
-            fastingGlucose = fastingGlucoseText.toIntOrNull() ?: run {
-                Toast.makeText(requireContext(), "공복 혈당을 입력해주세요.", Toast.LENGTH_SHORT).show()
-                enableButtonAndReturn()
-                return
-            },
-            urineCount = urineCountText.toIntOrNull() ?: run {
-                Toast.makeText(requireContext(), "소변 횟수를 입력해주세요.", Toast.LENGTH_SHORT).show()
-                enableButtonAndReturn()
-                return
-            },
+            weight = weight,
+            systolic = systolic,
+            diastolic = diastolic,
+            fastingGlucose = fastingGlucose,
+            urineCount = urineCount,
             turbidity = turbidityValue,
             notes = notesText.takeIf { it.isNotBlank() }
         )
