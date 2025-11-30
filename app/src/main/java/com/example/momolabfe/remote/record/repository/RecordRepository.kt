@@ -9,6 +9,7 @@ import com.example.momolabfe.remote.record.model.RecordGetResponse
 import com.example.momolabfe.remote.record.model.RecordOcrResponse
 import com.example.momolabfe.remote.record.model.RecordUpdateRequest
 import com.example.momolabfe.remote.record.model.GetCalendarResponse
+import com.example.momolabfe.remote.record.model.TodayExchangeSummary
 import com.example.momolabfe.remote.record.model.WeeklyAverageResponse
 import com.example.momolabfe.remote.record.service.RecordService
 import com.example.momolabfe.utils.ApiException
@@ -90,6 +91,15 @@ class RecordRepository @Inject constructor(
         val response = recordService.getWeeklyAvgRecords(targetDate)
         if (!response.isSuccessful) {
             throw ApiException(response.code(), "주간 평균 기록 조회 실패: HTTP ${response.code()}")
+        }
+        response.body() ?: throw ApiException(response.code(), "빈 본문")
+    }
+
+    // 오늘의 요약 조회
+    suspend fun getTodayExchangeSummary(): Result<TodayExchangeSummary> = runCatching {
+        val response = recordService.getTodayExchangeSummary()
+        if (!response.isSuccessful) {
+            throw ApiException(response.code(), "오늘의 요약 조회 실패: HTTP ${response.code()}")
         }
         response.body() ?: throw ApiException(response.code(), "빈 본문")
     }

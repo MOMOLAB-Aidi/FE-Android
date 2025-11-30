@@ -74,3 +74,8 @@ data class WeeklyAverageResponse (
     @SerializedName("end_date") val endDate: LocalDate,
     @SerializedName("data") val data: WeeklyAverageData
 )
+
+data class TodayExchangeSummary (
+    @SerializedName("exchange_count") val exchangeCount: Int,
+    @SerializedName("total_uf") val totalUf: Int
+)

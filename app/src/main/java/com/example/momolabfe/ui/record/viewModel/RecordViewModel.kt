@@ -10,6 +10,7 @@ import com.example.momolabfe.remote.record.model.RecordCreateRequest
 import com.example.momolabfe.remote.record.model.RecordGetResponse
 import com.example.momolabfe.remote.record.model.RecordOcrResponse
 import com.example.momolabfe.remote.record.model.RecordUpdateRequest
+import com.example.momolabfe.remote.record.model.TodayExchangeSummary
 import com.example.momolabfe.remote.record.model.WeeklyAverageResponse
 import com.example.momolabfe.remote.record.repository.RecordRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -57,6 +58,9 @@ class RecordViewModel @Inject constructor(
 
     private val _calendarData = MutableLiveData<List<GetCalendarResponse>>()
     val calendarData: LiveData<List<GetCalendarResponse>> = _calendarData
+
+    private val _todayExchangeSummary = MutableLiveData<TodayExchangeSummary?>()
+    val todayExchangeSummary: LiveData<TodayExchangeSummary?> get() = _todayExchangeSummary
 
     // OCR로부터 마지막으로 받은 gcsPath를 보관
     var lastOcrGcsPath: String? = null
@@ -142,6 +146,18 @@ class RecordViewModel @Inject constructor(
                 _weeklyAverageData.value = weeklyAvgData
             }.onFailure { e ->
                 _errorMessage.value = e.localizedMessage ?: "주간 평균 기록 조회에 실패했습니다."
+            }
+        }
+    }
+
+    // 오늘의 요약 조회
+    fun getTodayExchangeSummary() {
+        viewModelScope.launch {
+            val result = recordRepository.getTodayExchangeSummary()
+            result.onSuccess { summary ->
+                _todayExchangeSummary.value = summary
+            }.onFailure { e ->
+                _errorMessage.value = e.localizedMessage ?: "오늘의 요약 조회에 실패했습니다."
             }
         }
     }
