@@ -17,9 +17,10 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import com.example.momolabfe.R
 import com.example.momolabfe.databinding.FragmentRecordListBinding
+import com.example.momolabfe.databinding.ItemExchangeDetailBinding
 import com.example.momolabfe.remote.record.model.GetCalendarResponse
+import com.example.momolabfe.remote.record.model.RecordExchangeGetResponse
 import com.example.momolabfe.remote.record.model.RecordGetResponse
-import com.example.momolabfe.ui.record.adapter.RecordExchangeDetailAdapter
 import com.example.momolabfe.ui.record.viewModel.RecordViewModel
 import com.example.momolabfe.utils.dpToPx
 import com.example.momolabfe.utils.weekdayShortKorean
@@ -40,8 +41,6 @@ class RecordListFragment : Fragment() {
 
     private var _binding: FragmentRecordListBinding? = null
     private val binding get() = _binding!!
-
-    private lateinit var adapter: RecordExchangeDetailAdapter
 
     private val monthCalendar: CalendarView
         get() = binding.calenderView
@@ -93,9 +92,6 @@ class RecordListFragment : Fragment() {
 
         // 바텀 내비게이션 숨기기
         activity?.findViewById<BottomNavigationView>(R.id.main_bnv)?.visibility = View.GONE
-
-        adapter = RecordExchangeDetailAdapter(emptyList())
-        binding.exchangeDetailRv.adapter = adapter
 
         // 해당 라이브러리는 캘린더 범위를 무제한으로 설정할 수 없어 일단은 +-50년으로 설정...
         val currentMonth = YearMonth.now()
@@ -189,7 +185,7 @@ class RecordListFragment : Fragment() {
                         selectedRecordId = null
                         hideDetailViews()
                         clearRecordViews()
-                        adapter.updateList(emptyList())
+                        renderExchanges(emptyList())
                     }
                 }
             }
@@ -342,7 +338,7 @@ class RecordListFragment : Fragment() {
                 selectedRecordId = null
                 hideDetailViews()
                 clearRecordViews()
-                adapter.updateList(emptyList())
+                renderExchanges(emptyList())
             }
         }
 
@@ -364,14 +360,13 @@ class RecordListFragment : Fragment() {
                 binding.totalUfValueTv.text = "${recordItem.totalUf}g"
                 binding.noteContentTv.text = recordItem.notes ?: ""
 
-                adapter.updateList(recordItem.exchanges)
-                binding.exchangeDetailRv.visibility =
-                    if (recordItem.exchanges.isEmpty()) View.GONE else View.VISIBLE
+                renderExchanges(recordItem.exchanges)
+
             } else {
                 selectedRecordId = null
                 hideDetailViews()
                 clearRecordViews()
-                adapter.updateList(emptyList())
+                renderExchanges(emptyList())
             }
         }
 
@@ -397,7 +392,7 @@ class RecordListFragment : Fragment() {
             selectedDateInfoContainer.visibility = View.GONE
             healthInfoCv.visibility = View.GONE
             sessionDetailTitleTv.visibility = View.GONE
-            exchangeDetailRv.visibility = View.GONE
+            exchangeDetailContainer.visibility = View.GONE
             noteCv.visibility = View.GONE
             detailEditBtn.visibility = View.GONE
             deleteBtn.visibility = View.GONE
@@ -409,11 +404,41 @@ class RecordListFragment : Fragment() {
             selectedDateInfoContainer.visibility = View.VISIBLE
             healthInfoCv.visibility = View.VISIBLE
             sessionDetailTitleTv.visibility = View.VISIBLE
-            // exchangeDetailRv는 회차 없으면 GONE 처리하니까 여기서 VISIBLE 해놔도 됨
-            exchangeDetailRv.visibility = View.VISIBLE
+            exchangeDetailContainer.visibility = View.VISIBLE
             noteCv.visibility = View.VISIBLE
             detailEditBtn.visibility = View.VISIBLE
             deleteBtn.visibility = View.VISIBLE
+        }
+    }
+
+    private fun renderExchanges(exchanges: List<RecordExchangeGetResponse>) {
+        val container = binding.exchangeDetailContainer
+        container.removeAllViews()
+
+        if (exchanges.isEmpty()) {
+            container.visibility = View.GONE
+            return
+        } else {
+            container.visibility = View.VISIBLE
+        }
+
+        val inflater = LayoutInflater.from(requireContext())
+
+        exchanges.forEach { item ->
+            val itemBinding = ItemExchangeDetailBinding.inflate(inflater, container, false)
+
+            // 기존 onBindViewHolder 내용 그대로
+            itemBinding.exchangeNumberBadgeTv.text = item.exchangeNo.toString()
+            itemBinding.exchangeTimeTv.text = item.exchangeTime.format(
+                DateTimeFormatter.ofPattern("HH:mm", Locale.KOREA)
+            )
+            itemBinding.ufValueTv.text = "${item.uf}g"
+
+            val drainText = "배액량: ${item.drainVolume}g"
+            val fillText = "주입량: ${item.fillVolume}g"
+            itemBinding.volumeTv.text = "$drainText | $fillText"
+
+            container.addView(itemBinding.root)
         }
     }
 

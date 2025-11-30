@@ -253,7 +253,7 @@
                         android:layout_marginTop="5dp"
                         android:fontFamily="@font/noto_sans_kr_regular"
                         android:includeFontPadding="false"
-                        android:text="55.8kg"
+                        tools:text="55.8kg"
                         android:textColor="@color/white"
                         android:textSize="16sp"
                         app:layout_constraintStart_toStartOf="parent"
@@ -277,7 +277,7 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/noto_sans_kr_regular"
                         android:includeFontPadding="false"
-                        android:text="122/76"
+                        tools:text="122/76"
                         android:textColor="@color/white"
                         android:textSize="16sp"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -303,7 +303,7 @@
                         android:layout_marginTop="5dp"
                         android:fontFamily="@font/noto_sans_kr_regular"
                         android:includeFontPadding="false"
-                        android:text="128 mg/dL"
+                        tools:text="128 mg/dL"
                         android:textColor="@color/white"
                         android:textSize="16sp"
                         app:layout_constraintStart_toStartOf="parent"
@@ -327,7 +327,7 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/noto_sans_kr_regular"
                         android:includeFontPadding="false"
-                        android:text="540g"
+                        tools:text="540g"
                         android:textColor="@color/white"
                         android:textSize="16sp"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -351,21 +351,17 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/health_info_cv" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/exchange_detail_rv"
+            <LinearLayout
+                android:id="@+id/exchange_detail_container"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="20dp"
-                android:nestedScrollingEnabled="false"
                 android:orientation="vertical"
-                android:overScrollMode="never"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/session_detail_title_tv"
-                tools:listitem="@layout/item_exchange_detail" />
+                app:layout_constraintTop_toBottomOf="@id/session_detail_title_tv" />
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/note_cv"
@@ -380,7 +376,7 @@
                 app:cardElevation="0dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/exchange_detail_rv"
+                app:layout_constraintTop_toBottomOf="@id/exchange_detail_container"
                 app:strokeWidth="0dp">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -407,7 +403,7 @@
                         android:layout_marginTop="8dp"
                         android:fontFamily="@font/noto_sans_kr_regular"
                         android:includeFontPadding="false"
-                        android:text="컨디션 양호"
+                        tools:text="컨디션 양호"
                         android:textColor="@color/text_primary"
                         android:textSize="14sp"
                         app:layout_constraintEnd_toEndOf="parent"

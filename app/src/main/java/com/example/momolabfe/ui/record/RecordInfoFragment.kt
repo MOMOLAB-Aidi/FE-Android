@@ -10,13 +10,14 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.example.momolabfe.R
 import com.example.momolabfe.databinding.FragmentRecordInfoBinding
+import com.example.momolabfe.databinding.ItemExchangeInfoBinding
 import com.example.momolabfe.remote.record.model.DayWeek
 import com.example.momolabfe.remote.record.model.RecordGetResponse
 import com.example.momolabfe.remote.record.model.Turbidity
-import com.example.momolabfe.ui.record.adapter.RecordExchangeInfoAdapter
 import com.example.momolabfe.ui.record.viewModel.RecordViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 class RecordInfoFragment : Fragment() {
 
@@ -25,7 +26,6 @@ class RecordInfoFragment : Fragment() {
 
     private var recordId: Long = -1L
 
-    private lateinit var adapter: RecordExchangeInfoAdapter
     private val viewModel: RecordViewModel by activityViewModels()
 
     override fun onCreateView(
@@ -45,9 +45,6 @@ class RecordInfoFragment : Fragment() {
 
         // 바텀 내비게이션 숨기기
         activity?.findViewById<BottomNavigationView>(R.id.main_bnv)?.visibility = View.GONE
-
-        adapter = RecordExchangeInfoAdapter(emptyList(), highlightMismatch = true)
-        binding.exchangeInfoRv.adapter = adapter
 
         if (recordId != -1L) {
             viewModel.getRecord(recordId)
@@ -94,7 +91,7 @@ class RecordInfoFragment : Fragment() {
                 binding.noteValueTv.text = recordItem.notes
 
                 // 회차별 정보 바인딩
-                adapter.updateList(recordItem.exchanges)
+                renderExchangeInfo(recordItem)
 
                 applyUfValidation(recordItem)
             }
@@ -158,6 +155,51 @@ class RecordInfoFragment : Fragment() {
             binding.totalUfValueTv.setTextColor(errorColor)
         } else {
             binding.totalUfValueTv.setTextColor(normalColor)
+        }
+    }
+
+    private fun renderExchangeInfo(recordItem: RecordGetResponse) {
+        val container = binding.exchangeInfoContainer
+        container.removeAllViews()
+
+        val inflater = LayoutInflater.from(requireContext())
+
+        val normalColor = ContextCompat.getColor(requireContext(), R.color.secondary_text)
+        val errorColor = ContextCompat.getColor(requireContext(), R.color.red)
+
+        val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
+
+        recordItem.exchanges.forEachIndexed { index, ex ->
+            val itemBinding = ItemExchangeInfoBinding.inflate(inflater, container, false)
+
+            itemBinding.exchangeTitleTv.text = "${index + 1}회차"
+
+            itemBinding.exchangeTimeValueTv.text =
+                ex.exchangeTime.format(timeFormatter) ?: "-"
+
+            itemBinding.fillConcentrationValueTv.text =
+                ex.fillConcentration.toString()
+
+            itemBinding.drainVolumeValueTv.text = ex.drainVolume.toString()
+            itemBinding.fillVolumeValueTv.text = ex.fillVolume.toString()
+
+            val uf = ex.uf
+            val drain = ex.drainVolume
+            val fill = ex.fillVolume
+
+            val calculatedUf =
+                if (drain != null && fill != null) drain - fill else null
+
+            itemBinding.ufValueTv.text = uf.toString()
+
+            // 불일치 → 빨간색
+            if (uf != null && calculatedUf != null && uf != calculatedUf) {
+                itemBinding.ufValueTv.setTextColor(errorColor)
+            } else {
+                itemBinding.ufValueTv.setTextColor(normalColor)
+            }
+
+            container.addView(itemBinding.root)
         }
     }
 

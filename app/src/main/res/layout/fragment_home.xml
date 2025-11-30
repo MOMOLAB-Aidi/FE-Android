@@ -266,22 +266,18 @@
                     app:layout_constraintStart_toEndOf="@id/recent_record_tv"
                     app:layout_constraintTop_toBottomOf="@id/complete_cv"/>
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recent_record_rv"
+                <LinearLayout
+                    android:id="@+id/recent_record_container"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
                     android:layout_marginTop="22dp"
-                    android:nestedScrollingEnabled="false"
                     android:orientation="vertical"
-                    android:overScrollMode="never"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintBottom_toTopOf="@id/weekly_avg_cv"
-                    app:layout_constraintTop_toBottomOf="@id/recent_record_tv"
-                    tools:listitem="@layout/item_recent_record" />
+                    app:layout_constraintTop_toBottomOf="@id/recent_record_tv" />
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/weekly_avg_cv"
@@ -295,7 +291,7 @@
                     app:cardCornerRadius="10dp"
                     app:cardElevation="0dp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/recent_record_rv"
+                    app:layout_constraintTop_toBottomOf="@id/recent_record_container"
                     app:strokeWidth="0dp">
 
                     <androidx.constraintlayout.widget.ConstraintLayout

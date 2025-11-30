@@ -24,17 +24,18 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.example.momolabfe.R
 import com.example.momolabfe.databinding.DialogTimePickerBinding
 import com.example.momolabfe.databinding.FragmentRecordEditBinding
+import com.example.momolabfe.databinding.ItemExchangeEditBinding
 import com.example.momolabfe.remote.record.model.DayWeek
 import com.example.momolabfe.remote.record.model.RecordExchangeGetResponse
 import com.example.momolabfe.remote.record.model.RecordExchangeUpdateRequest
 import com.example.momolabfe.remote.record.model.RecordUpdateRequest
 import com.example.momolabfe.remote.record.model.Turbidity
-import com.example.momolabfe.ui.record.adapter.RecordExchangeEditAdapter
 import com.example.momolabfe.ui.record.viewModel.RecordViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 class RecordEditFragment : Fragment() {
@@ -46,7 +47,13 @@ class RecordEditFragment : Fragment() {
 
     private val viewModel: RecordViewModel by activityViewModels()
 
-    private lateinit var adapter: RecordExchangeEditAdapter
+    // 회차 원본 리스트
+    private var currentExchanges: List<RecordExchangeGetResponse> = emptyList()
+
+    companion object {
+        private val TIME_FORMATTER: DateTimeFormatter =
+            DateTimeFormatter.ofPattern("HH:mm", Locale.KOREA)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -64,15 +71,6 @@ class RecordEditFragment : Fragment() {
 
         // 바텀 내비게이션 숨기기
         activity?.findViewById<BottomNavigationView>(R.id.main_bnv)?.visibility = View.GONE
-
-        adapter = RecordExchangeEditAdapter().apply {
-            onTimePickerClickListener = object : RecordExchangeEditAdapter.OnTimePickerClickListener {
-                override fun onTimePickerClick(position: Int, targetEditText: EditText) {
-                    showTimePickerDialog(position)
-                }
-            }
-        }
-        binding.exchangeInfoRv.adapter = adapter
 
         setupTurbidityCheckboxes()
         setupObservers()
@@ -206,63 +204,108 @@ class RecordEditFragment : Fragment() {
             }
         }
 
-        val currentExchangeList = adapter.items
+        // --- 회차별 정보(동적 View에서 읽기) ---
+        val container = binding.exchangeEditContainer
+        val childCount = container.childCount
 
-        currentExchangeList.forEach { item ->
-            val no = item.exchangeNo
+        if (childCount == 0) {
+            // 회차 정보가 없으면 null 로 보내도 됨(백엔드 Optional이면)
+            return RecordUpdateRequest(
+                recordDate = currentRecord?.recordDate,
+                recordDw = currentRecord?.recordDw,
+                weight = weight,
+                systolic = systolic,
+                diastolic = diastolic,
+                fastingGlucose = fastingGlucose,
+                urineCount = urineCount,
+                turbidity = turbidity,
+                notes = notes,
+                totalUf = totalUf,
+                exchanges = null
+            )
+        }
+
+        val exchanges = mutableListOf<RecordExchangeUpdateRequest>()
+
+        for (i in 0 until childCount) {
+            val child = container.getChildAt(i)
+            val itemBinding = ItemExchangeEditBinding.bind(child)
+
+            val no = currentExchanges.getOrNull(i)?.exchangeNo ?: (i + 1)
+
+            // 교환 시각
+            val timeStr = itemBinding.exchangeTimeValueEt.text.toString().trim()
+            val exchangeTime = try {
+                LocalTime.parse(timeStr, TIME_FORMATTER)
+            } catch (e: Exception) {
+                Log.w("RECORD_EDIT_FRAGMENT", "시간 파싱 실패: $timeStr", e)
+                Toast.makeText(requireContext(),"${no}회차 교환 시각을 올바른 형식(HH:mm)으로 입력해주세요. (현재: '$timeStr')", Toast.LENGTH_SHORT).show()
+                return null
+            }
 
             // 배액량
-            if (item.drainVolume < 0 || item.drainVolume > 6000) {
-                Toast.makeText(
-                    requireContext(),
-                    "${no}회차 배액량은 0 ~ 6000 g 사이로 입력해주세요. (현재: ${item.drainVolume})",
-                    Toast.LENGTH_SHORT
-                ).show()
+            val drainStr = itemBinding.drainVolumeValueEt.text.toString()
+            val drainVolume = drainStr.toIntOrNull()
+            if (drainVolume == null) {
+                Toast.makeText(requireContext(),"${no}회차 배액량을 입력해주세요.", Toast.LENGTH_SHORT).show()
+                return null
+            }
+            if (drainVolume < 0 || drainVolume > 6000) {
+                Toast.makeText(requireContext(),"${no}회차 배액량은 0 ~ 6000 g 사이로 입력해주세요. (현재: $drainVolume)", Toast.LENGTH_SHORT).show()
                 return null
             }
 
             // 주입량
-            if (item.fillVolume < 0 || item.fillVolume > 6000) {
-                Toast.makeText(
-                    requireContext(),
-                    "${no}회차 주입액 중량은 0 ~ 6000 g 사이로 입력해주세요. (현재: ${item.fillVolume})",
-                    Toast.LENGTH_SHORT
-                ).show()
+            val fillStr = itemBinding.fillVolumeValueEt.text.toString()
+            val fillVolume = fillStr.toIntOrNull()
+            if (fillVolume == null) {
+                Toast.makeText(requireContext(),"${no}회차 주입액 중량을 입력해주세요.", Toast.LENGTH_SHORT).show()
+                return null
+            }
+            if (fillVolume < 0 || fillVolume > 6000) {
+                Toast.makeText(requireContext(),"${no}회차 주입액 중량은 0 ~ 6000 g 사이로 입력해주세요. (현재: $fillVolume)", Toast.LENGTH_SHORT).show()
                 return null
             }
 
             // 주입액 농도
-            if (item.fillConcentration < 0.0 || item.fillConcentration > 100.0) {
-                Toast.makeText(
-                    requireContext(),
-                    "${no}회차 주입액 농도는 0.0 ~ 100.0 % 사이로 입력해주세요. (현재: ${item.fillConcentration})",
-                    Toast.LENGTH_SHORT
-                ).show()
+            val concStr = itemBinding.fillConcentrationValueEt.text.toString()
+            val fillConcentration = concStr.toDoubleOrNull()
+            if (fillConcentration == null) {
+                Toast.makeText(requireContext(),"${no}회차 주입액 농도를 입력해주세요.", Toast.LENGTH_SHORT).show()
+                return null
+            }
+            if (fillConcentration < 0.0 || fillConcentration > 100.0) {
+                Toast.makeText(requireContext(),"${no}회차 주입액 농도는 0.0 ~ 100.0 % 사이로 입력해주세요. (현재: $fillConcentration)", Toast.LENGTH_SHORT).show()
                 return null
             }
 
             // 제수량
-            val uf = item.uf
-            if (uf < -500 || uf > 500) {
-                Toast.makeText(
-                    requireContext(),
-                    "${no}회차 제수량은 -500 ~ 500 g 사이로 입력해주세요. (현재: $uf)",
-                    Toast.LENGTH_SHORT
-                ).show()
+            val ufStr = itemBinding.ufValueEt.text.toString()
+            val uf = ufStr.toIntOrNull()
+            if (uf == null) {
+                Toast.makeText(requireContext(),"${no}회차 제수량을 입력해주세요.", Toast.LENGTH_SHORT).show()
                 return null
             }
+            if (uf < -500 || uf > 500) {
+                Toast.makeText(requireContext(),"${no}회차 제수량은 -500 ~ 500 g 사이로 입력해주세요. (현재: $uf)", Toast.LENGTH_SHORT).show()
+                return null
+            }
+
+            val original = currentExchanges.getOrNull(i)
+
+            exchanges.add(
+                RecordExchangeUpdateRequest(
+                    id = original?.id, // 원래 회차 id 유지
+                    exchangeTime = exchangeTime.toString(),
+                    drainVolume = drainVolume,
+                    fillVolume = fillVolume,
+                    fillConcentration = fillConcentration,
+                    uf = uf
+                )
+            )
         }
 
-        val exchanges = currentExchangeList.map { item ->
-            RecordExchangeUpdateRequest(
-                id = item.id,
-                exchangeTime = item.exchangeTime.toString(),
-                drainVolume = item.drainVolume,
-                fillVolume = item.fillVolume,
-                fillConcentration = item.fillConcentration,
-                uf = item.uf
-            )
-        }.takeIf { it.isNotEmpty() }
+        val exchangesOrNull = exchanges.takeIf { it.isNotEmpty() }
 
         return RecordUpdateRequest(
             recordDate = currentRecord?.recordDate,
@@ -275,7 +318,7 @@ class RecordEditFragment : Fragment() {
             turbidity = turbidity,
             notes = notes,
             totalUf = totalUf,
-            exchanges = exchanges
+            exchanges = exchangesOrNull
         )
     }
 
@@ -346,7 +389,8 @@ class RecordEditFragment : Fragment() {
                     uf = item.uf
                 )
             }
-            adapter.updateList(exchangesForEdit)
+            currentExchanges = exchangesForEdit
+            renderExchangeEditViews(exchangesForEdit)
         }
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -390,7 +434,7 @@ class RecordEditFragment : Fragment() {
         }
     }
 
-    private fun showTimePickerDialog(position: Int) {
+    private fun showTimePickerDialogForView(exchangeIndex: Int, targetEditText: EditText) {
         val dialogBinding = DialogTimePickerBinding.inflate(layoutInflater)
 
         val dialog = AlertDialog.Builder(requireContext(), R.style.RoundedAlertDialog)
@@ -400,7 +444,8 @@ class RecordEditFragment : Fragment() {
         setupPickersInDialog(dialogBinding)
 
         dialogBinding.applyTv.setOnClickListener {
-            applySelectedTime(dialogBinding, position)
+            val (timeText, _) = buildSelectedTime(dialogBinding)
+            targetEditText.setText(timeText)
             dialog.dismiss()
         }
 
@@ -438,26 +483,20 @@ class RecordEditFragment : Fragment() {
         }
     }
 
-    private fun applySelectedTime(dialogBinding: DialogTimePickerBinding, position: Int) {
+    private fun buildSelectedTime(dialogBinding: DialogTimePickerBinding): Pair<String, LocalTime> {
         val ampmPicker = dialogBinding.ampmPickerNp
         val hourPicker = dialogBinding.hourPickerNp
         val minutePicker = dialogBinding.minutePickerNp
 
         val ampm = ampmPicker.value
         val hour12 = hourPicker.value
-        val minute = arrayOf("00", "10", "20", "30", "40", "50")[minutePicker.value]
+        val minuteStr = arrayOf("00", "10", "20", "30", "40", "50")[minutePicker.value]
 
         val hour24 = convertTo24Hour(ampm, hour12)
-        val timeText = String.format(Locale.KOREA, "%02d:%s", hour24, minute)
+        val timeText = String.format(Locale.KOREA, "%02d:%s", hour24, minuteStr)
+        val time = LocalTime.parse(timeText, TIME_FORMATTER)
 
-        val currentList = adapter.items
-        if (position >= 0 && position < currentList.size) {
-            val updated = currentList[position].copy(
-                exchangeTime = LocalTime.parse(timeText, RecordExchangeEditAdapter.TIME_FORMATTER)
-            )
-            currentList[position] = updated
-            adapter.notifyItemChanged(position)
-        }
+        return timeText to time
     }
 
     private fun convertTo24Hour(ampm: Int, hour12: Int): Int {
@@ -498,6 +537,33 @@ class RecordEditFragment : Fragment() {
             }
         } catch (e: Exception) {
             e.printStackTrace()
+        }
+    }
+
+    private fun renderExchangeEditViews(exchanges: List<RecordExchangeGetResponse>) {
+        val container = binding.exchangeEditContainer
+        container.removeAllViews()
+
+        val inflater = LayoutInflater.from(requireContext())
+
+        exchanges.forEachIndexed { index, item ->
+            val itemBinding = ItemExchangeEditBinding.inflate(inflater, container, false)
+
+            itemBinding.exchangeTitleTv.text = "${index + 1}회차"
+
+            val timeText = item.exchangeTime.format(TIME_FORMATTER) ?: "-"
+            itemBinding.exchangeTimeValueEt.setText(timeText)
+
+            itemBinding.exchangeTimeValueEt.setOnClickListener {
+                showTimePickerDialogForView(index, itemBinding.exchangeTimeValueEt)
+            }
+
+            itemBinding.drainVolumeValueEt.setText(item.drainVolume.toString())
+            itemBinding.fillVolumeValueEt.setText(item.fillVolume.toString())
+            itemBinding.fillConcentrationValueEt.setText(item.fillConcentration.toString())
+            itemBinding.ufValueEt.setText(item.uf.toString())
+
+            container.addView(itemBinding.root)
         }
     }
 
