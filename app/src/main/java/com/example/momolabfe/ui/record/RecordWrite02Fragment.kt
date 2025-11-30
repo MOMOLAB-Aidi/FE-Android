@@ -467,6 +467,9 @@ class RecordWrite02Fragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.recordSuccess.collectLatest {
+                    // 기록 저장 성공 시에만 OCR 상태 정리
+                    viewModel.clearOcr()
+
                     parentFragmentManager.beginTransaction()
                         .replace(R.id.main_frm, RecordListFragment())
                         .commit()
@@ -543,7 +546,7 @@ class RecordWrite02Fragment : Fragment() {
     }
 
     private fun renderExchangeViews() {
-        val container = binding.exchangeContainer   // XML에서 RecyclerView → LinearLayout 로 바꾼 id
+        val container = binding.exchangeContainer
         container.removeAllViews()
 
         val inflater = LayoutInflater.from(requireContext())
@@ -551,31 +554,19 @@ class RecordWrite02Fragment : Fragment() {
         exchangeList.forEachIndexed { index, item ->
             val itemBinding = ItemRecordExchangeBinding.inflate(inflater, container, false)
 
-            // ① 회차 번호 (1회차, 2회차, ...)
             itemBinding.exchangeNoTv.text = "${index + 1}회차"
 
-            // ② 교환 시각
             val timeText = item.exchangeTime.format(TIME_FORMATTER)
             itemBinding.exchangeTimeEt.setText(timeText)
-
-            // 시간 선택기
             itemBinding.exchangeTimeEt.setOnClickListener {
                 showTimePickerDialog(itemBinding.exchangeTimeEt, index)
             }
 
-            // ③ 배액량
             itemBinding.drainVolumeEt.setText(item.drainVolume.toString())
-
-            // ④ 주입량
             itemBinding.fillVolumeEt.setText(item.fillVolume.toString())
-
-            // ⑤ 농도
             itemBinding.fillConcentrationEt.setText(item.fillConcentration.toString())
-
-            // ⑥ 제수량
             itemBinding.ufEt.setText(item.uf.toString())
 
-            // EditText 변경 시 exchangeList 동기화
             itemBinding.drainVolumeEt.addTextChangedListener {
                 val v = it?.toString()?.toIntOrNull() ?: 0
                 exchangeList[index] = exchangeList[index].copy(drainVolume = v)
@@ -604,7 +595,6 @@ class RecordWrite02Fragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        viewModel.clearOcr()
         _binding = null
     }
 }

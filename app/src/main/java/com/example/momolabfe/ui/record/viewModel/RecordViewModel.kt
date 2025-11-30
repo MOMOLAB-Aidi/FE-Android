@@ -178,29 +178,8 @@ class RecordViewModel @Inject constructor(
         }
     }
 
-    // ocr 이미지 다운로드
-    fun downloadOcrImage(gcsPath: String) {
-        viewModelScope.launch {
-            _ocrImageBytes.value = null // 다운로드 시작 전 StateFlow 초기화
-
-            val result = recordRepository.downloadOcrImage(gcsPath)
-
-            result.onSuccess { imageBytes ->
-                // 성공 시 ByteArray를 StateFlow에 저장
-                _ocrImageBytes.value = imageBytes
-                _errorMessage.value = null
-            }.onFailure { e ->
-                _errorMessage.value = e.localizedMessage ?: "OCR 이미지 다운로드에 실패했습니다."
-            }
-        }
-    }
-
     fun setExchangeTime(time: String) {
         _exchangeTime.value = time
-    }
-
-    fun getExchangeTime(): String? {
-        return _exchangeTime.value
     }
 
     fun clearOcr() {
