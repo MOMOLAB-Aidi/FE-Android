@@ -82,12 +82,6 @@ class RecordWrite02Fragment : Fragment() {
 
         fillExchangesFromOcr()
 
-        if (isFromOcr) {
-            downloadOcrImageIfAvailable()
-        } else {
-            binding.ocrImagePreview.visibility = View.GONE
-        }
-
         binding.addExchangeBtn.setOnClickListener {
             addExchange()
         }
@@ -468,17 +462,8 @@ class RecordWrite02Fragment : Fragment() {
         )
     }
 
-    private fun downloadOcrImageIfAvailable() {
-        val ocr = viewModel.ocrRecordResult.value
-
-        val gcsPath = ocr?.gcsPath
-        if (!gcsPath.isNullOrEmpty()) {
-            // gcs path를 사용하여 이미지 다운로드 시작
-            viewModel.downloadOcrImage(gcsPath)
-        }
-    }
-
     private fun setupObservers() {
+
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.recordSuccess.collectLatest {

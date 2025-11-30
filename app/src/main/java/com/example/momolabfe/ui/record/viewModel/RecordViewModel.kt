@@ -64,6 +64,9 @@ class RecordViewModel @Inject constructor(
     private val _calendarData = MutableLiveData<List<GetCalendarResponse>>()
     val calendarData: LiveData<List<GetCalendarResponse>> = _calendarData
 
+    // OCR로부터 마지막으로 받은 gcsPath를 보관
+    var lastOcrGcsPath: String? = null
+
     // 캘린더 일정 조회
     fun getCalendar(year: Int, month: Int) {
         viewModelScope.launch {
