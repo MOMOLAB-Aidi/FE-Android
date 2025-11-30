@@ -15,6 +15,7 @@ import android.widget.NumberPicker
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
@@ -24,6 +25,7 @@ import com.example.momolabfe.R
 import com.example.momolabfe.remote.record.model.OcrRecordExchangeData
 import com.example.momolabfe.databinding.DialogTimePickerBinding
 import com.example.momolabfe.databinding.FragmentRecordWrite02Binding
+import com.example.momolabfe.databinding.ItemRecordExchangeBinding
 import com.example.momolabfe.remote.record.model.RecordCreateRequest
 import com.example.momolabfe.remote.record.model.RecordExchangeCreateRequest
 import com.example.momolabfe.ui.record.adapter.RecordExchangeAdapter
@@ -35,18 +37,19 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 @AndroidEntryPoint
-class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClickListener {
+class RecordWrite02Fragment : Fragment() {
 
     private var _binding: FragmentRecordWrite02Binding? = null
     private val binding get() = _binding!!
 
     private val viewModel: RecordViewModel by activityViewModels()
-    private lateinit var exchangeAdapter: RecordExchangeAdapter
 
-    private val MAX_EXCHANGES = RecordExchangeAdapter.MAX_EXCHANGES
+    // 회차 리스트 직접 관리
+    private val exchangeList = mutableListOf<OcrRecordExchangeData>()
 
     private val isFromOcr: Boolean by lazy {
         arguments?.getBoolean("fromOcr", false) ?: false
@@ -78,7 +81,6 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
         // 바텀 내비게이션 숨기기
         activity?.findViewById<BottomNavigationView>(R.id.main_bnv)?.visibility = View.GONE
 
-        setupRecyclerView()
         fillExchangesFromOcr()
 
         if (isFromOcr) {
@@ -97,11 +99,6 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
         }
 
         setupObservers()
-    }
-
-    // 어댑터에서 호출되는 콜백 함수 구현
-    override fun onTimePickerClick(position: Int, targetEditText: EditText) {
-        showTimePickerDialog(targetEditText, position)
     }
 
     private fun showTimePickerDialog(targetEditText: EditText, position: Int) {
@@ -152,7 +149,11 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
         }
     }
 
-    private fun applySelectedTime(dialogBinding: DialogTimePickerBinding, targetEditText: EditText, position: Int) {
+    private fun applySelectedTime(
+        dialogBinding: DialogTimePickerBinding,
+        targetEditText: EditText,
+        position: Int
+    ) {
         val ampmPicker = dialogBinding.ampmPickerNp
         val hourPicker = dialogBinding.hourPickerNp
         val minutePicker = dialogBinding.minutePickerNp
@@ -165,17 +166,18 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
         val hour24 = convertTo24Hour(ampm, hour12)
         val serverTimeText = String.format(Locale.KOREA, "%02d:%s", hour24, minute)
 
-        val currentList = exchangeAdapter.items
-        if (position >= 0 && position < currentList.size) {
-            val updatedItem = currentList[position].copy(
-                // 24시간 형식 문자열을 LocalTime 객체로 파싱
-                exchangeTime = LocalTime.parse(serverTimeText, RecordExchangeAdapter.TIME_FORMATTER)
+        // 리스트 데이터 업데이트
+        if (position >= 0 && position < exchangeList.size) {
+            val updatedItem = exchangeList[position].copy(
+                exchangeTime = LocalTime.parse(serverTimeText, TIME_FORMATTER)
             )
-            currentList[position] = updatedItem
-            exchangeAdapter.notifyItemChanged(position)
+            exchangeList[position] = updatedItem
         }
 
-        // ViewModel에 24시간 형식 저장 (서버 전송용)
+        // 화면에 표시
+        targetEditText.setText(serverTimeText)
+
+        // ViewModel에 24시간 형식 저장 (서버 전송용 – 기존 로직 유지)
         viewModel.setExchangeTime(serverTimeText)
     }
 
@@ -234,30 +236,16 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
         }
     }
 
-    private fun setupRecyclerView() {
-        exchangeAdapter = RecordExchangeAdapter().apply {
-            onTimePickerClickListener = this@RecordWrite02Fragment
-        }
-        binding.exchangeRv.apply {
-            adapter = exchangeAdapter
-            setHasFixedSize(false)
-            setItemViewCacheSize(MAX_EXCHANGES)
-        }
-    }
-
     // 회차 추가 버튼 클릭 시 새로운 교환 항목 추가 + 업데이트
     private fun addExchange() {
-        val currentExchanges = exchangeAdapter.items
-
-        if (currentExchanges.size >= MAX_EXCHANGES) {
+        if (exchangeList.size >= MAX_EXCHANGES) {
             return
         }
 
-        // 새 항목의 exchangeNo 계산
-        val newExchangeNo = currentExchanges.size + 1
+        val newExchangeNo = exchangeList.size + 1
 
         val newExchange = OcrRecordExchangeData(
-            id = -1, // 임시 ID 할당
+            id = -1,
             exchangeNo = newExchangeNo,
             exchangeTime = LocalTime.now(),
             drainVolume = 0,
@@ -266,22 +254,19 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
             uf = 0
         )
 
-        exchangeAdapter.addExchangeItem(newExchange)
+        exchangeList.add(newExchange)
 
+        renderExchangeViews()
         updateAddButtonVisibility()
-        binding.exchangeRv.requestLayout()
-
-        // 추가된 항목 위치로 스크롤
-        binding.exchangeRv.scrollToPosition(exchangeAdapter.itemCount - 1)
     }
 
     private fun fillExchangesFromOcr() {
         val ocr = viewModel.ocrRecordResult.value
 
         // OCR 결과가 null이거나 exchanges 리스트가 비어있는지 확인
-        val exchanges = ocr?.ocrData?.exchanges.orEmpty().toMutableList()
+        val exchangesFromOcr = ocr?.ocrData?.exchanges.orEmpty().toMutableList()
 
-        if (exchanges.isEmpty()) {
+        if (exchangesFromOcr.isEmpty()) {
             // 1회차 항목을 생성하여 추가
             val firstExchange = OcrRecordExchangeData(
                 id = -1, // 임시 ID
@@ -292,17 +277,19 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
                 fillVolume = 0,
                 uf = 0
             )
-            exchanges.add(firstExchange)
+            exchangesFromOcr.add(firstExchange)
         }
 
-        exchangeAdapter.items = exchanges
-        if (exchanges.size == 1) {
-            exchangeAdapter.notifyItemInserted(0)
-        } else {
-            exchangeAdapter.notifyItemRangeInserted(0, exchanges.size)
+        exchangeList.clear()
+        exchangeList.addAll(exchangesFromOcr)
+
+        // 회차 번호 정렬
+        exchangeList.forEachIndexed { index, item ->
+            exchangeList[index] = item.copy(exchangeNo = index + 1)
         }
+
+        renderExchangeViews()
         updateAddButtonVisibility()
-        binding.exchangeRv.requestLayout() // 레이아웃 다시 계산하도록 요청
 
         if (isFromOcr) {
             val totalUfFromOcr = ocr?.ocrData?.totalUf
@@ -314,8 +301,7 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
     }
 
     private fun updateAddButtonVisibility() {
-        // 현재 어댑터의 항목 개수를 확인
-        if (exchangeAdapter.itemCount >= MAX_EXCHANGES) {
+        if (exchangeList.size >= MAX_EXCHANGES) {
             binding.addExchangeBtn.visibility = View.GONE
         } else {
             binding.addExchangeBtn.visibility = View.VISIBLE
@@ -329,7 +315,11 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
 
         val draft = commonDraft
         if (draft == null) {
-            Toast.makeText(requireContext(), "공통 정보가 없습니다. 처음 화면부터 다시 작성해주세요.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                requireContext(),
+                "공통 정보가 없습니다. 처음 화면부터 다시 작성해주세요.",
+                Toast.LENGTH_SHORT
+            ).show()
             enableButtonAndReturn()
             return
         }
@@ -352,13 +342,12 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
             return
         }
 
-        val exchanges = exchangeAdapter.items
+        val exchanges = exchangeList
 
-        // 각 회차 데이터 유효성 검사 및 DTO 리스트 생성
         val requestList = mutableListOf<RecordExchangeCreateRequest>()
         for (item in exchanges) {
 
-            if (item.drainVolume <= 0) {
+            if (item.drainVolume == 0) {
                 Toast.makeText(
                     requireContext(),
                     "${item.exchangeNo}회차 배액량을 입력해주세요.",
@@ -440,7 +429,7 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
 
             requestList += RecordExchangeCreateRequest(
                 exchangeNo = item.exchangeNo,
-                exchangeTime = item.exchangeTime.format(RecordExchangeAdapter.TIME_FORMATTER),
+                exchangeTime = item.exchangeTime.format(TIME_FORMATTER),
                 drainVolume = item.drainVolume,
                 fillVolume = item.fillVolume,
                 fillConcentration = item.fillConcentration,
@@ -454,12 +443,10 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
             return
         }
 
-        // 제수량 검증
         validateUfAndShowDialogIfNeeded(
             totalUf = totalUf,
             exchanges = exchanges,
             onProceed = {
-                // 팝업에서 [예] 선택하거나, 불일치 없을 때 호출
                 val fullRequest = RecordCreateRequest(
                     recordDate = recordDate,
                     recordDw = draft.recordDw,
@@ -477,7 +464,6 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
                 viewModel.createRecord(fullRequest)
             },
             onCancel = {
-                // 팝업에서 [아니오] 눌렀을 때 → 저장 취소
                 enableButtonAndReturn()
             }
         )
@@ -570,6 +556,66 @@ class RecordWrite02Fragment : Fragment(), RecordExchangeAdapter.OnTimePickerClic
         applyDialogWindow(dialog)
 
         dialog.show()
+    }
+
+    private fun renderExchangeViews() {
+        val container = binding.exchangeContainer   // XML에서 RecyclerView → LinearLayout 로 바꾼 id
+        container.removeAllViews()
+
+        val inflater = LayoutInflater.from(requireContext())
+
+        exchangeList.forEachIndexed { index, item ->
+            val itemBinding = ItemRecordExchangeBinding.inflate(inflater, container, false)
+
+            // ① 회차 번호 (1회차, 2회차, ...)
+            itemBinding.exchangeNoTv.text = "${index + 1}회차"
+
+            // ② 교환 시각
+            val timeText = item.exchangeTime.format(TIME_FORMATTER)
+            itemBinding.exchangeTimeEt.setText(timeText)
+
+            // 시간 선택기
+            itemBinding.exchangeTimeEt.setOnClickListener {
+                showTimePickerDialog(itemBinding.exchangeTimeEt, index)
+            }
+
+            // ③ 배액량
+            itemBinding.drainVolumeEt.setText(item.drainVolume.toString())
+
+            // ④ 주입량
+            itemBinding.fillVolumeEt.setText(item.fillVolume.toString())
+
+            // ⑤ 농도
+            itemBinding.fillConcentrationEt.setText(item.fillConcentration.toString())
+
+            // ⑥ 제수량
+            itemBinding.ufEt.setText(item.uf.toString())
+
+            // EditText 변경 시 exchangeList 동기화
+            itemBinding.drainVolumeEt.addTextChangedListener {
+                val v = it?.toString()?.toIntOrNull() ?: 0
+                exchangeList[index] = exchangeList[index].copy(drainVolume = v)
+            }
+            itemBinding.fillVolumeEt.addTextChangedListener {
+                val v = it?.toString()?.toIntOrNull() ?: 0
+                exchangeList[index] = exchangeList[index].copy(fillVolume = v)
+            }
+            itemBinding.fillConcentrationEt.addTextChangedListener {
+                val v = it?.toString()?.toDoubleOrNull() ?: 0.0
+                exchangeList[index] = exchangeList[index].copy(fillConcentration = v)
+            }
+            itemBinding.ufEt.addTextChangedListener {
+                val v = it?.toString()?.toIntOrNull() ?: 0
+                exchangeList[index] = exchangeList[index].copy(uf = v)
+            }
+
+            container.addView(itemBinding.root)
+        }
+    }
+
+    companion object {
+        private const val MAX_EXCHANGES = 12
+        private val TIME_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
     }
 
     override fun onDestroyView() {
