@@ -14,12 +14,10 @@ import com.example.momolabfe.databinding.ItemExchangeInfoBinding
 import com.example.momolabfe.remote.record.model.DayWeek
 import com.example.momolabfe.remote.record.model.RecordGetResponse
 import com.example.momolabfe.remote.record.model.Turbidity
-import com.example.momolabfe.ui.record.adapter.RecordExchangeInfoAdapter
 import com.example.momolabfe.ui.record.viewModel.RecordViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.Locale
 
 class RecordInfoFragment : Fragment() {
 

@@ -30,7 +30,6 @@ import com.example.momolabfe.remote.record.model.RecordExchangeGetResponse
 import com.example.momolabfe.remote.record.model.RecordExchangeUpdateRequest
 import com.example.momolabfe.remote.record.model.RecordUpdateRequest
 import com.example.momolabfe.remote.record.model.Turbidity
-import com.example.momolabfe.ui.record.adapter.RecordExchangeEditAdapter
 import com.example.momolabfe.ui.record.viewModel.RecordViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.launch
@@ -551,7 +550,7 @@ class RecordEditFragment : Fragment() {
 
             itemBinding.exchangeTitleTv.text = "${index + 1}회차"
 
-            val timeText = item.exchangeTime.format(RecordExchangeEditAdapter.TIME_FORMATTER) ?: "-"
+            val timeText = item.exchangeTime.format(TIME_FORMATTER) ?: "-"
             itemBinding.exchangeTimeValueEt.setText(timeText)
 
             itemBinding.exchangeTimeValueEt.setOnClickListener {
@@ -566,7 +565,6 @@ class RecordEditFragment : Fragment() {
             container.addView(itemBinding.root)
         }
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()

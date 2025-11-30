@@ -9,9 +9,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.example.momolabfe.R
 import com.example.momolabfe.databinding.FragmentHomeBinding
+import com.example.momolabfe.databinding.ItemRecentRecordBinding
 import com.example.momolabfe.ui.record.RecordFragment
+import com.example.momolabfe.ui.record.RecordInfoFragment
 import com.example.momolabfe.ui.record.RecordListFragment
-import com.example.momolabfe.ui.record.adapter.RecentRecordAdapter
 import com.example.momolabfe.ui.record.viewModel.RecordViewModel
 import com.example.momolabfe.ui.setting.SettingFragment
 import com.example.momolabfe.ui.stats.StatsFragment
@@ -26,7 +27,6 @@ class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var adapter: RecentRecordAdapter
     private val viewModel: RecordViewModel by activityViewModels()
 
     override fun onCreateView(
@@ -45,9 +45,6 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        adapter = RecentRecordAdapter(parentFragmentManager, emptyList())
-        binding.recentRecordRv.adapter = adapter
 
         setupObservers()
         viewModel.getRecentRecords()
@@ -97,12 +94,50 @@ class HomeFragment : Fragment() {
 
     private fun setupObservers() {
         viewModel.recordlistItems.observe(viewLifecycleOwner) { itemList ->
-            adapter.updateList(itemList)
+            val container = binding.recentRecordContainer
+            container.removeAllViews()
 
             if (itemList.isEmpty()) {
-                binding.recentRecordRv.visibility = View.GONE
+                container.visibility = View.GONE
+                return@observe
             } else {
-                binding.recentRecordRv.visibility = View.VISIBLE
+                container.visibility = View.VISIBLE
+            }
+
+            val inflater = LayoutInflater.from(requireContext())
+
+            itemList.forEach { item ->
+                val itemBinding = ItemRecentRecordBinding.inflate(inflater, container, false)
+
+                itemBinding.dateTv.text = item.recordDate.toString()
+
+                itemBinding.weightTv.text = item.weight.let { weight ->
+                    String.format(Locale.KOREA, "%.1fkg", weight)
+                }
+
+                itemBinding.totalUfTv.text = item.totalUf.let { uf ->
+                    String.format(Locale.KOREA, "%dg", uf)
+                }
+
+                val exchangeCount = item.exchanges.size
+                itemBinding.completeTv.text = "${exchangeCount}회차 완료"
+
+                itemBinding.root.setOnClickListener {
+                    val args = Bundle().apply {
+                        putLong("record_id", item.id)
+                    }
+
+                    val recordInfoFragment = RecordInfoFragment().apply {
+                        arguments = args
+                    }
+
+                    parentFragmentManager.beginTransaction()
+                        .replace(R.id.main_frm, recordInfoFragment)
+                        .addToBackStack(null)
+                        .commit()
+                }
+
+                container.addView(itemBinding.root)
             }
         }
 
@@ -112,7 +147,6 @@ class HomeFragment : Fragment() {
 
                 val data = weeklyAvgResponse.data
 
-                // 주간 기간 포맷 설정 (yyyy-MM-dd 형식)
                 val rangeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.KOREA)
 
                 val startDateStr = weeklyAvgResponse.startDate.format(rangeFormatter)

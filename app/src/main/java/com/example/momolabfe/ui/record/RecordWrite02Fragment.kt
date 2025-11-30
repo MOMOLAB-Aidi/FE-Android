@@ -28,7 +28,6 @@ import com.example.momolabfe.databinding.FragmentRecordWrite02Binding
 import com.example.momolabfe.databinding.ItemRecordExchangeBinding
 import com.example.momolabfe.remote.record.model.RecordCreateRequest
 import com.example.momolabfe.remote.record.model.RecordExchangeCreateRequest
-import com.example.momolabfe.ui.record.adapter.RecordExchangeAdapter
 import com.example.momolabfe.ui.record.data.RecordCommonDraft
 import com.example.momolabfe.ui.record.viewModel.RecordViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -614,7 +613,7 @@ class RecordWrite02Fragment : Fragment() {
     }
 
     companion object {
-        private const val MAX_EXCHANGES = 12
+        private const val MAX_EXCHANGES = 5
         private val TIME_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
     }
 

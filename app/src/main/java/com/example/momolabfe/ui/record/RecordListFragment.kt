@@ -21,7 +21,6 @@ import com.example.momolabfe.databinding.ItemExchangeDetailBinding
 import com.example.momolabfe.remote.record.model.GetCalendarResponse
 import com.example.momolabfe.remote.record.model.RecordExchangeGetResponse
 import com.example.momolabfe.remote.record.model.RecordGetResponse
-import com.example.momolabfe.ui.record.adapter.RecordExchangeDetailAdapter
 import com.example.momolabfe.ui.record.viewModel.RecordViewModel
 import com.example.momolabfe.utils.dpToPx
 import com.example.momolabfe.utils.weekdayShortKorean
@@ -42,8 +41,6 @@ class RecordListFragment : Fragment() {
 
     private var _binding: FragmentRecordListBinding? = null
     private val binding get() = _binding!!
-
-    private lateinit var adapter: RecordExchangeDetailAdapter
 
     private val monthCalendar: CalendarView
         get() = binding.calenderView
@@ -95,8 +92,6 @@ class RecordListFragment : Fragment() {
 
         // 바텀 내비게이션 숨기기
         activity?.findViewById<BottomNavigationView>(R.id.main_bnv)?.visibility = View.GONE
-
-        adapter = RecordExchangeDetailAdapter(emptyList())
 
         // 해당 라이브러리는 캘린더 범위를 무제한으로 설정할 수 없어 일단은 +-50년으로 설정...
         val currentMonth = YearMonth.now()
@@ -190,7 +185,7 @@ class RecordListFragment : Fragment() {
                         selectedRecordId = null
                         hideDetailViews()
                         clearRecordViews()
-                        adapter.updateList(emptyList())
+                        renderExchanges(emptyList())
                     }
                 }
             }
@@ -343,7 +338,7 @@ class RecordListFragment : Fragment() {
                 selectedRecordId = null
                 hideDetailViews()
                 clearRecordViews()
-                adapter.updateList(emptyList())
+                renderExchanges(emptyList())
             }
         }
 
