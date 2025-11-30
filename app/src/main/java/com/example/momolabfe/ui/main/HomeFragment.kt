@@ -95,14 +95,8 @@ class HomeFragment : Fragment() {
 
     private fun setupObservers() {
         viewModel.todayExchangeSummary.observe(viewLifecycleOwner) { summary ->
-            if (summary == null) {
+            if (summary == null || !summary.hasRecord) {
                 // 오늘 기록이 없을 때 기본 표시
-                binding.completeContentTv.text = "-회"
-                binding.ufContentTv.text = "-g"
-                return@observe
-            }
-
-            if (summary.exchangeCount == 0 && summary.totalUf == 0) {
                 binding.completeContentTv.text = "-회"
                 binding.ufContentTv.text = "-g"
                 return@observe
