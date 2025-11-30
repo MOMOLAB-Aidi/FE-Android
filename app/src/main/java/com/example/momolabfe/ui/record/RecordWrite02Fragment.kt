@@ -17,6 +17,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -28,6 +29,7 @@ import com.example.momolabfe.databinding.FragmentRecordWrite02Binding
 import com.example.momolabfe.databinding.ItemRecordExchangeBinding
 import com.example.momolabfe.remote.record.model.RecordCreateRequest
 import com.example.momolabfe.remote.record.model.RecordExchangeCreateRequest
+import com.example.momolabfe.ui.main.HomeFragment
 import com.example.momolabfe.ui.record.data.RecordCommonDraft
 import com.example.momolabfe.ui.record.viewModel.RecordViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -470,8 +472,14 @@ class RecordWrite02Fragment : Fragment() {
                     // 기록 저장 성공 시에만 OCR 상태 정리
                     viewModel.clearOcr()
 
+                    // 기존 백스택 다 비우기
+                    parentFragmentManager.popBackStack(
+                        null,
+                        FragmentManager.POP_BACK_STACK_INCLUSIVE
+                    )
+
                     parentFragmentManager.beginTransaction()
-                        .replace(R.id.main_frm, RecordListFragment())
+                        .replace(R.id.main_frm, HomeFragment())
                         .commit()
                 }
             }
