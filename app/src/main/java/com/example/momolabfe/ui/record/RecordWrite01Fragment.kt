@@ -15,6 +15,7 @@ import android.widget.CompoundButton
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -84,6 +85,35 @@ class RecordWrite01Fragment : Fragment() {
         }
 
         return binding.root
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        requireActivity().onBackPressedDispatcher.addCallback(
+            this,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    showBackConfirmDialog()
+                }
+            }
+        )
+    }
+
+    private fun showBackConfirmDialog() {
+        AlertDialog.Builder(requireContext())
+            .setTitle("기록 작성 취소")
+            .setMessage("기록을 처음부터 다시 작성하시겠습니까?\n\n" +
+                    "현재까지 입력한 내용은 삭제됩니다.")
+            .setNegativeButton("아니오") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .setPositiveButton("예") { dialog, _ ->
+                dialog.dismiss()
+                viewModel.clearOcr()
+                parentFragmentManager.popBackStack()
+            }
+            .show()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
