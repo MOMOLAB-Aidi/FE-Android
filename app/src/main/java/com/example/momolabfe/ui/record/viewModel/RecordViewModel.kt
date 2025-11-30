@@ -14,9 +14,7 @@ import com.example.momolabfe.remote.record.model.WeeklyAverageResponse
 import com.example.momolabfe.remote.record.repository.RecordRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -50,10 +48,6 @@ class RecordViewModel @Inject constructor(
 
     private val _ocrRecordResult = MutableLiveData<RecordOcrResponse?>()
     val ocrRecordResult: LiveData<RecordOcrResponse?> get() = _ocrRecordResult
-
-    // OCR 이미지 다운로드 결과 (다운로드된 이미지 파일의 바이트 배열)
-    private val _ocrImageBytes = MutableStateFlow<ByteArray?>(null)
-    val ocrImageBytes: StateFlow<ByteArray?> = _ocrImageBytes
 
     private val _editSuccess = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
     val editSuccess: SharedFlow<Unit> = _editSuccess.asSharedFlow()

@@ -107,6 +107,15 @@ class RecordInfoFragment : Fragment() {
                         .placeholder(R.drawable.ic_thumbnail_sv)
                         .error(R.drawable.ic_thumbnail_sv)
                         .into(binding.ocrImageIv)
+
+                    // 클릭 시 전체 화면 프리뷰
+                    binding.ocrImageIv.setOnClickListener {
+                        val fragment = OcrImagePreviewFragment.newInstance(imageUrl)
+                        parentFragmentManager.beginTransaction()
+                            .add(R.id.main_frm, fragment) // 전체 화면 위에 쌓기
+                            .addToBackStack(null)
+                            .commit()
+                    }
                 } else {
                     binding.ocrImageTitleTv.visibility = View.GONE
                     binding.ocrImageIv.visibility = View.GONE

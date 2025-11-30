@@ -23,7 +23,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
-import java.io.IOException
 
 @Singleton
 class RecordRepository @Inject constructor(
@@ -113,19 +112,6 @@ class RecordRepository @Inject constructor(
         }
         response.body() ?: throw ApiException(response.code(), "빈 본문")
     }
-
-    // OCR 이미지 다운로드
-    suspend fun downloadOcrImage(gcsPath: String): Result<ByteArray> = runCatching {
-        val response = recordService.downloadOcrImage(gcsPath)
-
-        if (response.isSuccessful) {
-            response.body()?.bytes()
-                ?: throw IOException("서버에서 빈 이미지 데이터를 받았습니다.")
-        } else {
-            throw IOException("이미지 다운로드 실패: HTTP ${response.code()} ${response.message()}")
-        }
-    }
-
 
     // 헬퍼 메소드
     private fun makeFilePartFromUri(
