@@ -10,7 +10,6 @@ import com.example.momolabfe.utils.ApiResponse
 import com.example.momolabfe.utils.AuthRetrofit
 import com.example.momolabfe.utils.PythonRetrofit
 import okhttp3.MultipartBody
-import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.http.Body
@@ -70,11 +69,6 @@ class RecordService @Inject constructor (
         @Multipart
         @POST("/api/v1/records/ocr")
         suspend fun recordByOcr(@Part file: MultipartBody.Part): Response<RecordOcrResponse>
-
-        // OCR 이미지 다운로드
-        @GET("/api/v1/records/ocr/image")
-        suspend fun downloadOcrImage(@Query("gcs_path") gcsPath: String): Response<ResponseBody>
-
     }
 
     // 내부 서비스 인스턴스 초기화
@@ -115,9 +109,5 @@ class RecordService @Inject constructor (
 
     suspend fun recordByOcr(file: MultipartBody.Part): Response<RecordOcrResponse> {
         return pythonService.recordByOcr(file)
-    }
-
-    suspend fun downloadOcrImage(gcsPath: String): Response<ResponseBody> {
-        return pythonService.downloadOcrImage(gcsPath)
     }
 }

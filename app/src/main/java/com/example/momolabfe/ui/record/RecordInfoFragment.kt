@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import com.bumptech.glide.Glide
 import com.example.momolabfe.R
 import com.example.momolabfe.databinding.FragmentRecordInfoBinding
 import com.example.momolabfe.databinding.ItemExchangeInfoBinding
@@ -94,6 +95,34 @@ class RecordInfoFragment : Fragment() {
                 renderExchangeInfo(recordItem)
 
                 applyUfValidation(recordItem)
+
+                val imageUrl = recordItem.ocrImageUrl
+
+                if (!imageUrl.isNullOrBlank()) {
+                    binding.ocrImageTitleTv.visibility = View.VISIBLE
+                    binding.ocrImageIv.visibility = View.VISIBLE
+
+                    Glide.with(requireContext())
+                        .load(imageUrl)
+                        .placeholder(R.drawable.ic_thumbnail_sv)
+                        .error(R.drawable.ic_thumbnail_sv)
+                        .into(binding.ocrImageIv)
+
+                    // 클릭 시 전체 화면 프리뷰
+                    binding.ocrImageIv.setOnClickListener {
+                        val tag = "ocr_image_preview"
+                        if (parentFragmentManager.findFragmentByTag(tag) == null) {
+                            val fragment = OcrImagePreviewFragment.newInstance(imageUrl)
+                            parentFragmentManager.beginTransaction()
+                                .add(R.id.main_frm, fragment, tag) // 전체 화면 위에 쌓기
+                                .addToBackStack(null)
+                                .commit()
+                        }
+                    }
+                } else {
+                    binding.ocrImageTitleTv.visibility = View.GONE
+                    binding.ocrImageIv.visibility = View.GONE
+                }
             }
         }
 

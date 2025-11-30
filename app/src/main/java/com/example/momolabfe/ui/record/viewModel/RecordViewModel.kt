@@ -14,9 +14,7 @@ import com.example.momolabfe.remote.record.model.WeeklyAverageResponse
 import com.example.momolabfe.remote.record.repository.RecordRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -51,10 +49,6 @@ class RecordViewModel @Inject constructor(
     private val _ocrRecordResult = MutableLiveData<RecordOcrResponse?>()
     val ocrRecordResult: LiveData<RecordOcrResponse?> get() = _ocrRecordResult
 
-    // OCR 이미지 다운로드 결과 (다운로드된 이미지 파일의 바이트 배열)
-    private val _ocrImageBytes = MutableStateFlow<ByteArray?>(null)
-    val ocrImageBytes: StateFlow<ByteArray?> = _ocrImageBytes
-
     private val _editSuccess = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
     val editSuccess: SharedFlow<Unit> = _editSuccess.asSharedFlow()
 
@@ -63,6 +57,9 @@ class RecordViewModel @Inject constructor(
 
     private val _calendarData = MutableLiveData<List<GetCalendarResponse>>()
     val calendarData: LiveData<List<GetCalendarResponse>> = _calendarData
+
+    // OCR로부터 마지막으로 받은 gcsPath를 보관
+    var lastOcrGcsPath: String? = null
 
     // 캘린더 일정 조회
     fun getCalendar(year: Int, month: Int) {
@@ -175,29 +172,8 @@ class RecordViewModel @Inject constructor(
         }
     }
 
-    // ocr 이미지 다운로드
-    fun downloadOcrImage(gcsPath: String) {
-        viewModelScope.launch {
-            _ocrImageBytes.value = null // 다운로드 시작 전 StateFlow 초기화
-
-            val result = recordRepository.downloadOcrImage(gcsPath)
-
-            result.onSuccess { imageBytes ->
-                // 성공 시 ByteArray를 StateFlow에 저장
-                _ocrImageBytes.value = imageBytes
-                _errorMessage.value = null
-            }.onFailure { e ->
-                _errorMessage.value = e.localizedMessage ?: "OCR 이미지 다운로드에 실패했습니다."
-            }
-        }
-    }
-
     fun setExchangeTime(time: String) {
         _exchangeTime.value = time
-    }
-
-    fun getExchangeTime(): String? {
-        return _exchangeTime.value
     }
 
     fun clearOcr() {

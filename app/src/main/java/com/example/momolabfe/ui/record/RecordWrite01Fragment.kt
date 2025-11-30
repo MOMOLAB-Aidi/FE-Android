@@ -2,11 +2,9 @@ package com.example.momolabfe.ui.record
 
 import android.app.AlertDialog
 import android.content.res.ColorStateList
-import android.graphics.BitmapFactory
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
-import android.util.Log
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -17,13 +15,11 @@ import android.widget.CompoundButton
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import com.example.momolabfe.R
 import com.example.momolabfe.databinding.DialogCalendarBinding
 import com.example.momolabfe.databinding.FragmentRecordWrite01Binding
@@ -41,8 +37,6 @@ import com.kizitonwose.calendar.core.daysOfWeek
 import com.kizitonwose.calendar.view.CalendarView
 import com.kizitonwose.calendar.view.MonthDayBinder
 import com.kizitonwose.calendar.view.ViewContainer
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
@@ -93,15 +87,40 @@ class RecordWrite01Fragment : Fragment() {
         return binding.root
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        requireActivity().onBackPressedDispatcher.addCallback(
+            this,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    showBackConfirmDialog()
+                }
+            }
+        )
+    }
+
+    private fun showBackConfirmDialog() {
+        AlertDialog.Builder(requireContext())
+            .setTitle("기록 작성 취소")
+            .setMessage("기록을 처음부터 다시 작성하시겠습니까?\n\n" +
+                    "현재까지 입력한 내용은 삭제됩니다.")
+            .setNegativeButton("아니오") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .setPositiveButton("예") { dialog, _ ->
+                dialog.dismiss()
+                viewModel.clearOcr()
+                parentFragmentManager.popBackStack()
+            }
+            .show()
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         // 바텀 내비게이션 숨기기
         activity?.findViewById<BottomNavigationView>(R.id.main_bnv)?.visibility = View.GONE
-
-        if (!isOcrApplied) {
-            binding.ocrImagePreview.visibility = View.GONE
-        }
 
         // 최초 가시 월 기준으로 한 번 조회
         visibleMonth = YearMonth.now()
@@ -119,7 +138,6 @@ class RecordWrite01Fragment : Fragment() {
             collectDataAndCallApi()
         }
 
-        setupObservers()
         setupTurbidityCheckboxes()
         observeOcrAndFillFields()
     }
@@ -514,7 +532,8 @@ class RecordWrite01Fragment : Fragment() {
             fastingGlucose = fastingGlucose,
             urineCount = urineCount,
             turbidity = turbidityValue,
-            notes = notesText.takeIf { it.isNotBlank() }
+            notes = notesText.takeIf { it.isNotBlank() },
+            gcsPath = if (isFromOcr) viewModel.lastOcrGcsPath else null
         )
 
         val fragment = RecordWrite02Fragment().apply {
@@ -535,13 +554,11 @@ class RecordWrite01Fragment : Fragment() {
     private fun observeOcrAndFillFields() {
         viewModel.ocrRecordResult.observe(viewLifecycleOwner) { ocr ->
             if (!isFromOcr) {
-                binding.ocrImagePreview.visibility = View.GONE
                 return@observe
             }
 
             // null 이거나 이미 한 번 반영했다면 스킵
             if (ocr == null || isOcrApplied) {
-                binding.ocrImagePreview.visibility = View.GONE
                 return@observe
             }
 
@@ -568,38 +585,8 @@ class RecordWrite01Fragment : Fragment() {
             // gCS Path를 사용하여 이미지 다운로드 시작
             val gcsPath = ocr.gcsPath
             if (gcsPath.isNotEmpty()) {
-                viewModel.downloadOcrImage(gcsPath)
+                viewModel.lastOcrGcsPath = gcsPath
             }
-        }
-    }
-
-    private fun setupObservers() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.ocrImageBytes.collectLatest { imageBytes ->
-                    if (imageBytes != null) {
-                        try {
-                            // ByteArray를 Bitmap으로 변환하여 ImageView에 설정
-                            val bitmap =
-                                BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-                            binding.ocrImagePreview.setImageBitmap(bitmap)
-                            binding.ocrImagePreview.visibility = View.VISIBLE
-                            Log.d("OCR_IMAGE", "OCR 이미지 로드 성공")
-                        } catch (e: Exception) {
-                            Log.e("OCR_IMAGE", "Bitmap 변환 실패: ${e.message}")
-                        }
-                    } else {
-                        if (!isOcrApplied) { // 수기 작성
-                            binding.ocrImagePreview.visibility = View.GONE
-                        }
-                    }
-                }
-            }
-        }
-
-        viewModel.errorMessage.observe(viewLifecycleOwner) { errorMsg ->
-            Log.e("RECORD_WRITE_01_FRAGMENT", errorMsg.toString())
-            binding.nextBtn.isEnabled = true
         }
     }
 

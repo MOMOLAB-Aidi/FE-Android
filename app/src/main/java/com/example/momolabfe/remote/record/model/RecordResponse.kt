@@ -17,6 +17,7 @@ data class RecordGetResponse (
     @SerializedName("notes") val notes: String?,
     @SerializedName("total_uf") val totalUf: Int,
     @SerializedName("gcs_path") val gcsPath: String?,
+    @SerializedName("ocr_image_url") val ocrImageUrl: String?,
     @SerializedName("exchanges") val exchanges: List<RecordExchangeGetResponse> = emptyList()
 )
 
