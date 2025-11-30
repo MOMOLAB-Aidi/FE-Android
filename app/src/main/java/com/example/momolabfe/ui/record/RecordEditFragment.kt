@@ -4,7 +4,6 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Typeface
-import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.util.Log
 import android.util.TypedValue
@@ -40,7 +39,9 @@ import com.example.momolabfe.remote.record.model.RecordExchangeUpdateRequest
 import com.example.momolabfe.remote.record.model.RecordUpdateRequest
 import com.example.momolabfe.remote.record.model.Turbidity
 import com.example.momolabfe.ui.record.viewModel.RecordViewModel
+import com.example.momolabfe.utils.circleFill
 import com.example.momolabfe.utils.dpToPx
+import com.example.momolabfe.utils.weekdayShortKorean
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.CalendarMonth
@@ -822,16 +823,6 @@ class RecordEditFragment : Fragment() {
         }
     }
 
-    private fun weekdayShortKorean(dow: DayOfWeek): String = when (dow) {
-        DayOfWeek.SUNDAY -> "일"
-        DayOfWeek.MONDAY -> "월"
-        DayOfWeek.TUESDAY -> "화"
-        DayOfWeek.WEDNESDAY -> "수"
-        DayOfWeek.THURSDAY -> "목"
-        DayOfWeek.FRIDAY -> "금"
-        DayOfWeek.SATURDAY -> "토"
-    }
-
     private fun convertDayOfWeekToDayWeek(d: DayOfWeek): DayWeek = when (d) {
         DayOfWeek.MONDAY -> DayWeek.MON
         DayOfWeek.TUESDAY -> DayWeek.TUE
@@ -861,14 +852,6 @@ class RecordEditFragment : Fragment() {
     private inner class DayViewContainer(view: View) : ViewContainer(view) {
         val textView: TextView = view.findViewById(R.id.calendar_day_tv)
         val dotView: View = view.findViewById(R.id.dot_view)
-    }
-
-    // 동그라미 배경
-    private fun circleFill(fillColor: Int): GradientDrawable {
-        return GradientDrawable().apply {
-            shape = GradientDrawable.OVAL
-            setColor(fillColor)
-        }
     }
 
     override fun onDestroyView() {
