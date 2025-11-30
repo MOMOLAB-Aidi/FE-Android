@@ -19,6 +19,7 @@ import android.widget.LinearLayout
 import android.widget.NumberPicker
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
@@ -95,6 +96,35 @@ class RecordEditFragment : Fragment() {
         recordId = arguments?.getLong("record_id") ?: -1L
 
         return binding.root
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        requireActivity().onBackPressedDispatcher.addCallback(
+            this,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    showBackConfirmDialog()
+                }
+            }
+        )
+    }
+
+    private fun showBackConfirmDialog() {
+        AlertDialog.Builder(requireContext())
+            .setTitle("기록 수정 취소")
+            .setMessage("기록 수정을 취소하시겠습니까?\n\n" +
+                    "현재까지 수정한 내용은 저장되지 않습니다.")
+            .setNegativeButton("아니오") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .setPositiveButton("예") { dialog, _ ->
+                dialog.dismiss()
+                viewModel.clearOcr()
+                parentFragmentManager.popBackStack()
+            }
+            .show()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
