@@ -58,6 +58,24 @@
                     app:layout_constraintStart_toStartOf="@id/title_tv"
                     app:layout_constraintTop_toBottomOf="@id/title_tv" />
 
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/change_date_btn"
+                    style="@style/Widget.Material3.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:fontFamily="@font/noto_sans_kr_medium"
+                    android:text="날짜 변경하기"
+                    android:textColor="@color/main_1"
+                    android:textSize="14sp"
+                    app:icon="@drawable/ic_change_date_sv"
+                    app:iconGravity="start"
+                    app:iconTint="@color/main_1"
+                    android:backgroundTint="@color/white"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout

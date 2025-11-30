@@ -3,8 +3,11 @@ package com.example.momolabfe.ui.record
 import android.app.AlertDialog
 import android.content.Context
 import android.content.res.ColorStateList
+import android.graphics.Typeface
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.util.Log
+import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -12,29 +15,44 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.CompoundButton
 import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.NumberPicker
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.momolabfe.R
+import com.example.momolabfe.databinding.DialogCalendarBinding
 import com.example.momolabfe.databinding.DialogTimePickerBinding
 import com.example.momolabfe.databinding.FragmentRecordEditBinding
 import com.example.momolabfe.databinding.ItemExchangeEditBinding
 import com.example.momolabfe.remote.record.model.DayWeek
+import com.example.momolabfe.remote.record.model.GetCalendarResponse
 import com.example.momolabfe.remote.record.model.RecordExchangeGetResponse
 import com.example.momolabfe.remote.record.model.RecordExchangeUpdateRequest
 import com.example.momolabfe.remote.record.model.RecordUpdateRequest
 import com.example.momolabfe.remote.record.model.Turbidity
 import com.example.momolabfe.ui.record.viewModel.RecordViewModel
+import com.example.momolabfe.utils.dpToPx
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.kizitonwose.calendar.core.CalendarDay
+import com.kizitonwose.calendar.core.CalendarMonth
+import com.kizitonwose.calendar.core.DayPosition
+import com.kizitonwose.calendar.core.daysOfWeek
+import com.kizitonwose.calendar.view.CalendarView
+import com.kizitonwose.calendar.view.MonthDayBinder
+import com.kizitonwose.calendar.view.ViewContainer
 import kotlinx.coroutines.launch
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalTime
+import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
@@ -50,9 +68,22 @@ class RecordEditFragment : Fragment() {
     // 회차 원본 리스트
     private var currentExchanges: List<RecordExchangeGetResponse> = emptyList()
 
+    // 사용자가 수정한 날짜/요일
+    private var editedRecordDate: LocalDate? = null
+    private var editedRecordDw: DayWeek? = null
+
+    private val today: LocalDate = LocalDate.now()
+    private val headerFormatter = DateTimeFormatter.ofPattern(DATE_PATTERN)
+
+    // 중복 호출 방지용 캐시: 마지막으로 서버에 요청했던 [시작일, 종료일]
+    private var lastRequestedRange: Pair<Int, Int>? = null
+
+    // 일정 있는 날짜들 캐시
+    private val eventDates = hashSetOf<LocalDate>()
+
     companion object {
-        private val TIME_FORMATTER: DateTimeFormatter =
-            DateTimeFormatter.ofPattern("HH:mm", Locale.KOREA)
+        private val TIME_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm", Locale.KOREA)
+        private const val DATE_PATTERN = "yyyy년 M월"
     }
 
     override fun onCreateView(
@@ -86,6 +117,10 @@ class RecordEditFragment : Fragment() {
 
         binding.cancelBtn.setOnClickListener {
             parentFragmentManager.popBackStack()
+        }
+
+        binding.changeDateBtn.setOnClickListener {
+            showCalendarDialogForEdit()
         }
     }
 
@@ -204,6 +239,9 @@ class RecordEditFragment : Fragment() {
             }
         }
 
+        val finalRecordDate = editedRecordDate ?: currentRecord?.recordDate
+        val finalRecordDw = editedRecordDw ?: currentRecord?.recordDw
+
         // --- 회차별 정보(동적 View에서 읽기) ---
         val container = binding.exchangeEditContainer
         val childCount = container.childCount
@@ -211,8 +249,8 @@ class RecordEditFragment : Fragment() {
         if (childCount == 0) {
             // 회차 정보가 없으면 null 로 보내도 됨(백엔드 Optional이면)
             return RecordUpdateRequest(
-                recordDate = currentRecord?.recordDate,
-                recordDw = currentRecord?.recordDw,
+                recordDate = finalRecordDate,
+                recordDw = finalRecordDw,
                 weight = weight,
                 systolic = systolic,
                 diastolic = diastolic,
@@ -308,8 +346,8 @@ class RecordEditFragment : Fragment() {
         val exchangesOrNull = exchanges.takeIf { it.isNotEmpty() }
 
         return RecordUpdateRequest(
-            recordDate = currentRecord?.recordDate,
-            recordDw = currentRecord?.recordDw,
+            recordDate = finalRecordDate,
+            recordDw = finalRecordDw,
             weight = weight,
             systolic = systolic,
             diastolic = diastolic,
@@ -351,7 +389,11 @@ class RecordEditFragment : Fragment() {
         viewModel.record.observe(viewLifecycleOwner) { record ->
             if (record == null) return@observe
 
-            binding.contentTv.text = formatRecordDate(record.recordDate, record.recordDw)
+            // 아직 사용자가 날짜를 수정하지 않았다면, 서버에서 받은 날짜로 표시
+            val displayDate = editedRecordDate ?: record.recordDate
+            val displayDw = editedRecordDw ?: record.recordDw
+
+            binding.contentTv.text = formatRecordDate(displayDate, displayDw)
 
             // 공통 정보 세팅
             binding.weightValueEt.setText(record.weight.toString())
@@ -564,6 +606,239 @@ class RecordEditFragment : Fragment() {
             itemBinding.ufValueEt.setText(item.uf.toString())
 
             container.addView(itemBinding.root)
+        }
+    }
+
+    private fun showCalendarDialogForEdit() {
+        val currentRecord = viewModel.record.value
+
+        val dialogBinding = DialogCalendarBinding.inflate(layoutInflater)
+
+        val dialog = AlertDialog.Builder(requireContext(), R.style.RoundedAlertDialog)
+            .setView(dialogBinding.root)
+            .create()
+
+        var dialogSelectedDate: LocalDate =
+            editedRecordDate ?: currentRecord?.recordDate ?: today
+
+        var dialogVisibleMonth: YearMonth =
+            YearMonth.of(dialogSelectedDate.year, dialogSelectedDate.month)
+
+        // 캘린더 뷰 초기화
+        val monthCalendar: CalendarView = dialogBinding.calendarView
+        val currentMonth = YearMonth.now()
+        val startMonth = currentMonth.minusYears(50)
+        val endMonth = currentMonth.plusYears(50)
+        val firstDayOfWeek = daysOfWeek().first()
+
+        monthCalendar.setup(startMonth, endMonth, firstDayOfWeek)
+        monthCalendar.scrollToMonth(dialogVisibleMonth)
+
+        dialogBinding.selectedDateTv.text = dialogVisibleMonth.format(headerFormatter)
+        setupWeekdayLabels(dialogBinding.calendarWeekdaysRow, firstDayOfWeek)
+
+        dialogBinding.calendarPreviousDateIv.setOnClickListener {
+            dialogVisibleMonth = dialogVisibleMonth.minusMonths(1)
+            monthCalendar.smoothScrollToMonth(dialogVisibleMonth)
+            dialogBinding.selectedDateTv.text = dialogVisibleMonth.format(headerFormatter)
+        }
+
+        dialogBinding.calendarNextDateIv.setOnClickListener {
+            dialogVisibleMonth = dialogVisibleMonth.plusMonths(1)
+            monthCalendar.smoothScrollToMonth(dialogVisibleMonth)
+            dialogBinding.selectedDateTv.text = dialogVisibleMonth.format(headerFormatter)
+        }
+
+        val initialYear = dialogVisibleMonth.year
+        val initialMonthValue = dialogVisibleMonth.monthValue
+        val initialPair = initialYear to initialMonthValue
+
+        if (lastRequestedRange != initialPair) {
+            lastRequestedRange = initialPair
+            viewModel.getCalendar(initialYear, initialMonthValue)
+        }
+
+        // 월 스크롤 리스너
+        monthCalendar.monthScrollListener = { month ->
+            dialogVisibleMonth = month.yearMonth
+            dialogBinding.selectedDateTv.text = dialogVisibleMonth.format(headerFormatter)
+            requestForMonth(month)
+        }
+
+        // DayBinder
+        monthCalendar.dayBinder = object : MonthDayBinder<DayViewContainer> {
+            override fun create(view: View): DayViewContainer = DayViewContainer(view)
+
+            override fun bind(container: DayViewContainer, day: CalendarDay) {
+                val tv = container.textView
+                val dot = container.dotView
+
+                // dot 위쪽 간격
+                (dot.layoutParams as? ViewGroup.MarginLayoutParams)?.let { params ->
+                    params.topMargin = dpToPx(3)
+                    dot.layoutParams = params
+                }
+
+                tv.text = day.date.dayOfMonth.toString()
+                tv.typeface = Typeface.DEFAULT
+                tv.background = null
+
+                val isThisMonth = day.position == DayPosition.MonthDate
+
+                tv.setTextColor(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        if (isThisMonth) R.color.text_primary else R.color.deactive
+                    )
+                )
+
+                // 일정 점 표시
+                dot.visibility =
+                    if (eventDates.contains(day.date) && isThisMonth) View.VISIBLE else View.GONE
+
+                // 오늘 표시
+                if (day.date == today) {
+                    tv.background = circleFill(
+                        fillColor = ContextCompat.getColor(requireContext(), R.color.gray)
+                    )
+                }
+
+                // 선택된 날짜 표시
+                if (day.date == dialogSelectedDate && isThisMonth) {
+                    tv.setTextColor(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            android.R.color.white
+                        )
+                    )
+                    tv.background =
+                        circleFill(ContextCompat.getColor(requireContext(), R.color.main_1))
+                }
+
+                // 날짜 클릭 처리
+                container.view.setOnClickListener {
+                    if (!isThisMonth) return@setOnClickListener
+
+                    val hasRecord = eventDates.contains(day.date)
+                    val isCurrentRecordDate = currentRecord?.recordDate == day.date
+
+                    if (hasRecord && !isCurrentRecordDate) {
+                        Toast.makeText(
+                            requireContext(),
+                            "해당 날짜에 이미 다른 기록이 존재합니다.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@setOnClickListener
+                    }
+
+                    val old = dialogSelectedDate
+                    dialogSelectedDate = day.date
+
+                    monthCalendar.notifyDateChanged(old)
+                    monthCalendar.notifyDateChanged(dialogSelectedDate)
+                }
+            }
+        }
+
+        // 기록이 있는 날짜에 점 표시
+        val observer = Observer<List<GetCalendarResponse>> { items ->
+            eventDates.clear()
+            items.forEach { ev ->
+                if (ev.hasSchedule) {
+                    eventDates += ev.date
+                }
+            }
+            monthCalendar.notifyCalendarChanged()
+        }
+
+        viewModel.calendarData.observe(viewLifecycleOwner, observer)
+
+        dialog.setOnDismissListener {
+            viewModel.calendarData.removeObserver(observer)
+        }
+
+        dialogBinding.applyTv.setOnClickListener {
+            editedRecordDate = dialogSelectedDate
+            editedRecordDw = convertDayOfWeekToDayWeek(dialogSelectedDate.dayOfWeek)
+
+            binding.contentTv.text = formatRecordDate(editedRecordDate, editedRecordDw)
+            dialog.dismiss()
+        }
+
+        dialogBinding.cancelTv.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        applyDialogWindow(dialog)
+        dialog.show()
+    }
+
+    private fun setupWeekdayLabels(container: LinearLayout, firstDayOfWeek: DayOfWeek) {
+        container.removeAllViews()
+
+        val days = daysOfWeek()
+        days.forEach { dow ->
+            val tv = TextView(requireContext()).apply {
+                layoutParams = LinearLayout.LayoutParams(
+                    0,
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    1f
+                )
+                gravity = Gravity.CENTER
+                setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
+                text = weekdayShortKorean(dow)
+                setTextColor(ContextCompat.getColor(requireContext(), R.color.text_primary))
+            }
+            container.addView(tv)
+        }
+    }
+
+    private fun weekdayShortKorean(dow: DayOfWeek): String = when (dow) {
+        DayOfWeek.SUNDAY -> "일"
+        DayOfWeek.MONDAY -> "월"
+        DayOfWeek.TUESDAY -> "화"
+        DayOfWeek.WEDNESDAY -> "수"
+        DayOfWeek.THURSDAY -> "목"
+        DayOfWeek.FRIDAY -> "금"
+        DayOfWeek.SATURDAY -> "토"
+    }
+
+    private fun convertDayOfWeekToDayWeek(d: DayOfWeek): DayWeek = when (d) {
+        DayOfWeek.MONDAY -> DayWeek.MON
+        DayOfWeek.TUESDAY -> DayWeek.TUE
+        DayOfWeek.WEDNESDAY -> DayWeek.WED
+        DayOfWeek.THURSDAY -> DayWeek.THU
+        DayOfWeek.FRIDAY -> DayWeek.FRI
+        DayOfWeek.SATURDAY -> DayWeek.SAT
+        DayOfWeek.SUNDAY -> DayWeek.SUN
+    }
+
+    // 월 단위 조회
+    private fun requestForMonth(month: CalendarMonth) {
+        val year = month.yearMonth.year
+        val monthValue = month.yearMonth.monthValue
+
+        val requestedYearMonth = year to monthValue
+
+        if (lastRequestedRange == requestedYearMonth) {
+            return
+        }
+
+        lastRequestedRange = requestedYearMonth
+        viewModel.getCalendar(year, monthValue)
+    }
+
+    // DayView 컨테이너
+    private inner class DayViewContainer(view: View) : ViewContainer(view) {
+        val textView: TextView = view.findViewById(R.id.calendar_day_tv)
+        val dotView: View = view.findViewById(R.id.dot_view)
+    }
+
+    // 동그라미 배경
+    private fun circleFill(fillColor: Int): GradientDrawable {
+        return GradientDrawable().apply {
+            shape = GradientDrawable.OVAL
+            setColor(fillColor)
         }
     }
 
