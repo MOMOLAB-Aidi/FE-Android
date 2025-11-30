@@ -121,7 +121,6 @@ class RecordEditFragment : Fragment() {
             }
             .setPositiveButton("예") { dialog, _ ->
                 dialog.dismiss()
-                viewModel.clearOcr()
                 parentFragmentManager.popBackStack()
             }
             .show()
