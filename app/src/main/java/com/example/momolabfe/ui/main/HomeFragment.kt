@@ -49,6 +49,7 @@ class HomeFragment : Fragment() {
         setupObservers()
         viewModel.getRecentRecords()
         viewModel.getWeeklyAvgRecords()
+        viewModel.getTodayExchangeSummary()
 
         try {
             // 날짜 포맷
@@ -93,6 +94,18 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupObservers() {
+        viewModel.todayExchangeSummary.observe(viewLifecycleOwner) { summary ->
+            if (summary == null || !summary.hasRecord) {
+                // 오늘 기록이 없을 때 기본 표시
+                binding.completeContentTv.text = "-회"
+                binding.ufContentTv.text = "-g"
+                return@observe
+            }
+
+            binding.completeContentTv.text = "${summary.exchangeCount} / 5회"
+            binding.ufContentTv.text = String.format(Locale.KOREA, "%dg", summary.totalUf)
+        }
+
         viewModel.recordlistItems.observe(viewLifecycleOwner) { itemList ->
             val container = binding.recentRecordContainer
             container.removeAllViews()

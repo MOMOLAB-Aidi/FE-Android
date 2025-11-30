@@ -5,6 +5,7 @@ import com.example.momolabfe.remote.record.model.RecordCreateRequest
 import com.example.momolabfe.remote.record.model.RecordGetResponse
 import com.example.momolabfe.remote.record.model.RecordOcrResponse
 import com.example.momolabfe.remote.record.model.RecordUpdateRequest
+import com.example.momolabfe.remote.record.model.TodayExchangeSummary
 import com.example.momolabfe.remote.record.model.WeeklyAverageResponse
 import com.example.momolabfe.utils.ApiResponse
 import com.example.momolabfe.utils.AuthRetrofit
@@ -61,6 +62,10 @@ class RecordService @Inject constructor (
         @GET("/api/v1/records/weekly-average")
         suspend fun getWeeklyAvgRecords(@Query("target_date") targetDate: String? = null): Response<WeeklyAverageResponse>
 
+        // 오늘의 요약 조회
+        @GET("/api/v1/records/today-summary")
+        suspend fun getTodayExchangeSummary(): Response<TodayExchangeSummary>
+
         // 특정 기록 삭제
         @DELETE("/api/v1/records/{rec_id}")
         suspend fun deleteRecord(@Path("rec_id") recId: Long): Response<Unit>
@@ -101,6 +106,10 @@ class RecordService @Inject constructor (
 
     suspend fun getWeeklyAvgRecords(targetDate: String? = null): Response<WeeklyAverageResponse> {
         return pythonService.getWeeklyAvgRecords(targetDate)
+    }
+
+    suspend fun getTodayExchangeSummary(): Response<TodayExchangeSummary> {
+        return pythonService.getTodayExchangeSummary()
     }
 
     suspend fun deleteRecord(recId: Long): Response<Unit> {
