@@ -110,11 +110,14 @@ class RecordInfoFragment : Fragment() {
 
                     // 클릭 시 전체 화면 프리뷰
                     binding.ocrImageIv.setOnClickListener {
-                        val fragment = OcrImagePreviewFragment.newInstance(imageUrl)
-                        parentFragmentManager.beginTransaction()
-                            .add(R.id.main_frm, fragment) // 전체 화면 위에 쌓기
-                            .addToBackStack(null)
-                            .commit()
+                        val tag = "ocr_image_preview"
+                        if (parentFragmentManager.findFragmentByTag(tag) == null) {
+                            val fragment = OcrImagePreviewFragment.newInstance(imageUrl)
+                            parentFragmentManager.beginTransaction()
+                                .add(R.id.main_frm, fragment, tag) // 전체 화면 위에 쌓기
+                                .addToBackStack(null)
+                                .commit()
+                        }
                     }
                 } else {
                     binding.ocrImageTitleTv.visibility = View.GONE
