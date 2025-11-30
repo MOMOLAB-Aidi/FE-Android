@@ -238,6 +238,7 @@ class RecordEditFragment : Fragment() {
             val exchangeTime = try {
                 LocalTime.parse(timeStr, TIME_FORMATTER)
             } catch (e: Exception) {
+                Log.w("RECORD_EDIT_FRAGMENT", "시간 파싱 실패: $timeStr", e)
                 Toast.makeText(requireContext(),"${no}회차 교환 시각을 올바른 형식(HH:mm)으로 입력해주세요. (현재: '$timeStr')", Toast.LENGTH_SHORT).show()
                 return null
             }
