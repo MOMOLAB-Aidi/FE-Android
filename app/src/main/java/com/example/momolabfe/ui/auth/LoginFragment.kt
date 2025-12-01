@@ -16,10 +16,12 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.momolabfe.R
+import com.example.momolabfe.databinding.BottomSheetForgetPasswordBinding
 import com.example.momolabfe.remote.auth.model.LoginRequest
 import com.example.momolabfe.databinding.FragmentLoginBinding
 import com.example.momolabfe.ui.auth.viewModel.AuthViewModel
 import com.example.momolabfe.ui.main.HomeFragment
+import com.example.momolabfe.ui.record.BottomSheetRecordDeleteFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -84,6 +86,17 @@ class LoginFragment : Fragment() {
 
             val request = LoginRequest(loginId, password)
             viewModel.login(request)
+        }
+
+        binding.forgetPasswordTv.setOnClickListener {
+
+            // 이미 표시된 BottomSheet가 있는지 확인
+            if (parentFragmentManager.findFragmentByTag("BottomSheetForgetPassword") != null) {
+                return@setOnClickListener
+            }
+
+            val bottomSheet = BottomSheetForgetPasswordFragment()
+            bottomSheet.show(parentFragmentManager, "BottomSheetForgetPassword")
         }
     }
 
