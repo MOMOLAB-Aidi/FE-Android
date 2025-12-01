@@ -146,6 +146,22 @@
 
             </com.google.android.material.card.MaterialCardView>
 
+            <TextView
+                android:id="@+id/record_error_tv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginStart="25dp"
+                android:layout_marginEnd="25dp"
+                android:textColor="@color/red"
+                android:textSize="13sp"
+                android:includeFontPadding="false"
+                android:fontFamily="@font/noto_sans_kr_regular"
+                android:visibility="gone"
+                app:layout_constraintTop_toBottomOf="@id/total_uf_cv"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/save_btn"
                 android:layout_width="match_parent"
@@ -164,7 +180,7 @@
                 app:strokeColor="@color/main_1"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/total_uf_cv"
+                app:layout_constraintTop_toBottomOf="@id/record_error_tv"
                 app:layout_constraintBottom_toBottomOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

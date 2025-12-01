@@ -314,18 +314,26 @@ class RecordWrite02Fragment : Fragment() {
         }
     }
 
+    private fun showError(message: String) {
+        binding.recordErrorTv.text = message
+        binding.recordErrorTv.visibility = View.VISIBLE
+    }
+
+    private fun clearError() {
+        binding.recordErrorTv.text = ""
+        binding.recordErrorTv.visibility = View.GONE
+    }
+
     private fun collectDataAndCallApi() {
         fun enableButtonAndReturn() {
             binding.saveBtn.isEnabled = true
         }
 
+        clearError() // 이전 에러 초기화
+
         val draft = commonDraft
         if (draft == null) {
-            Toast.makeText(
-                requireContext(),
-                "공통 정보가 없습니다. 처음 화면부터 다시 작성해주세요.",
-                Toast.LENGTH_SHORT
-            ).show()
+            showError("공통 정보가 없습니다. 처음 화면부터 다시 작성해주세요.")
             enableButtonAndReturn()
             return
         }
@@ -333,17 +341,13 @@ class RecordWrite02Fragment : Fragment() {
         val totalUfText = binding.totalUfEt.text.toString()
         val totalUf = totalUfText.toIntOrNull()
         if (totalUf == null) {
-            Toast.makeText(requireContext(), "제수량 합계를 입력해주세요.", Toast.LENGTH_SHORT).show()
+            showError("제수량 합계를 입력해주세요.")
             enableButtonAndReturn()
             return
         }
 
         if (totalUf < -5000 || totalUf > 5000) {
-            Toast.makeText(
-                requireContext(),
-                "제수량 합계는 -5000 ~ 5000 g 사이로 입력해주세요. (현재: $totalUf)",
-                Toast.LENGTH_SHORT
-            ).show()
+            showError("제수량 합계는 -5000 ~ 5000 g 사이로 입력해주세요. (현재: $totalUf)")
             enableButtonAndReturn()
             return
         }
@@ -354,81 +358,49 @@ class RecordWrite02Fragment : Fragment() {
         for (item in exchanges) {
 
             if (item.drainVolume == -1) {
-                Toast.makeText(
-                    requireContext(),
-                    "${item.exchangeNo}회차 배액량을 입력해주세요.",
-                    Toast.LENGTH_SHORT
-                ).show()
+                showError("${item.exchangeNo}회차 배액량을 입력해주세요.")
                 enableButtonAndReturn()
                 return
             }
 
             if (item.fillVolume == -1) {
-                Toast.makeText(
-                    requireContext(),
-                    "${item.exchangeNo}회차 주입량을 입력해주세요.",
-                    Toast.LENGTH_SHORT
-                ).show()
+                showError("${item.exchangeNo}회차 주입량을 입력해주세요.")
                 enableButtonAndReturn()
                 return
             }
 
             if (item.fillConcentration == -1.0) {
-                Toast.makeText(
-                    requireContext(),
-                    "${item.exchangeNo}회차 주입액 농도를 입력해주세요.",
-                    Toast.LENGTH_SHORT
-                ).show()
+                showError("${item.exchangeNo}회차 주입액 농도를 입력해주세요.")
                 enableButtonAndReturn()
                 return
             }
 
             if (item.uf == -999) {
-                Toast.makeText(
-                    requireContext(),
-                    "${item.exchangeNo}회차 제수량을 입력해주세요.",
-                    Toast.LENGTH_SHORT
-                ).show()
+                showError("${item.exchangeNo}회차 제수량을 입력해주세요.")
                 enableButtonAndReturn()
                 return
             }
 
             if (item.drainVolume < 0 || item.drainVolume > 6000) {
-                Toast.makeText(
-                    requireContext(),
-                    "${item.exchangeNo}회차 배액량은 0 ~ 6000 g 사이로 입력해주세요. (현재: ${item.drainVolume})",
-                    Toast.LENGTH_SHORT
-                ).show()
+                showError("${item.exchangeNo}회차 배액량은 0 ~ 6000 g 사이로 입력해주세요. (현재: ${item.drainVolume})")
                 enableButtonAndReturn()
                 return
             }
 
             if (item.fillVolume < 0 || item.fillVolume > 6000) {
-                Toast.makeText(
-                    requireContext(),
-                    "${item.exchangeNo}회차 주입량은 0 ~ 6000 g 사이로 입력해주세요. (현재: ${item.fillVolume})",
-                    Toast.LENGTH_SHORT
-                ).show()
+                showError("${item.exchangeNo}회차 주입량은 0 ~ 6000 g 사이로 입력해주세요. (현재: ${item.fillVolume})")
                 enableButtonAndReturn()
                 return
             }
 
             if (item.fillConcentration < 0.0 || item.fillConcentration > 100.0) {
-                Toast.makeText(
-                    requireContext(),
-                    "${item.exchangeNo}회차 주입액 농도는 0.0 ~ 100.0 % 사이로 입력해주세요. (현재: ${item.fillConcentration})",
-                    Toast.LENGTH_SHORT
-                ).show()
+                showError("${item.exchangeNo}회차 주입액 농도는 0.0 ~ 100.0 % 사이로 입력해주세요. (현재: ${item.fillConcentration})")
                 enableButtonAndReturn()
                 return
             }
 
             if (item.uf < -500 || item.uf > 500) {
-                Toast.makeText(
-                    requireContext(),
-                    "${item.exchangeNo}회차 제수량은 -500 ~ 500 g 사이로 입력해주세요. (현재: ${item.uf})",
-                    Toast.LENGTH_SHORT
-                ).show()
+                showError("${item.exchangeNo}회차 제수량은 -500 ~ 500 g 사이로 입력해주세요. (현재: ${item.uf})")
                 enableButtonAndReturn()
                 return
             }
@@ -444,7 +416,7 @@ class RecordWrite02Fragment : Fragment() {
         }
 
         val recordDate = runCatching { LocalDate.parse(draft.recordDate) }.getOrElse {
-            Toast.makeText(requireContext(), "날짜 형식이 올바르지 않습니다.", Toast.LENGTH_SHORT).show()
+            showError("날짜 형식이 올바르지 않습니다.")
             enableButtonAndReturn()
             return
         }

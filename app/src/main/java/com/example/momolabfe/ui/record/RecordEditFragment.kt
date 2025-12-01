@@ -154,6 +154,16 @@ class RecordEditFragment : Fragment() {
         }
     }
 
+    private fun showError(message: String) {
+        binding.recordErrorTv.text = message
+        binding.recordErrorTv.visibility = View.VISIBLE
+    }
+
+    private fun clearError() {
+        binding.recordErrorTv.text = ""
+        binding.recordErrorTv.visibility = View.GONE
+    }
+
     private fun setupTurbidityCheckboxes() {
         // 초기 상태 색상 적용
         val initialNChecked = binding.turbidityNCheckbox.isChecked
@@ -188,83 +198,94 @@ class RecordEditFragment : Fragment() {
     private fun getRecordRequest(): RecordUpdateRequest? {
         val currentRecord = viewModel.record.value
 
-        val weight = binding.weightValueEt.text.toString().toDoubleOrNull()
-        val systolic = binding.bloodPressureSystolicEt.text.toString().toIntOrNull()
-        val diastolic = binding.bloodPressureDiastolicEt.text.toString().toIntOrNull()
-        val fastingGlucose = binding.fastingGlucoseValueEt.text.toString().toIntOrNull()
-        val urineCount = binding.urineCountValueEt.text.toString().toIntOrNull()
+        val weightText = binding.weightValueEt.text.toString().trim()
+        val weight = if (weightText.isBlank()) {
+            currentRecord?.weight
+        } else {
+            weightText.toDoubleOrNull()
+        }
+
+        val systolicText = binding.bloodPressureSystolicEt.text.toString().trim()
+        val systolic = if (systolicText.isBlank()) {
+            currentRecord?.systolic
+        } else {
+            systolicText.toIntOrNull()
+        }
+
+        val diastolicText = binding.bloodPressureDiastolicEt.text.toString().trim()
+        val diastolic = if (diastolicText.isBlank()) {
+            currentRecord?.diastolic
+        } else {
+            diastolicText.toIntOrNull()
+        }
+
+        val fastingGlucoseText = binding.fastingGlucoseValueEt.text.toString().trim()
+        val fastingGlucose = if (fastingGlucoseText.isBlank()) {
+            currentRecord?.fastingGlucose
+        } else {
+            fastingGlucoseText.toIntOrNull()
+        }
+
+        val urineCountText = binding.urineCountValueEt.text.toString().trim()
+        val urineCount = if (urineCountText.isBlank()) {
+            currentRecord?.urineCount
+        } else {
+            urineCountText.toIntOrNull()
+        }
 
         val turbidity = when {
             binding.turbidityYCheckbox.isChecked -> Turbidity.PRESENT
             binding.turbidityNCheckbox.isChecked -> Turbidity.NONE
-            else -> null
+            else -> currentRecord?.turbidity
         }
 
-        val totalUf = binding.totalUfValueEt.text.toString().toIntOrNull()
+        val totalUfText = binding.totalUfValueEt.text.toString().trim()
+        val totalUf = if (totalUfText.isBlank()) {
+            currentRecord?.totalUf
+        } else {
+            totalUfText.toIntOrNull()
+        }
+
         val notes = binding.noteValueEt.text.toString().ifBlank { null }
 
         weight?.let {
             if (it < 20.0 || it > 300.0) {
-                Toast.makeText(
-                    requireContext(),
-                    "체중은 20.0 ~ 300.0 kg 사이로 입력해주세요. (현재: $it)",
-                    Toast.LENGTH_SHORT
-                ).show()
+                showError("체중은 20.0 ~ 300.0 kg 사이로 입력해주세요. (현재: $it)")
                 return null
             }
         }
 
         systolic?.let {
             if (it < 70 || it > 240) {
-                Toast.makeText(
-                    requireContext(),
-                    "수축기 혈압은 70 ~ 240 mmHg 사이로 입력해주세요. (현재: $it)",
-                    Toast.LENGTH_SHORT
-                ).show()
+                showError("수축기 혈압은 70 ~ 240 mmHg 사이로 입력해주세요. (현재: $it)")
                 return null
             }
         }
 
         diastolic?.let {
             if (it < 40 || it > 160) {
-                Toast.makeText(
-                    requireContext(),
-                    "이완기 혈압은 40 ~ 160 mmHg 사이로 입력해주세요. (현재: $it)",
-                    Toast.LENGTH_SHORT
-                ).show()
+                showError("이완기 혈압은 40 ~ 160 mmHg 사이로 입력해주세요. (현재: $it)")
                 return null
             }
         }
 
         fastingGlucose?.let {
             if (it < 40 || it > 600) {
-                Toast.makeText(
-                    requireContext(),
-                    "공복 혈당은 40 ~ 600 mg/dL 사이로 입력해주세요. (현재: $it)",
-                    Toast.LENGTH_SHORT
-                ).show()
+                showError("공복 혈당은 40 ~ 600 mg/dL 사이로 입력해주세요. (현재: $it)")
                 return null
             }
         }
 
         urineCount?.let {
             if (it < 0 || it > 50) {
-                Toast.makeText(
-                    requireContext(),
-                    "하루 소변 횟수는 0 ~ 50회 사이로 입력해주세요. (현재: $it)",
-                    Toast.LENGTH_SHORT
-                ).show()
+                showError("하루 소변 횟수는 0 ~ 50회 사이로 입력해주세요. (현재: $it)")
                 return null
             }
         }
 
         totalUf?.let {
             if (it < -5000 || it > 5000) {
-                Toast.makeText(
-                    requireContext(),
-                    "제수량 합계는 -5000 ~ 5000 g 사이로 입력해주세요. (현재: $it)",
-                    Toast.LENGTH_SHORT
-                ).show()
+                showError("제수량 합계는 -5000 ~ 5000 g 사이로 입력해주세요. (현재: $it)")
                 return null
             }
         }
@@ -272,12 +293,11 @@ class RecordEditFragment : Fragment() {
         val finalRecordDate = editedRecordDate ?: currentRecord?.recordDate
         val finalRecordDw = editedRecordDw ?: currentRecord?.recordDw
 
-        // --- 회차별 정보(동적 View에서 읽기) ---
+        // 회차별 정보
         val container = binding.exchangeEditContainer
         val childCount = container.childCount
 
         if (childCount == 0) {
-            // 회차 정보가 없으면 null 로 보내도 됨(백엔드 Optional이면)
             return RecordUpdateRequest(
                 recordDate = finalRecordDate,
                 recordDw = finalRecordDw,
@@ -299,67 +319,84 @@ class RecordEditFragment : Fragment() {
             val child = container.getChildAt(i)
             val itemBinding = ItemExchangeEditBinding.bind(child)
 
-            val no = currentExchanges.getOrNull(i)?.exchangeNo ?: (i + 1)
+            val original = currentExchanges.getOrNull(i)
+            val no = original?.exchangeNo ?: (i + 1)
 
-            // 교환 시각
             val timeStr = itemBinding.exchangeTimeValueEt.text.toString().trim()
-            val exchangeTime = try {
-                LocalTime.parse(timeStr, TIME_FORMATTER)
-            } catch (e: Exception) {
-                Log.w("RECORD_EDIT_FRAGMENT", "시간 파싱 실패: $timeStr", e)
-                Toast.makeText(requireContext(),"${no}회차 교환 시각을 올바른 형식(HH:mm)으로 입력해주세요. (현재: '$timeStr')", Toast.LENGTH_SHORT).show()
-                return null
+            val exchangeTime: LocalTime = if (timeStr.isBlank()) {
+                original?.exchangeTime ?: run {
+                    showError("${no}회차 교환 시각을 입력해주세요.")
+                    return null
+                }
+            } else {
+                try {
+                    LocalTime.parse(timeStr, TIME_FORMATTER)
+                } catch (e: Exception) {
+                    Log.w("RECORD_EDIT_FRAGMENT", "시간 파싱 실패: $timeStr", e)
+                    showError("${no}회차 교환 시각을 올바른 형식(HH:mm)으로 입력해주세요. (현재: '$timeStr')")
+                    return null
+                }
             }
 
-            // 배액량
-            val drainStr = itemBinding.drainVolumeValueEt.text.toString()
-            val drainVolume = drainStr.toIntOrNull()
+            val drainStr = itemBinding.drainVolumeValueEt.text.toString().trim()
+            val drainVolume = if (drainStr.isBlank()) {
+                original?.drainVolume
+            } else {
+                drainStr.toIntOrNull()
+            }
             if (drainVolume == null) {
-                Toast.makeText(requireContext(),"${no}회차 배액량을 입력해주세요.", Toast.LENGTH_SHORT).show()
+                showError("${no}회차 배액량을 입력해주세요.")
                 return null
             }
             if (drainVolume < 0 || drainVolume > 6000) {
-                Toast.makeText(requireContext(),"${no}회차 배액량은 0 ~ 6000 g 사이로 입력해주세요. (현재: $drainVolume)", Toast.LENGTH_SHORT).show()
+                showError("${no}회차 배액량은 0 ~ 6000 g 사이로 입력해주세요. (현재: $drainVolume)")
                 return null
             }
 
-            // 주입량
-            val fillStr = itemBinding.fillVolumeValueEt.text.toString()
-            val fillVolume = fillStr.toIntOrNull()
+            val fillStr = itemBinding.fillVolumeValueEt.text.toString().trim()
+            val fillVolume = if (fillStr.isBlank()) {
+                original?.fillVolume
+            } else {
+                fillStr.toIntOrNull()
+            }
             if (fillVolume == null) {
-                Toast.makeText(requireContext(),"${no}회차 주입액 중량을 입력해주세요.", Toast.LENGTH_SHORT).show()
+                showError("${no}회차 주입액 중량을 입력해주세요.")
                 return null
             }
             if (fillVolume < 0 || fillVolume > 6000) {
-                Toast.makeText(requireContext(),"${no}회차 주입액 중량은 0 ~ 6000 g 사이로 입력해주세요. (현재: $fillVolume)", Toast.LENGTH_SHORT).show()
+                showError("${no}회차 주입액 중량은 0 ~ 6000 g 사이로 입력해주세요. (현재: $fillVolume)")
                 return null
             }
 
-            // 주입액 농도
-            val concStr = itemBinding.fillConcentrationValueEt.text.toString()
-            val fillConcentration = concStr.toDoubleOrNull()
+            val concStr = itemBinding.fillConcentrationValueEt.text.toString().trim()
+            val fillConcentration = if (concStr.isBlank()) {
+                original?.fillConcentration
+            } else {
+                concStr.toDoubleOrNull()
+            }
             if (fillConcentration == null) {
-                Toast.makeText(requireContext(),"${no}회차 주입액 농도를 입력해주세요.", Toast.LENGTH_SHORT).show()
+                showError("${no}회차 주입액 농도를 입력해주세요.")
                 return null
             }
             if (fillConcentration < 0.0 || fillConcentration > 100.0) {
-                Toast.makeText(requireContext(),"${no}회차 주입액 농도는 0.0 ~ 100.0 % 사이로 입력해주세요. (현재: $fillConcentration)", Toast.LENGTH_SHORT).show()
+                showError("${no}회차 주입액 농도는 0.0 ~ 100.0 % 사이로 입력해주세요. (현재: $fillConcentration)")
                 return null
             }
 
-            // 제수량
-            val ufStr = itemBinding.ufValueEt.text.toString()
-            val uf = ufStr.toIntOrNull()
+            val ufStr = itemBinding.ufValueEt.text.toString().trim()
+            val uf = if (ufStr.isBlank()) {
+                original?.uf
+            } else {
+                ufStr.toIntOrNull()
+            }
             if (uf == null) {
-                Toast.makeText(requireContext(),"${no}회차 제수량을 입력해주세요.", Toast.LENGTH_SHORT).show()
+                showError("${no}회차 제수량을 입력해주세요.")
                 return null
             }
             if (uf < -500 || uf > 500) {
-                Toast.makeText(requireContext(),"${no}회차 제수량은 -500 ~ 500 g 사이로 입력해주세요. (현재: $uf)", Toast.LENGTH_SHORT).show()
+                showError("${no}회차 제수량은 -500 ~ 500 g 사이로 입력해주세요. (현재: $uf)")
                 return null
             }
-
-            val original = currentExchanges.getOrNull(i)
 
             exchanges.add(
                 RecordExchangeUpdateRequest(
@@ -391,6 +428,8 @@ class RecordEditFragment : Fragment() {
     }
 
     private fun edit() {
+        clearError() // 이전 에러 초기화
+
         // 1순위: ViewModel에 로드된 기록의 id 사용
         val currentRecord = viewModel.record.value
         val currentRecordId = currentRecord?.id ?: -1L
