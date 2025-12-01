@@ -601,7 +601,6 @@ class RecordWrite01Fragment : Fragment() {
             // 이 날짜가 속한 달 데이터 미리 요청
             viewModel.getCalendar(recordDate.year, recordDate.monthValue)
 
-            selectedDate = ocr.ocrData.recordDate
             binding.dateEt.setText(ocr.ocrData.recordDate.format(displayFormatter))
             binding.weightEt.setText(ocr.ocrData.weight.toString())
             binding.systolicEt.setText(ocr.ocrData.bloodPressure.systolic.toString())
