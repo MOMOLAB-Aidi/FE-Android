@@ -33,6 +33,7 @@ import com.example.momolabfe.ui.main.HomeFragment
 import com.example.momolabfe.ui.record.data.RecordCommonDraft
 import com.example.momolabfe.ui.record.viewModel.RecordViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -606,6 +607,50 @@ class RecordWrite02Fragment : Fragment() {
 
             // 리스너 연결
             itemBinding.dropdownIv.setOnClickListener(toggleListener)
+
+            itemBinding.deleteIv.setOnClickListener {
+                if (exchangeList.size <= 1) {
+                    Toast.makeText(requireContext(), "최소 1회차는 유지해야 합니다.", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+
+                // 삭제 대상 백업
+                val removedIndex = index
+                val removedItem = exchangeList[removedIndex]
+                val removedExpanded = expandedStates[removedIndex]
+
+                // 실제 삭제
+                exchangeList.removeAt(removedIndex)
+                expandedStates.removeAt(removedIndex)
+
+                // 회차 번호 다시 정렬
+                exchangeList.forEachIndexed { i, ex ->
+                    exchangeList[i] = ex.copy(exchangeNo = i + 1)
+                }
+
+                renderExchangeViews()
+                updateAddButtonVisibility()
+
+                // Snackbar로 "되돌리기" 제공
+                Snackbar.make(
+                    binding.root,
+                    "${removedItem.exchangeNo}회차를 삭제했습니다.",
+                    Snackbar.LENGTH_LONG
+                ).setAction("되돌리기") {
+                    // 원래 위치에 다시 추가
+                    val safeIndex = removedIndex.coerceIn(0, exchangeList.size)
+                    exchangeList.add(safeIndex, removedItem)
+                    expandedStates.add(safeIndex, removedExpanded)
+
+                    // 다시 회차 번호 정렬
+                    exchangeList.forEachIndexed { i, ex ->
+                        exchangeList[i] = ex.copy(exchangeNo = i + 1)
+                    }
+
+                    renderExchangeViews()
+                    updateAddButtonVisibility()
+                }.show()
+            }
 
             val timeText = item.exchangeTime.format(TIME_FORMATTER)
             itemBinding.exchangeTimeEt.setText(timeText)
