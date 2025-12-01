@@ -2,15 +2,24 @@ package com.example.momolabfe.ui.setting
 
 import android.os.Bundle
 import android.text.InputType
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.example.momolabfe.R
 import com.example.momolabfe.databinding.FragmentPasswordBinding
+import com.example.momolabfe.remote.user.model.UpdatePassword
+import com.example.momolabfe.ui.setting.viewModel.SettingViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import kotlinx.coroutines.launch
 
 class PasswordFragment : Fragment() {
 
@@ -20,6 +29,8 @@ class PasswordFragment : Fragment() {
     private var isCurrentPasswordVisible = false
     private var isNewPasswordVisible = false
     private var isNewPasswordCheckVisible = false
+
+    private val viewModel: SettingViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -35,11 +46,16 @@ class PasswordFragment : Fragment() {
         // 바텀 내비게이션 숨기기
         activity?.findViewById<BottomNavigationView>(R.id.main_bnv)?.visibility = View.GONE
 
+        setupPasswordToggle()
+        setupObservers()
+
         binding.cancelBtn.setOnClickListener {
             parentFragmentManager.popBackStack()
         }
 
-        setupPasswordToggle()
+        binding.changeBtn.setOnClickListener {
+            submitPasswordChange()
+        }
     }
 
     private fun setupPasswordToggle() {
@@ -92,6 +108,53 @@ class PasswordFragment : Fragment() {
 
             // 커서를 텍스트 끝으로 이동
             et.setSelection(et.text?.length ?: 0)
+        }
+    }
+
+    private fun submitPasswordChange() {
+        val current = binding.currentPasswordEt.text?.toString()?.trim() ?: ""
+        val newPw = binding.newPasswordEt.text?.toString()?.trim() ?: ""
+        val newPwCheck = binding.newPasswordCheckEt.text?.toString()?.trim() ?: ""
+
+        // 입력 체크
+        if (current.isEmpty() || newPw.isEmpty() || newPwCheck.isEmpty()) {
+            Toast.makeText(requireContext(), "모든 비밀번호 항목을 입력해주세요.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (newPw != newPwCheck) {
+            Toast.makeText(requireContext(), "새 비밀번호와 확인이 일치하지 않습니다.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val request = UpdatePassword(
+            currentPassword = current,
+            newPassword = newPw,
+            newPasswordCheck = newPwCheck
+        )
+
+        binding.changeBtn.isEnabled = false
+
+        viewModel.updatePassword(request)
+    }
+
+    private fun setupObservers() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.passwordSuccess.collect {
+                        Toast.makeText(requireContext(), "비밀번호가 변경되었습니다.", Toast.LENGTH_SHORT)
+                            .show()
+                        binding.changeBtn.isEnabled = true
+                        parentFragmentManager.popBackStack()
+                    }
+                }
+            }
+        }
+
+        viewModel.errorMessage.observe(viewLifecycleOwner) { errorMsg ->
+            Log.e("PASSWORD_FRAGMENT", errorMsg.toString())
+            binding.changeBtn.isEnabled = true
         }
     }
 
