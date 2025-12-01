@@ -291,8 +291,7 @@ class RecordWrite01Fragment : Fragment() {
                     val hasRecord = eventDates.contains(day.date)
 
                     if (hasRecord) {
-                        Toast.makeText(requireContext(), "해당 날짜에 이미 기록이 존재합니다.", Toast.LENGTH_SHORT)
-                            .show()
+                        Toast.makeText(requireContext(), "해당 날짜에 이미 기록이 존재합니다.", Toast.LENGTH_SHORT).show()
                         // 기록이 있는 날짜는 선택 상태를 변경하지 않고 종료
                         return@setOnClickListener
                     }
@@ -441,6 +440,14 @@ class RecordWrite01Fragment : Fragment() {
             return
         }
 
+        // 이미 기록이 있는 날짜인지 체크
+        if (hasRecordOn(selected)) {
+            Toast.makeText(requireContext(), "해당 날짜에 이미 기록이 존재합니다.", Toast.LENGTH_SHORT).show()
+            enableButtonAndReturn()
+            return
+        }
+
+
         if (weightText.isEmpty() || systolicText.isEmpty() || diastolicText.isEmpty()) {
             Toast.makeText(requireContext(), "필수 정보를 모두 입력해주세요. (체중, 혈압)", Toast.LENGTH_SHORT).show()
             enableButtonAndReturn()
@@ -588,6 +595,12 @@ class RecordWrite01Fragment : Fragment() {
 
             isOcrApplied = true  // 다시 덮어쓰지 않도록 플래그 ON
 
+            val recordDate = ocr.ocrData.recordDate
+            selectedDate = recordDate
+
+            // 이 날짜가 속한 달 데이터 미리 요청
+            viewModel.getCalendar(recordDate.year, recordDate.monthValue)
+
             selectedDate = ocr.ocrData.recordDate
             binding.dateEt.setText(ocr.ocrData.recordDate.format(displayFormatter))
             binding.weightEt.setText(ocr.ocrData.weight.toString())
@@ -627,6 +640,11 @@ class RecordWrite01Fragment : Fragment() {
             turbidityNCheckbox.isChecked = false
             turbidityYCheckbox.isChecked = false
         }
+    }
+
+    private fun hasRecordOn(date: LocalDate): Boolean {
+        val items = viewModel.calendarData.value ?: return false
+        return items.any { it.date == date && it.hasSchedule }
     }
 
     override fun onDestroyView() {
