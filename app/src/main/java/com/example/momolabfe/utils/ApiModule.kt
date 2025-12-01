@@ -6,6 +6,7 @@ import com.example.momolabfe.remote.auth.repository.PreferenceRepository
 import com.example.momolabfe.remote.auth.repository.SharedPreferencesRepository
 import com.example.momolabfe.remote.auth.service.AuthService
 import com.example.momolabfe.remote.consult.service.ConsultService
+import com.example.momolabfe.remote.fcm.service.FcmService
 import com.example.momolabfe.remote.stats.service.StatsService
 import com.example.momolabfe.remote.user.service.UserService
 import dagger.Module
@@ -44,6 +45,12 @@ class ApiModule {
     @NoAuthRetrofit
     fun provideNoAuthServiceForInterceptor(@NoAuthRetrofit retrofit: Retrofit): AuthService {
         return retrofit.create(AuthService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideFcmApi(@AuthRetrofit retrofit: Retrofit): FcmService {
+        return retrofit.create(FcmService::class.java)
     }
 
     @Provides
