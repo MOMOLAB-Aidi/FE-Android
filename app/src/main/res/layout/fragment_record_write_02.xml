@@ -88,8 +88,7 @@
                 app:strokeColor="@color/main_1"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/exchange_container"
-                app:layout_constraintBottom_toTopOf="@id/total_uf_cv"/>
+                app:layout_constraintTop_toBottomOf="@id/exchange_container" />
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/total_uf_cv"
@@ -104,7 +103,7 @@
                 app:cardElevation="0dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/save_btn"
+                app:layout_constraintTop_toBottomOf="@id/add_exchange_btn"
                 app:strokeWidth="0dp">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -165,7 +164,7 @@
                 app:strokeColor="@color/main_1"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/add_exchange_btn"
+                app:layout_constraintTop_toBottomOf="@id/total_uf_cv"
                 app:layout_constraintBottom_toBottomOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

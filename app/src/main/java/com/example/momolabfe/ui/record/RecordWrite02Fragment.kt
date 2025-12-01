@@ -33,6 +33,7 @@ import com.example.momolabfe.ui.main.HomeFragment
 import com.example.momolabfe.ui.record.data.RecordCommonDraft
 import com.example.momolabfe.ui.record.viewModel.RecordViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -51,6 +52,9 @@ class RecordWrite02Fragment : Fragment() {
 
     // 회차 리스트 직접 관리
     private val exchangeList = mutableListOf<OcrRecordExchangeData>()
+
+    // 각 회차별 드롭다운 펼침/접힘 상태
+    private val expandedStates = mutableListOf<Boolean>()
 
     private val isFromOcr: Boolean by lazy {
         arguments?.getBoolean("fromOcr", false) ?: false
@@ -243,13 +247,14 @@ class RecordWrite02Fragment : Fragment() {
             id = -1,
             exchangeNo = newExchangeNo,
             exchangeTime = LocalTime.now(),
-            drainVolume = 0,
-            fillConcentration = 0.0,
-            fillVolume = 0,
-            uf = 0
+            drainVolume = -1,
+            fillConcentration = -1.0,
+            fillVolume = -1,
+            uf = -999
         )
 
         exchangeList.add(newExchange)
+        expandedStates.add(true)
 
         renderExchangeViews()
         updateAddButtonVisibility()
@@ -267,10 +272,10 @@ class RecordWrite02Fragment : Fragment() {
                 id = -1, // 임시 ID
                 exchangeNo = 1,
                 exchangeTime = LocalTime.now(),
-                drainVolume = 0,
-                fillConcentration = 0.0,
-                fillVolume = 0,
-                uf = 0
+                drainVolume = -1,
+                fillConcentration = -1.0,
+                fillVolume = -1,
+                uf = -999
             )
             exchangesFromOcr.add(firstExchange)
         }
@@ -281,6 +286,12 @@ class RecordWrite02Fragment : Fragment() {
         // 회차 번호 정렬
         exchangeList.forEachIndexed { index, item ->
             exchangeList[index] = item.copy(exchangeNo = index + 1)
+        }
+
+        // 펼침 상태도 같이 초기화
+        expandedStates.clear()
+        repeat(exchangeList.size) {
+            expandedStates.add(true) // 처음엔 전부 펼침
         }
 
         renderExchangeViews()
@@ -342,7 +353,7 @@ class RecordWrite02Fragment : Fragment() {
         val requestList = mutableListOf<RecordExchangeCreateRequest>()
         for (item in exchanges) {
 
-            if (item.drainVolume == 0) {
+            if (item.drainVolume == -1) {
                 Toast.makeText(
                     requireContext(),
                     "${item.exchangeNo}회차 배액량을 입력해주세요.",
@@ -352,7 +363,7 @@ class RecordWrite02Fragment : Fragment() {
                 return
             }
 
-            if (item.fillVolume <= 0) {
+            if (item.fillVolume == -1) {
                 Toast.makeText(
                     requireContext(),
                     "${item.exchangeNo}회차 주입량을 입력해주세요.",
@@ -362,7 +373,7 @@ class RecordWrite02Fragment : Fragment() {
                 return
             }
 
-            if (item.fillConcentration <= 0.0) {
+            if (item.fillConcentration == -1.0) {
                 Toast.makeText(
                     requireContext(),
                     "${item.exchangeNo}회차 주입액 농도를 입력해주세요.",
@@ -372,7 +383,7 @@ class RecordWrite02Fragment : Fragment() {
                 return
             }
 
-            if (item.uf == null) {
+            if (item.uf == -999) {
                 Toast.makeText(
                     requireContext(),
                     "${item.exchangeNo}회차 제수량을 입력해주세요.",
@@ -562,7 +573,85 @@ class RecordWrite02Fragment : Fragment() {
         exchangeList.forEachIndexed { index, item ->
             val itemBinding = ItemRecordExchangeBinding.inflate(inflater, container, false)
 
+            // 혹시 expandedStates 길이가 모자라면 채워주기
+            if (expandedStates.size <= index) {
+                expandedStates.add(true)
+            }
+            val isExpanded = expandedStates[index]
+
             itemBinding.exchangeNoTv.text = "${index + 1}회차"
+
+            // 드롭다운 상태에 따라 보이기/숨기기
+            itemBinding.detailsContainer.visibility =
+                if (isExpanded) View.VISIBLE else View.GONE
+
+            // 아이콘도 위/아래로 변경
+            itemBinding.dropdownIv.setImageResource(
+                if (isExpanded) R.drawable.ic_arrow_up_sv
+                else R.drawable.ic_arrow_down_sv
+            )
+
+            // 토글용 공용 리스너
+            val toggleListener = View.OnClickListener {
+                val newState = !(expandedStates.getOrNull(index) ?: true)
+                expandedStates[index] = newState
+
+                itemBinding.detailsContainer.visibility =
+                    if (newState) View.VISIBLE else View.GONE
+
+                itemBinding.dropdownIv.setImageResource(
+                    if (newState) R.drawable.ic_arrow_up_sv
+                    else R.drawable.ic_arrow_down_sv
+                )
+            }
+
+            // 리스너 연결
+            itemBinding.dropdownIv.setOnClickListener(toggleListener)
+
+            itemBinding.deleteIv.setOnClickListener {
+                if (exchangeList.size <= 1) {
+                    Toast.makeText(requireContext(), "최소 1회차는 유지해야 합니다.", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+
+                // 삭제 대상 백업
+                val removedIndex = index
+                val removedItem = exchangeList[removedIndex]
+                val removedExpanded = expandedStates[removedIndex]
+                val removedOrder = removedItem.exchangeNo
+
+                // 실제 삭제
+                exchangeList.removeAt(removedIndex)
+                expandedStates.removeAt(removedIndex)
+
+                // 회차 번호 다시 정렬
+                exchangeList.forEachIndexed { i, ex ->
+                    exchangeList[i] = ex.copy(exchangeNo = i + 1)
+                }
+
+                renderExchangeViews()
+                updateAddButtonVisibility()
+
+                // Snackbar로 "되돌리기" 제공
+                Snackbar.make(
+                    binding.root,
+                    "${removedOrder}회차를 삭제했습니다.",
+                    Snackbar.LENGTH_LONG
+                ).setAction("되돌리기") {
+                    // 원래 위치에 다시 추가
+                    val safeIndex = removedIndex.coerceIn(0, exchangeList.size)
+                    exchangeList.add(safeIndex, removedItem)
+                    expandedStates.add(safeIndex, removedExpanded)
+
+                    // 다시 회차 번호 정렬
+                    exchangeList.forEachIndexed { i, ex ->
+                        exchangeList[i] = ex.copy(exchangeNo = i + 1)
+                    }
+
+                    renderExchangeViews()
+                    updateAddButtonVisibility()
+                }.show()
+            }
 
             val timeText = item.exchangeTime.format(TIME_FORMATTER)
             itemBinding.exchangeTimeEt.setText(timeText)
@@ -570,25 +659,40 @@ class RecordWrite02Fragment : Fragment() {
                 showTimePickerDialog(itemBinding.exchangeTimeEt, index)
             }
 
-            itemBinding.drainVolumeEt.setText(item.drainVolume.toString())
-            itemBinding.fillVolumeEt.setText(item.fillVolume.toString())
-            itemBinding.fillConcentrationEt.setText(item.fillConcentration.toString())
-            itemBinding.ufEt.setText(item.uf.toString())
+            itemBinding.drainVolumeEt.setText(
+                if (item.drainVolume == -1) "" else item.drainVolume.toString()
+            )
+            itemBinding.fillVolumeEt.setText(
+                if (item.fillVolume == -1) "" else item.fillVolume.toString()
+            )
+            itemBinding.fillConcentrationEt.setText(
+                if (item.fillConcentration == -1.0) "" else item.fillConcentration.toString()
+            )
+            itemBinding.ufEt.setText(
+                if (item.uf == -999) "" else item.uf.toString()
+            )
 
             itemBinding.drainVolumeEt.addTextChangedListener {
-                val v = it?.toString()?.toIntOrNull() ?: 0
+                val text = it?.toString()?.trim()
+                val v = if (text.isNullOrEmpty()) -1 else text.toIntOrNull() ?: -1
                 exchangeList[index] = exchangeList[index].copy(drainVolume = v)
             }
+
             itemBinding.fillVolumeEt.addTextChangedListener {
-                val v = it?.toString()?.toIntOrNull() ?: 0
+                val text = it?.toString()?.trim()
+                val v = if (text.isNullOrEmpty()) -1 else text.toIntOrNull() ?: -1
                 exchangeList[index] = exchangeList[index].copy(fillVolume = v)
             }
+
             itemBinding.fillConcentrationEt.addTextChangedListener {
-                val v = it?.toString()?.toDoubleOrNull() ?: 0.0
+                val text = it?.toString()?.trim()
+                val v = if (text.isNullOrEmpty()) -1.0 else text.toDoubleOrNull() ?: -1.0
                 exchangeList[index] = exchangeList[index].copy(fillConcentration = v)
             }
+
             itemBinding.ufEt.addTextChangedListener {
-                val v = it?.toString()?.toIntOrNull() ?: 0
+                val text = it?.toString()?.trim()
+                val v = if (text.isNullOrEmpty()) -999 else text.toIntOrNull() ?: -999
                 exchangeList[index] = exchangeList[index].copy(uf = v)
             }
 

@@ -178,9 +178,13 @@ class RecordWrite01Fragment : Fragment() {
             .setView(dialogBinding.root)
             .create()
 
-        var dialogSelectedDate: LocalDate = selectedDate ?: today
+        // 선택된 날짜가 있으면 그걸 기본값으로, 없으면 선택 안 된 상태
+        var dialogSelectedDate: LocalDate? = selectedDate
+
+        // 캘린더는 선택된 날짜 기준으로 보되, 없으면 today 기준으로 월만 맞춰줌
+        val baseDateForMonth = dialogSelectedDate ?: today
         var dialogVisibleMonth: YearMonth =
-            YearMonth.of(dialogSelectedDate.year, dialogSelectedDate.month)
+            YearMonth.of(baseDateForMonth.year, baseDateForMonth.month)
 
         // 캘린더 뷰 초기화
         val monthCalendar: CalendarView = dialogBinding.calendarView
@@ -287,8 +291,7 @@ class RecordWrite01Fragment : Fragment() {
                     val hasRecord = eventDates.contains(day.date)
 
                     if (hasRecord) {
-                        Toast.makeText(requireContext(), "해당 날짜에 이미 기록이 존재합니다.", Toast.LENGTH_SHORT)
-                            .show()
+                        Toast.makeText(requireContext(), "해당 날짜에 이미 기록이 존재합니다.", Toast.LENGTH_SHORT).show()
                         // 기록이 있는 날짜는 선택 상태를 변경하지 않고 종료
                         return@setOnClickListener
                     }
@@ -296,8 +299,8 @@ class RecordWrite01Fragment : Fragment() {
                     val old = dialogSelectedDate
                     dialogSelectedDate = day.date
 
-                    monthCalendar.notifyDateChanged(old)
-                    monthCalendar.notifyDateChanged(dialogSelectedDate)
+                    old?.let { monthCalendar.notifyDateChanged(it) }  // 이전 선택이 있을 때만 갱신
+                    monthCalendar.notifyDateChanged(dialogSelectedDate!!)
                 }
             }
         }
@@ -319,8 +322,16 @@ class RecordWrite01Fragment : Fragment() {
         }
 
         dialogBinding.applyTv.setOnClickListener {
-            selectedDate = dialogSelectedDate
-            binding.dateEt.setText(dialogSelectedDate.format(displayFormatter))
+            val chosen = dialogSelectedDate
+
+            // 날짜를 선택하지 않고 "적용"을 클릭한 경우
+            if (chosen == null) {
+                Toast.makeText(requireContext(), "날짜를 선택해주세요.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            selectedDate = chosen
+            binding.dateEt.setText(chosen.format(displayFormatter))
             dialog.dismiss()
         }
 
@@ -428,6 +439,14 @@ class RecordWrite01Fragment : Fragment() {
             enableButtonAndReturn()
             return
         }
+
+        // 이미 기록이 있는 날짜인지 체크
+        if (hasRecordOn(selected)) {
+            Toast.makeText(requireContext(), "해당 날짜에 이미 기록이 존재합니다.", Toast.LENGTH_SHORT).show()
+            enableButtonAndReturn()
+            return
+        }
+
 
         if (weightText.isEmpty() || systolicText.isEmpty() || diastolicText.isEmpty()) {
             Toast.makeText(requireContext(), "필수 정보를 모두 입력해주세요. (체중, 혈압)", Toast.LENGTH_SHORT).show()
@@ -576,7 +595,12 @@ class RecordWrite01Fragment : Fragment() {
 
             isOcrApplied = true  // 다시 덮어쓰지 않도록 플래그 ON
 
-            selectedDate = ocr.ocrData.recordDate
+            val recordDate = ocr.ocrData.recordDate
+            selectedDate = recordDate
+
+            // 이 날짜가 속한 달 데이터 미리 요청
+            viewModel.getCalendar(recordDate.year, recordDate.monthValue)
+
             binding.dateEt.setText(ocr.ocrData.recordDate.format(displayFormatter))
             binding.weightEt.setText(ocr.ocrData.weight.toString())
             binding.systolicEt.setText(ocr.ocrData.bloodPressure.systolic.toString())
@@ -615,6 +639,11 @@ class RecordWrite01Fragment : Fragment() {
             turbidityNCheckbox.isChecked = false
             turbidityYCheckbox.isChecked = false
         }
+    }
+
+    private fun hasRecordOn(date: LocalDate): Boolean {
+        val items = viewModel.calendarData.value ?: return false
+        return items.any { it.date == date && it.hasSchedule }
     }
 
     override fun onDestroyView() {
