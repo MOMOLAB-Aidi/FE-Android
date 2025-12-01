@@ -428,6 +428,8 @@ class RecordEditFragment : Fragment() {
     }
 
     private fun edit() {
+        clearError() // 이전 에러 초기화
+
         // 1순위: ViewModel에 로드된 기록의 id 사용
         val currentRecord = viewModel.record.value
         val currentRecordId = currentRecord?.id ?: -1L

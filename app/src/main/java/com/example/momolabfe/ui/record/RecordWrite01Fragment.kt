@@ -494,6 +494,7 @@ class RecordWrite01Fragment : Fragment() {
 
         val systolic = systolicText.toIntOrNull() ?: run {
             showError("최고 혈압을 올바른 숫자로 입력해주세요.")
+            enableButtonAndReturn()
             return
         }
 
