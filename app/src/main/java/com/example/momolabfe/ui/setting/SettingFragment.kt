@@ -50,25 +50,22 @@ class SettingFragment : Fragment() {
         viewModel.getMyPage()
         observeMyPageResult()
 
-        binding.changePasswordTitleTv.setOnClickListener {
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.main_frm, PasswordFragment())
-                .addToBackStack(null)
-                .commit()
-        }
+        binding.changePasswordTitleTv.setOnClickListener { navigateToPassword() }
 
-        binding.changePasswordContentTv.setOnClickListener {
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.main_frm, PasswordFragment())
-                .addToBackStack(null)
-                .commit()
-        }
+        binding.changePasswordContentTv.setOnClickListener { navigateToPassword() }
 
         binding.logoutBtn.setOnClickListener {
             viewLifecycleOwner.lifecycleScope.launch {
                 logoutManager.logout()
             }
         }
+    }
+
+    private fun navigateToPassword() {
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.main_frm, PasswordFragment())
+            .addToBackStack(null)
+            .commit()
     }
 
     private fun observeMyPageResult() {

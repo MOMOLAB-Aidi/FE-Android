@@ -112,6 +112,8 @@ class PasswordFragment : Fragment() {
     }
 
     private fun submitPasswordChange() {
+        clearError() // 이전 에러 초기화
+
         val current = binding.currentPasswordEt.text?.toString()?.trim() ?: ""
         val newPw = binding.newPasswordEt.text?.toString()?.trim() ?: ""
         val newPwCheck = binding.newPasswordCheckEt.text?.toString()?.trim() ?: ""
