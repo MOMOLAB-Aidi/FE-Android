@@ -95,8 +95,7 @@ class LoginFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            val bottomSheet = BottomSheetForgetPasswordFragment()
-            bottomSheet.show(parentFragmentManager, "BottomSheetForgetPassword")
+            BottomSheetForgetPasswordFragment().show(parentFragmentManager, "BottomSheetForgetPassword")
         }
     }
 

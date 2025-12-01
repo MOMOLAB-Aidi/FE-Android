@@ -35,11 +35,14 @@ class BottomSheetForgetPasswordFragment : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // 전화번호 밑줄 + 강조
-        val phoneText = "에이디 연락처: 1522-2025"
+        val rawPhone = "1522-2025"
+        val email = "aidi2025@gmail.com"
+        val emailSubject = "비밀번호 재설정 문의"
+
+        val phoneText = "에이디 연락처: $rawPhone"
         val phoneSpannable = SpannableString(phoneText)
-        val phoneStart = phoneText.indexOf("1522")
-        val phoneEnd = phoneText.length
+        val phoneStart = phoneText.indexOf(rawPhone).takeIf { it >= 0 } ?: 0
+        val phoneEnd = phoneStart + rawPhone.length
 
         phoneSpannable.setSpan(
             UnderlineSpan(),
@@ -64,10 +67,10 @@ class BottomSheetForgetPasswordFragment : BottomSheetDialogFragment() {
 
 
         // 이메일 밑줄 + 강조
-        val emailText = "에이디 이메일: aidi2025@gmail.com"
+        val emailText = "에이디 이메일: $email"
         val emailSpannable = SpannableString(emailText)
-        val emailStart = emailText.indexOf("aidi2025")
-        val emailEnd = emailText.length
+        val emailStart = emailText.indexOf(email).takeIf { it >= 0 } ?: 0
+        val emailEnd = emailStart + email.length
 
         emailSpannable.setSpan(
             UnderlineSpan(),
@@ -92,7 +95,6 @@ class BottomSheetForgetPasswordFragment : BottomSheetDialogFragment() {
 
         // 전화번호 클릭 → 전화 앱 열기 (ACTION_DIAL: 권한 필요 없음)
         binding.phoneNumTv.setOnClickListener {
-            val rawPhone = "1522-2025"
             val phone = rawPhone.replace("-", "") // tel:01012341234 형태로 변환
             val intent = Intent(Intent.ACTION_DIAL).apply {
                 data = Uri.fromParts("tel", phone, null)
@@ -102,11 +104,8 @@ class BottomSheetForgetPasswordFragment : BottomSheetDialogFragment() {
 
         // 이메일 클릭 → 이메일 앱 열기
         binding.emailTv.setOnClickListener {
-            val email = "aidi2025@gmail.com"
-            val subject = "비밀번호 재설정 문의"
 
-            val uri = "mailto:$email?subject=${Uri.encode(subject)}".toUri()
-
+            val uri = "mailto:$email?subject=${Uri.encode(emailSubject)}".toUri()
             val intent = Intent(Intent.ACTION_SENDTO, uri)
             startActivity(intent)
         }
