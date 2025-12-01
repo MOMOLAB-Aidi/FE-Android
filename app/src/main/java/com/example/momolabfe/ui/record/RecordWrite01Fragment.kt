@@ -421,10 +421,22 @@ class RecordWrite01Fragment : Fragment() {
         private const val DATE_DISPLAY_PATTERN = "yyyy-MM-dd(E)"
     }
 
+    private fun showError(message: String) {
+        binding.recordErrorTv.text = message
+        binding.recordErrorTv.visibility = View.VISIBLE
+    }
+
+    private fun clearError() {
+        binding.recordErrorTv.text = ""
+        binding.recordErrorTv.visibility = View.GONE
+    }
+
     private fun collectDataAndCallApi() {
         fun enableButtonAndReturn() {
             binding.nextBtn.isEnabled = true
         }
+
+        clearError() // 이전 에러 초기화
 
         val weightText = binding.weightEt.text.toString()
         val systolicText = binding.systolicEt.text.toString()
@@ -435,21 +447,21 @@ class RecordWrite01Fragment : Fragment() {
 
         val selected = selectedDate
         if (selected == null) {
-            Toast.makeText(requireContext(), "날짜를 선택해주세요.", Toast.LENGTH_SHORT).show()
+            showError("날짜를 선택해주세요.")
             enableButtonAndReturn()
             return
         }
 
         // 이미 기록이 있는 날짜인지 체크
         if (hasRecordOn(selected)) {
-            Toast.makeText(requireContext(), "해당 날짜에 이미 기록이 존재합니다.", Toast.LENGTH_SHORT).show()
+            showError("해당 날짜에 이미 기록이 존재합니다.")
             enableButtonAndReturn()
             return
         }
 
 
-        if (weightText.isEmpty() || systolicText.isEmpty() || diastolicText.isEmpty()) {
-            Toast.makeText(requireContext(), "필수 정보를 모두 입력해주세요. (체중, 혈압)", Toast.LENGTH_SHORT).show()
+        if (weightText.isEmpty() || systolicText.isEmpty() || diastolicText.isEmpty() || fastingGlucoseText.isEmpty() || urineCountText.isEmpty()) {
+            showError("필수 정보를 모두 입력해주세요.")
             enableButtonAndReturn()
             return
         }
@@ -458,7 +470,7 @@ class RecordWrite01Fragment : Fragment() {
             binding.turbidityNCheckbox.isChecked -> Turbidity.NONE
             binding.turbidityYCheckbox.isChecked -> Turbidity.PRESENT
             else -> {
-                Toast.makeText(requireContext(), "혼탁도를 선택해주세요.", Toast.LENGTH_SHORT).show()
+                showError("혼탁도를 선택해주세요.")
                 enableButtonAndReturn()
                 return
             }
@@ -475,81 +487,60 @@ class RecordWrite01Fragment : Fragment() {
         }
 
         val weight = weightText.toDoubleOrNull() ?: run {
-            Toast.makeText(requireContext(), "체중을 올바른 숫자로 입력해주세요.", Toast.LENGTH_SHORT).show()
+            showError("체중을 올바른 숫자로 입력해주세요.")
             enableButtonAndReturn()
             return
         }
 
         val systolic = systolicText.toIntOrNull() ?: run {
-            Toast.makeText(requireContext(), "최고 혈압을 올바른 숫자로 입력해주세요.", Toast.LENGTH_SHORT).show()
-            enableButtonAndReturn()
+            showError("최고 혈압을 올바른 숫자로 입력해주세요.")
             return
         }
 
         val diastolic = diastolicText.toIntOrNull() ?: run {
-            Toast.makeText(requireContext(), "최저 혈압을 올바른 숫자로 입력해주세요.", Toast.LENGTH_SHORT).show()
+            showError("최저 혈압을 올바른 숫자로 입력해주세요.")
             enableButtonAndReturn()
             return
         }
 
         val fastingGlucose = fastingGlucoseText.toIntOrNull() ?: run {
-            Toast.makeText(requireContext(), "공복 혈당을 올바른 숫자로 입력해주세요.", Toast.LENGTH_SHORT).show()
+            showError("공복 혈당을 올바른 숫자로 입력해주세요.")
             enableButtonAndReturn()
             return
         }
 
         val urineCount = urineCountText.toIntOrNull() ?: run {
-            Toast.makeText(requireContext(), "소변 횟수를 올바른 숫자로 입력해주세요.", Toast.LENGTH_SHORT).show()
+            showError("소변 횟수를 올바른 숫자로 입력해주세요.")
             enableButtonAndReturn()
             return
         }
 
         if (weight < 20.0 || weight > 300.0) {
-            Toast.makeText(
-                requireContext(),
-                "체중은 20.0 ~ 300.0 kg 사이로 입력해주세요. (현재: $weight)",
-                Toast.LENGTH_SHORT
-            ).show()
+            showError("체중은 20.0 ~ 300.0 kg 사이로 입력해주세요. (현재: $weight)")
             enableButtonAndReturn()
             return
         }
 
         if (systolic < 70 || systolic > 240) {
-            Toast.makeText(
-                requireContext(),
-                "최고 혈압은 70 ~ 240 mmHg 사이로 입력해주세요. (현재: $systolic)",
-                Toast.LENGTH_SHORT
-            ).show()
+            showError("최고 혈압은 70 ~ 240 mmHg 사이로 입력해주세요. (현재: $systolic)")
             enableButtonAndReturn()
             return
         }
 
         if (diastolic < 40 || diastolic > 160) {
-            Toast.makeText(
-                requireContext(),
-                "최저 혈압은 40 ~ 160 mmHg 사이로 입력해주세요. (현재: $diastolic)",
-                Toast.LENGTH_SHORT
-            ).show()
+            showError("최저 혈압은 40 ~ 160 mmHg 사이로 입력해주세요. (현재: $diastolic)")
             enableButtonAndReturn()
             return
         }
 
         if (fastingGlucose < 40 || fastingGlucose > 600) {
-            Toast.makeText(
-                requireContext(),
-                "공복 혈당은 40 ~ 600 mg/dL 사이로 입력해주세요. (현재: $fastingGlucose)",
-                Toast.LENGTH_SHORT
-            ).show()
+            showError("공복 혈당은 40 ~ 600 mg/dL 사이로 입력해주세요. (현재: $fastingGlucose)")
             enableButtonAndReturn()
             return
         }
 
         if (urineCount < 0 || urineCount > 50) {
-            Toast.makeText(
-                requireContext(),
-                "소변 횟수는 0 ~ 50회 사이로 입력해주세요. (현재: $urineCount)",
-                Toast.LENGTH_SHORT
-            ).show()
+            showError("소변 횟수는 0 ~ 50회 사이로 입력해주세요. (현재: $urineCount)")
             enableButtonAndReturn()
             return
         }

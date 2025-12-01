@@ -152,7 +152,6 @@
                             android:background="#F9F9FA"
                             android:fontFamily="@font/noto_sans_kr_regular"
                             android:gravity="center_vertical"
-                            android:hint="56.2"
                             android:includeFontPadding="false"
                             android:inputType="numberDecimal"
                             android:paddingStart="16dp"
@@ -186,7 +185,6 @@
                             android:background="#F9F9FA"
                             android:fontFamily="@font/noto_sans_kr_regular"
                             android:gravity="center_vertical"
-                            android:hint="125"
                             android:includeFontPadding="false"
                             android:inputType="number"
                             android:paddingStart="16dp"
@@ -219,7 +217,6 @@
                             android:background="#F9F9FA"
                             android:fontFamily="@font/noto_sans_kr_regular"
                             android:gravity="center_vertical"
-                            android:hint="78"
                             android:includeFontPadding="false"
                             android:inputType="number"
                             android:paddingStart="16dp"
@@ -253,7 +250,6 @@
                             android:background="#F9F9FA"
                             android:fontFamily="@font/noto_sans_kr_regular"
                             android:gravity="center_vertical"
-                            android:hint="134"
                             android:includeFontPadding="false"
                             android:inputType="number"
                             android:paddingStart="16dp"
@@ -286,7 +282,6 @@
                             android:background="#F9F9FA"
                             android:fontFamily="@font/noto_sans_kr_regular"
                             android:gravity="center_vertical"
-                            android:hint="4"
                             android:includeFontPadding="false"
                             android:inputType="number"
                             android:paddingStart="16dp"
@@ -377,7 +372,6 @@
                             android:background="#F9F9FA"
                             android:fontFamily="@font/noto_sans_kr_regular"
                             android:gravity="center_vertical"
-                            android:hint="600"
                             android:includeFontPadding="false"
                             android:inputType="numberSigned"
                             android:paddingStart="16dp"
@@ -409,7 +403,6 @@
                             android:background="#F9F9FA"
                             android:fontFamily="@font/noto_sans_kr_regular"
                             android:gravity="start|top"
-                            android:hint="특이사항 없음"
                             android:includeFontPadding="false"
                             android:inputType="textMultiLine"
                             android:maxLines="4"
@@ -475,6 +468,22 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
+            <TextView
+                android:id="@+id/record_error_tv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginStart="25dp"
+                android:layout_marginEnd="25dp"
+                android:textColor="@color/red"
+                android:textSize="13sp"
+                android:includeFontPadding="false"
+                android:fontFamily="@font/noto_sans_kr_regular"
+                android:visibility="gone"
+                app:layout_constraintTop_toBottomOf="@id/exchange_info_section"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
             <LinearLayout
                 android:id="@+id/bottom_bar"
                 android:layout_width="match_parent"
@@ -486,7 +495,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/exchange_info_section">
+                app:layout_constraintTop_toBottomOf="@id/record_error_tv">
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/cancel_btn"
