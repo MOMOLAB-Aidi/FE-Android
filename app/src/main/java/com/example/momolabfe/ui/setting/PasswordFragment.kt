@@ -118,12 +118,12 @@ class PasswordFragment : Fragment() {
 
         // 입력 체크
         if (current.isEmpty() || newPw.isEmpty() || newPwCheck.isEmpty()) {
-            Toast.makeText(requireContext(), "모든 비밀번호 항목을 입력해주세요.", Toast.LENGTH_SHORT).show()
+            showError("모든 비밀번호 항목을 입력해주세요.")
             return
         }
 
         if (newPw != newPwCheck) {
-            Toast.makeText(requireContext(), "새 비밀번호와 확인이 일치하지 않습니다.", Toast.LENGTH_SHORT).show()
+            showError("새 비밀번호와 확인이 일치하지 않습니다.")
             return
         }
 
@@ -143,8 +143,8 @@ class PasswordFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
                     viewModel.passwordSuccess.collect {
-                        Toast.makeText(requireContext(), "비밀번호가 변경되었습니다.", Toast.LENGTH_SHORT)
-                            .show()
+                        clearError()
+                        Toast.makeText(requireContext(), "비밀번호가 변경되었습니다.", Toast.LENGTH_SHORT).show()
                         binding.changeBtn.isEnabled = true
                         parentFragmentManager.popBackStack()
                     }
@@ -156,6 +156,17 @@ class PasswordFragment : Fragment() {
             Log.e("PASSWORD_FRAGMENT", errorMsg.toString())
             binding.changeBtn.isEnabled = true
         }
+    }
+
+    // 에러 표기
+    private fun showError(message: String) {
+        binding.passwordErrorTv.text = message
+        binding.passwordErrorTv.visibility = View.VISIBLE
+    }
+
+    private fun clearError() {
+        binding.passwordErrorTv.text = ""
+        binding.passwordErrorTv.visibility = View.GONE
     }
 
     override fun onDestroyView() {

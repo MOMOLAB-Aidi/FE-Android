@@ -50,6 +50,13 @@ class SettingFragment : Fragment() {
         viewModel.getMyPage()
         observeMyPageResult()
 
+        binding.changePasswordTitleTv.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.main_frm, PasswordFragment())
+                .addToBackStack(null)
+                .commit()
+        }
+
         binding.changePasswordContentTv.setOnClickListener {
             parentFragmentManager.beginTransaction()
                 .replace(R.id.main_frm, PasswordFragment())
