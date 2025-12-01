@@ -242,10 +242,16 @@ class RecordWrite01Fragment : Fragment() {
                 tv.background = null
 
                 val isThisMonth = day.position == DayPosition.MonthDate
+                val isFuture = day.date.isAfter(today)
+
                 tv.setTextColor(
                     ContextCompat.getColor(
                         requireContext(),
-                        if (isThisMonth) R.color.text_primary else R.color.deactive
+                        when {
+                            !isThisMonth -> R.color.deactive // 다른 달
+                            isFuture     -> R.color.deactive // 이번 달이지만 미래 날짜
+                            else         -> R.color.text_primary
+                        }
                     )
                 )
 
@@ -261,7 +267,7 @@ class RecordWrite01Fragment : Fragment() {
                 }
 
                 // 날짜 선택
-                if (day.date == dialogSelectedDate && isThisMonth) {
+                if (day.date == dialogSelectedDate && isThisMonth && !isFuture) {
                     tv.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.white))
                     tv.background =
                         circleFill(ContextCompat.getColor(requireContext(), R.color.main_1))
@@ -270,6 +276,12 @@ class RecordWrite01Fragment : Fragment() {
                 // 클릭으로 선택 처리
                 container.view.setOnClickListener {
                     if (!isThisMonth) return@setOnClickListener
+
+                    // 미래 날짜인지 확인
+                    if (day.date.isAfter(today)) {
+                        Toast.makeText(requireContext(), "아직 기록할 수 없는 날짜입니다.", Toast.LENGTH_SHORT).show()
+                        return@setOnClickListener
+                    }
 
                     // 이미 기록이 존재하는 날짜인지 확인
                     val hasRecord = eventDates.contains(day.date)

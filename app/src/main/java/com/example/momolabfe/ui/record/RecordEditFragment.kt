@@ -714,11 +714,16 @@ class RecordEditFragment : Fragment() {
                 tv.background = null
 
                 val isThisMonth = day.position == DayPosition.MonthDate
+                val isFuture = day.date.isAfter(today)
 
                 tv.setTextColor(
                     ContextCompat.getColor(
                         requireContext(),
-                        if (isThisMonth) R.color.text_primary else R.color.deactive
+                        when {
+                            !isThisMonth -> R.color.deactive // 다른 달
+                            isFuture     -> R.color.deactive // 이번 달이지만 미래 날짜
+                            else         -> R.color.text_primary
+                        }
                     )
                 )
 
@@ -734,20 +739,20 @@ class RecordEditFragment : Fragment() {
                 }
 
                 // 선택된 날짜 표시
-                if (day.date == dialogSelectedDate && isThisMonth) {
-                    tv.setTextColor(
-                        ContextCompat.getColor(
-                            requireContext(),
-                            android.R.color.white
-                        )
-                    )
-                    tv.background =
-                        circleFill(ContextCompat.getColor(requireContext(), R.color.main_1))
+                if (day.date == dialogSelectedDate && isThisMonth && !isFuture) {
+                    tv.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.white))
+                    tv.background = circleFill(ContextCompat.getColor(requireContext(), R.color.main_1))
                 }
 
                 // 날짜 클릭 처리
                 container.view.setOnClickListener {
                     if (!isThisMonth) return@setOnClickListener
+
+                    // 미래 날짜인지 확인
+                    if (day.date.isAfter(today)) {
+                        Toast.makeText(requireContext(), "아직 기록할 수 없는 날짜입니다.", Toast.LENGTH_SHORT).show()
+                        return@setOnClickListener
+                    }
 
                     val hasRecord = eventDates.contains(day.date)
                     val isCurrentRecordDate = currentRecord?.recordDate == day.date
