@@ -178,9 +178,13 @@ class RecordWrite01Fragment : Fragment() {
             .setView(dialogBinding.root)
             .create()
 
-        var dialogSelectedDate: LocalDate = selectedDate ?: today
+        // 선택된 날짜가 있으면 그걸 기본값으로, 없으면 선택 안 된 상태
+        var dialogSelectedDate: LocalDate? = selectedDate
+
+        // 캘린더는 선택된 날짜 기준으로 보되, 없으면 today 기준으로 월만 맞춰줌
+        val baseDateForMonth = dialogSelectedDate ?: today
         var dialogVisibleMonth: YearMonth =
-            YearMonth.of(dialogSelectedDate.year, dialogSelectedDate.month)
+            YearMonth.of(baseDateForMonth.year, baseDateForMonth.month)
 
         // 캘린더 뷰 초기화
         val monthCalendar: CalendarView = dialogBinding.calendarView
@@ -296,8 +300,8 @@ class RecordWrite01Fragment : Fragment() {
                     val old = dialogSelectedDate
                     dialogSelectedDate = day.date
 
-                    monthCalendar.notifyDateChanged(old)
-                    monthCalendar.notifyDateChanged(dialogSelectedDate)
+                    old?.let { monthCalendar.notifyDateChanged(it) }  // 이전 선택이 있을 때만 갱신
+                    monthCalendar.notifyDateChanged(dialogSelectedDate!!)
                 }
             }
         }
@@ -319,8 +323,16 @@ class RecordWrite01Fragment : Fragment() {
         }
 
         dialogBinding.applyTv.setOnClickListener {
-            selectedDate = dialogSelectedDate
-            binding.dateEt.setText(dialogSelectedDate.format(displayFormatter))
+            val chosen = dialogSelectedDate
+
+            // 날짜를 선택하지 않고 "적용"을 클릭한 경우
+            if (chosen == null) {
+                Toast.makeText(requireContext(), "날짜를 선택해주세요.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            selectedDate = chosen
+            binding.dateEt.setText(chosen.format(displayFormatter))
             dialog.dismiss()
         }
 
