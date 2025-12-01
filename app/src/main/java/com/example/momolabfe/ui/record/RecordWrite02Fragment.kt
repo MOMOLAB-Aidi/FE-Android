@@ -346,8 +346,8 @@ class RecordWrite02Fragment : Fragment() {
             return
         }
 
-        if (totalUf < -5000 || totalUf > 5000) {
-            showError("제수량 합계는 -5000 ~ 5000 g 사이로 입력해주세요. (현재: $totalUf)")
+        if (totalUf < -2500 || totalUf > 2500) {
+            showError("제수량 합계는 -2500 ~ 2500 g 사이로 입력해주세요. (현재: $totalUf)")
             enableButtonAndReturn()
             return
         }

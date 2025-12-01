@@ -249,8 +249,8 @@ class RecordEditFragment : Fragment() {
         val notes = binding.noteValueEt.text.toString().ifBlank { null }
 
         weight?.let {
-            if (it < 20.0 || it > 300.0) {
-                showError("체중은 20.0 ~ 300.0 kg 사이로 입력해주세요. (현재: $it)")
+            if (it < 30.0 || it > 200.0) {
+                showError("체중은 30.0 ~ 200.0 kg 사이로 입력해주세요. (현재: $it)")
                 return null
             }
         }
@@ -277,15 +277,15 @@ class RecordEditFragment : Fragment() {
         }
 
         urineCount?.let {
-            if (it < 0 || it > 50) {
-                showError("하루 소변 횟수는 0 ~ 50회 사이로 입력해주세요. (현재: $it)")
+            if (it < 0 || it > 30) {
+                showError("하루 소변 횟수는 0 ~ 30회 사이로 입력해주세요. (현재: $it)")
                 return null
             }
         }
 
         totalUf?.let {
-            if (it < -5000 || it > 5000) {
-                showError("제수량 합계는 -5000 ~ 5000 g 사이로 입력해주세요. (현재: $it)")
+            if (it < -2500 || it > 2500) {
+                showError("제수량 합계는 -2500 ~ 2500 g 사이로 입력해주세요. (현재: $it)")
                 return null
             }
         }

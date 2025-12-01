@@ -516,8 +516,8 @@ class RecordWrite01Fragment : Fragment() {
             return
         }
 
-        if (weight < 20.0 || weight > 300.0) {
-            showError("체중은 20.0 ~ 300.0 kg 사이로 입력해주세요. (현재: $weight)")
+        if (weight < 30.0 || weight > 200.0) {
+            showError("체중은 30.0 ~ 200.0 kg 사이로 입력해주세요. (현재: $weight)")
             enableButtonAndReturn()
             return
         }
@@ -540,8 +540,8 @@ class RecordWrite01Fragment : Fragment() {
             return
         }
 
-        if (urineCount < 0 || urineCount > 50) {
-            showError("소변 횟수는 0 ~ 50회 사이로 입력해주세요. (현재: $urineCount)")
+        if (urineCount < 0 || urineCount > 30) {
+            showError("소변 횟수는 0 ~ 30회 사이로 입력해주세요. (현재: $urineCount)")
             enableButtonAndReturn()
             return
         }
