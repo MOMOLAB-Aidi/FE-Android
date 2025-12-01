@@ -4,4 +4,6 @@
     <string name="agent_welcome_message">안녕하세요! 복막투석 AI 상담사입니다. \n투석 관리, 일반 지침, 건강 상태 등에 대해 \n무엇이든 물어보세요.</string>
     <string name="no_weight_data">체중 기록이 없습니다.</string>
     <string name="no_uf_data">제수량 기록이 없습니다.</string>
+    <string name="password_info">•  최소 8자 이상\n•  숫자 포함\n•  특수문자 포함 권장</string>
+    <string name="security_tip">•  정기적으로 비밀번호를 변경하세요\n•  개인 정보가 포함된 비밀번호는 피하세요\n•  비밀번호를 타인과 공유하지 마세요</string>
 </resources>
