@@ -247,10 +247,10 @@ class RecordWrite02Fragment : Fragment() {
             id = -1,
             exchangeNo = newExchangeNo,
             exchangeTime = LocalTime.now(),
-            drainVolume = 0,
-            fillConcentration = 0.0,
-            fillVolume = 0,
-            uf = 0
+            drainVolume = -1,
+            fillConcentration = -1.0,
+            fillVolume = -1,
+            uf = -999
         )
 
         exchangeList.add(newExchange)
@@ -272,10 +272,10 @@ class RecordWrite02Fragment : Fragment() {
                 id = -1, // 임시 ID
                 exchangeNo = 1,
                 exchangeTime = LocalTime.now(),
-                drainVolume = 0,
-                fillConcentration = 0.0,
-                fillVolume = 0,
-                uf = 0
+                drainVolume = -1,
+                fillConcentration = -1.0,
+                fillVolume = -1,
+                uf = -999
             )
             exchangesFromOcr.add(firstExchange)
         }
@@ -353,7 +353,7 @@ class RecordWrite02Fragment : Fragment() {
         val requestList = mutableListOf<RecordExchangeCreateRequest>()
         for (item in exchanges) {
 
-            if (item.drainVolume == 0) {
+            if (item.drainVolume == -1) {
                 Toast.makeText(
                     requireContext(),
                     "${item.exchangeNo}회차 배액량을 입력해주세요.",
@@ -363,7 +363,7 @@ class RecordWrite02Fragment : Fragment() {
                 return
             }
 
-            if (item.fillVolume <= 0) {
+            if (item.fillVolume == -1) {
                 Toast.makeText(
                     requireContext(),
                     "${item.exchangeNo}회차 주입량을 입력해주세요.",
@@ -373,7 +373,7 @@ class RecordWrite02Fragment : Fragment() {
                 return
             }
 
-            if (item.fillConcentration <= 0.0) {
+            if (item.fillConcentration == -1.0) {
                 Toast.makeText(
                     requireContext(),
                     "${item.exchangeNo}회차 주입액 농도를 입력해주세요.",
@@ -383,7 +383,7 @@ class RecordWrite02Fragment : Fragment() {
                 return
             }
 
-            if (item.uf == null) {
+            if (item.uf == -999) {
                 Toast.makeText(
                     requireContext(),
                     "${item.exchangeNo}회차 제수량을 입력해주세요.",
@@ -658,25 +658,40 @@ class RecordWrite02Fragment : Fragment() {
                 showTimePickerDialog(itemBinding.exchangeTimeEt, index)
             }
 
-            itemBinding.drainVolumeEt.setText(item.drainVolume.toString())
-            itemBinding.fillVolumeEt.setText(item.fillVolume.toString())
-            itemBinding.fillConcentrationEt.setText(item.fillConcentration.toString())
-            itemBinding.ufEt.setText(item.uf.toString())
+            itemBinding.drainVolumeEt.setText(
+                if (item.drainVolume == -1) "" else item.drainVolume.toString()
+            )
+            itemBinding.fillVolumeEt.setText(
+                if (item.fillVolume == -1) "" else item.fillVolume.toString()
+            )
+            itemBinding.fillConcentrationEt.setText(
+                if (item.fillConcentration == -1.0) "" else item.fillConcentration.toString()
+            )
+            itemBinding.ufEt.setText(
+                if (item.uf == -999) "" else item.uf.toString()
+            )
 
             itemBinding.drainVolumeEt.addTextChangedListener {
-                val v = it?.toString()?.toIntOrNull() ?: 0
+                val text = it?.toString()?.trim()
+                val v = if (text.isNullOrEmpty()) -1 else text.toIntOrNull() ?: -1
                 exchangeList[index] = exchangeList[index].copy(drainVolume = v)
             }
+
             itemBinding.fillVolumeEt.addTextChangedListener {
-                val v = it?.toString()?.toIntOrNull() ?: 0
+                val text = it?.toString()?.trim()
+                val v = if (text.isNullOrEmpty()) -1 else text.toIntOrNull() ?: -1
                 exchangeList[index] = exchangeList[index].copy(fillVolume = v)
             }
+
             itemBinding.fillConcentrationEt.addTextChangedListener {
-                val v = it?.toString()?.toDoubleOrNull() ?: 0.0
+                val text = it?.toString()?.trim()
+                val v = if (text.isNullOrEmpty()) -1.0 else text.toDoubleOrNull() ?: -1.0
                 exchangeList[index] = exchangeList[index].copy(fillConcentration = v)
             }
+
             itemBinding.ufEt.addTextChangedListener {
-                val v = it?.toString()?.toIntOrNull() ?: 0
+                val text = it?.toString()?.trim()
+                val v = if (text.isNullOrEmpty()) -999 else text.toIntOrNull() ?: -999
                 exchangeList[index] = exchangeList[index].copy(uf = v)
             }
 
