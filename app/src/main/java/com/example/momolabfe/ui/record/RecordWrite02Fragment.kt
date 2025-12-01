@@ -618,6 +618,7 @@ class RecordWrite02Fragment : Fragment() {
                 val removedIndex = index
                 val removedItem = exchangeList[removedIndex]
                 val removedExpanded = expandedStates[removedIndex]
+                val removedOrder = removedItem.exchangeNo
 
                 // 실제 삭제
                 exchangeList.removeAt(removedIndex)
@@ -634,7 +635,7 @@ class RecordWrite02Fragment : Fragment() {
                 // Snackbar로 "되돌리기" 제공
                 Snackbar.make(
                     binding.root,
-                    "${removedItem.exchangeNo}회차를 삭제했습니다.",
+                    "${removedOrder}회차를 삭제했습니다.",
                     Snackbar.LENGTH_LONG
                 ).setAction("되돌리기") {
                     // 원래 위치에 다시 추가
