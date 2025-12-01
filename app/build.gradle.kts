@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.parcelize)
+    id("com.google.gms.google-services")
 }
 
 val properties = Properties().apply {
@@ -98,4 +99,8 @@ dependencies {
 
     // PhotoView
     implementation("com.github.chrisbanes:PhotoView:2.2.0")
+
+    // Firebase
+    implementation(platform("com.google.firebase:firebase-bom:34.6.0"))
+    implementation("com.google.firebase:firebase-messaging")
 }
