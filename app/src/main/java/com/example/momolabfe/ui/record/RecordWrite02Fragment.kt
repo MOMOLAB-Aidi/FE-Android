@@ -52,6 +52,9 @@ class RecordWrite02Fragment : Fragment() {
     // 회차 리스트 직접 관리
     private val exchangeList = mutableListOf<OcrRecordExchangeData>()
 
+    // 각 회차별 드롭다운 펼침/접힘 상태
+    private val expandedStates = mutableListOf<Boolean>()
+
     private val isFromOcr: Boolean by lazy {
         arguments?.getBoolean("fromOcr", false) ?: false
     }
@@ -250,6 +253,7 @@ class RecordWrite02Fragment : Fragment() {
         )
 
         exchangeList.add(newExchange)
+        expandedStates.add(true)
 
         renderExchangeViews()
         updateAddButtonVisibility()
@@ -281,6 +285,12 @@ class RecordWrite02Fragment : Fragment() {
         // 회차 번호 정렬
         exchangeList.forEachIndexed { index, item ->
             exchangeList[index] = item.copy(exchangeNo = index + 1)
+        }
+
+        // 펼침 상태도 같이 초기화
+        expandedStates.clear()
+        repeat(exchangeList.size) {
+            expandedStates.add(true) // 처음엔 전부 펼침
         }
 
         renderExchangeViews()
@@ -562,7 +572,40 @@ class RecordWrite02Fragment : Fragment() {
         exchangeList.forEachIndexed { index, item ->
             val itemBinding = ItemRecordExchangeBinding.inflate(inflater, container, false)
 
+            // 혹시 expandedStates 길이가 모자라면 채워주기
+            if (expandedStates.size <= index) {
+                expandedStates.add(true)
+            }
+            val isExpanded = expandedStates[index]
+
             itemBinding.exchangeNoTv.text = "${index + 1}회차"
+
+            // 드롭다운 상태에 따라 보이기/숨기기
+            itemBinding.detailsContainer.visibility =
+                if (isExpanded) View.VISIBLE else View.GONE
+
+            // 아이콘도 위/아래로 변경
+            itemBinding.dropdownIv.setImageResource(
+                if (isExpanded) R.drawable.ic_arrow_up_sv
+                else R.drawable.ic_arrow_down_sv
+            )
+
+            // 토글용 공용 리스너
+            val toggleListener = View.OnClickListener {
+                val newState = !(expandedStates.getOrNull(index) ?: true)
+                expandedStates[index] = newState
+
+                itemBinding.detailsContainer.visibility =
+                    if (newState) View.VISIBLE else View.GONE
+
+                itemBinding.dropdownIv.setImageResource(
+                    if (newState) R.drawable.ic_arrow_up_sv
+                    else R.drawable.ic_arrow_down_sv
+                )
+            }
+
+            // 리스너 연결
+            itemBinding.dropdownIv.setOnClickListener(toggleListener)
 
             val timeText = item.exchangeTime.format(TIME_FORMATTER)
             itemBinding.exchangeTimeEt.setText(timeText)
