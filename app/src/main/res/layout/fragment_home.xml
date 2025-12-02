@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false"
-        android:paddingBottom="100dp">
+        android:paddingBottom="60dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -106,6 +106,79 @@
                     </androidx.constraintlayout.widget.ConstraintLayout>
                 </com.google.android.material.card.MaterialCardView>
 
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/education_tip_cv"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginTop="20dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="0dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/record_cv">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_tip_card"
+                        android:padding="16dp">
+
+                        <ImageView
+                            android:id="@+id/tip_icon_iv"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:background="@drawable/bg_tip_icon_circle"
+                            android:padding="8dp"
+                            android:src="@drawable/ic_tip_bulb_sv"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:id="@+id/tip_title_tv"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginStart="12dp"
+                            android:fontFamily="@font/noto_sans_kr_medium"
+                            android:text="오늘의 복막투석 관리 TIP"
+                            android:textColor="#7B3306"
+                            android:textSize="15sp"
+                            android:includeFontPadding="false"
+                            app:layout_constraintStart_toEndOf="@id/tip_icon_iv"
+                            app:layout_constraintEnd_toStartOf="@id/tip_refresh_iv"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <ImageView
+                            android:id="@+id/tip_refresh_iv"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_tip_refresh_sv"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="@id/tip_title_tv"
+                            app:layout_constraintBottom_toBottomOf="@id/tip_title_tv" />
+
+                        <TextView
+                            android:id="@+id/tip_body_tv"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginEnd="6dp"
+                            android:fontFamily="@font/noto_sans_kr_regular"
+                            android:textColor="@color/secondary_text"
+                            android:textSize="14sp"
+                            android:lineSpacingExtra="2dp"
+                            android:includeFontPadding="false"
+                            tools:text="신장 질환 관리는 나 혼자만의 싸움이 아니에요. 가족·의료진과 함께 계획을 세우고, 역할을 나누어 보는 것도 좋은 방법이에요."
+                            app:layout_constraintStart_toStartOf="@id/tip_title_tv"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/tip_title_tv" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </com.google.android.material.card.MaterialCardView>
+
                 <TextView
                     android:id="@+id/summary_tv"
                     android:layout_width="wrap_content"
@@ -117,7 +190,7 @@
                     android:textColor="@color/secondary_text"
                     android:textSize="16sp"
                     app:layout_constraintStart_toStartOf="@id/record_cv"
-                    app:layout_constraintTop_toBottomOf="@id/record_cv"/>
+                    app:layout_constraintTop_toBottomOf="@id/education_tip_cv"/>
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/complete_cv"
