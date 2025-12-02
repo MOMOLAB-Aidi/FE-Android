@@ -21,7 +21,7 @@ import javax.inject.Singleton
 @Singleton
 class LogoutManager @Inject constructor(
     private val tokenManager: TokenManager,
-    @AuthRetrofit private val retrofitProvider: Provider<Retrofit>, // AuthRetrofit Qualifier가 있다고 가정
+    @AuthRetrofit private val retrofitProvider: Provider<Retrofit>
 ) {
     // 로그아웃 성공 이벤트를 발행하는 SharedFlow
     private val _logoutSuccess = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
@@ -55,8 +55,8 @@ class LogoutManager @Inject constructor(
                 val resp = withContext(Dispatchers.IO) { authService.logout() }
                 val body = resp.body()
 
-                // 서버 응답이 성공이거나, 이미 로그아웃된 상태(예: AUTH2004)로 처리
-                val ok = resp.isSuccessful && (body?.isSuccess == true || body?.code == "AUTH2004")
+                // 서버 응답이 성공이거나, 이미 로그아웃된 상태로 처리
+                val ok = resp.isSuccessful && (body?.isSuccess == true)
 
                 if (ok) {
                     Log.d("LogoutManager", "서버 로그아웃 성공")
@@ -74,7 +74,7 @@ class LogoutManager @Inject constructor(
                 Log.d("LogoutManager", "로컬 토큰 정리 완료")
             }
 
-            // 3) UI에 로그아웃 이벤트 발행 (MainActivity가 이를 수신)
+            // 4) UI에 로그아웃 이벤트 발행
             _logoutSuccess.tryEmit(Unit)
 
         } catch (e: Exception) {
