@@ -99,6 +99,10 @@ class HomeFragment : Fragment() {
                 .addToBackStack(null)
                 .commit()
         }
+
+        binding.tipRefreshIv.setOnClickListener {
+            educationViewModel.getTodayTip()
+        }
     }
 
     private fun setupObservers() {
