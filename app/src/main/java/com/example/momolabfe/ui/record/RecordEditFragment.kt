@@ -86,6 +86,7 @@ class RecordEditFragment : Fragment() {
     companion object {
         private val TIME_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm", Locale.KOREA)
         private const val DATE_PATTERN = "yyyy년 M월"
+        private const val MAX_EXCHANGES = 5
     }
 
     override fun onCreateView(
@@ -152,6 +153,10 @@ class RecordEditFragment : Fragment() {
         binding.changeDateBtn.setOnClickListener {
             showCalendarDialogForEdit()
         }
+
+        binding.addExchangeBtn.setOnClickListener {
+            addExchangeRow()
+        }
     }
 
     private fun showError(message: String) {
@@ -162,6 +167,12 @@ class RecordEditFragment : Fragment() {
     private fun clearError() {
         binding.recordErrorTv.text = ""
         binding.recordErrorTv.visibility = View.GONE
+    }
+
+    private fun updateAddExchangeButtonVisibility() {
+        val childCount = binding.exchangeEditContainer.childCount
+        binding.addExchangeBtn.visibility =
+            if (childCount < MAX_EXCHANGES) View.VISIBLE else View.GONE
     }
 
     private fun setupTurbidityCheckboxes() {
@@ -676,6 +687,8 @@ class RecordEditFragment : Fragment() {
 
             container.addView(itemBinding.root)
         }
+
+        updateAddExchangeButtonVisibility()
     }
 
     private fun showCalendarDialogForEdit() {
@@ -896,6 +909,38 @@ class RecordEditFragment : Fragment() {
     private inner class DayViewContainer(view: View) : ViewContainer(view) {
         val textView: TextView = view.findViewById(R.id.calendar_day_tv)
         val dotView: View = view.findViewById(R.id.dot_view)
+    }
+
+    private fun addExchangeRow() {
+        val container = binding.exchangeEditContainer
+        val childCount = container.childCount
+
+        if (childCount >= MAX_EXCHANGES) {
+            Toast.makeText(requireContext(), "회차는 최대 ${MAX_EXCHANGES}회까지만 추가할 수 있습니다.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val inflater = LayoutInflater.from(requireContext())
+        val itemBinding = ItemExchangeEditBinding.inflate(inflater, container, false)
+
+        val index = childCount
+        itemBinding.exchangeTitleTv.text = "${index + 1}회차"
+
+        itemBinding.exchangeTimeValueEt.setText("")
+        itemBinding.drainVolumeValueEt.setText("")
+        itemBinding.fillVolumeValueEt.setText("")
+        itemBinding.fillConcentrationValueEt.setText("")
+        itemBinding.ufValueEt.setText("")
+
+        // 시간 선택 클릭 시 타임피커 열기
+        itemBinding.exchangeTimeValueEt.setOnClickListener {
+            showTimePickerDialogForView(index, itemBinding.exchangeTimeValueEt)
+        }
+
+        container.addView(itemBinding.root)
+
+        // 새로 추가한 뒤 버튼 상태 갱신
+        updateAddExchangeButtonVisibility()
     }
 
     override fun onDestroyView() {
