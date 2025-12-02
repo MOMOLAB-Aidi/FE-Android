@@ -4,6 +4,7 @@ import android.app.NotificationManager
 import android.content.Context
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import com.example.momolabfe.BuildConfig
 import com.example.momolabfe.R
 import com.example.momolabfe.remote.fcm.repository.FcmRepository
 import com.google.firebase.messaging.FirebaseMessagingService
@@ -22,7 +23,9 @@ class AidiFirebaseService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)
-        Log.d("FCM", "새 FCM 토큰: $token")
+        if (BuildConfig.DEBUG) {
+            Log.d("FCM", "새 FCM 토큰(앞 10자리): ${token.take(10)}...")
+        }
 
         // 로컬에 저장
         saveFcmTokenLocal(token)
