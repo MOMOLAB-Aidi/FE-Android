@@ -19,7 +19,11 @@ class FcmRepository @Inject constructor(
         val response = fcmService.registerToken(request)
         Log.d("FcmRepository", "FCM 토큰 등록 API 호출 코드: ${response.code()}")
 
-        handleApiResponseUnit(response)
+        if (!response.isSuccessful) {
+            throw RuntimeException("FCM 토큰 등록 실패: code=${response.code()}")
+        }
+
+        Unit
     }
 
     // 로그아웃 시 서버에 해당 FCM 토큰 비활성화 요청
@@ -29,6 +33,10 @@ class FcmRepository @Inject constructor(
         val response = fcmService.deactivateToken(request)
         Log.d("FcmRepository", "FCM 토큰 비활성화 API 호출 코드: ${response.code()}")
 
-        handleApiResponseUnit(response)
+        if (!response.isSuccessful) {
+            throw RuntimeException("FCM 토큰 비활성화 실패: code=${response.code()}")
+        }
+
+        Unit
     }
 }

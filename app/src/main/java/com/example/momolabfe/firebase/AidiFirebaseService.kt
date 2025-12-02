@@ -5,13 +5,10 @@ import com.example.momolabfe.remote.fcm.repository.FcmRepository
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class MomolabFirebaseService : FirebaseMessagingService() {
+class AidiFirebaseService : FirebaseMessagingService() {
 
     @Inject
     lateinit var fcmRepository: FcmRepository
@@ -22,13 +19,6 @@ class MomolabFirebaseService : FirebaseMessagingService() {
 
         // 로컬에 저장
         saveFcmTokenLocal(token)
-
-        // 서버에 등록
-        CoroutineScope(Dispatchers.IO).launch {
-            fcmRepository.registerFcmToken(token)
-                .onSuccess { Log.d("FCM", "서버에 FCM 토큰 등록 성공") }
-                .onFailure { e -> Log.e("FCM", "서버에 FCM 토큰 등록 실패", e) }
-        }
     }
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {

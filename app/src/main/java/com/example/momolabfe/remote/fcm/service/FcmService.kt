@@ -12,10 +12,10 @@ import retrofit2.http.POST
 
 interface FcmService {
     @POST("/api/v1/fcm/token")
-    suspend fun registerToken(@Body request: FcmTokenRequest): Response<ApiResponse<Unit>>
+    suspend fun registerToken(@Body request: FcmTokenRequest): Response<Unit>
 
     @PATCH("/api/v1/fcm/token")
-    suspend fun deactivateToken(@Body request: FcmTokenRequest): Response<ApiResponse<Unit>>
+    suspend fun deactivateToken(@Body request: FcmTokenRequest): Response<Unit>
 
     companion object {
         val instance: FcmService by lazy {

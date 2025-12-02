@@ -43,7 +43,7 @@
         </provider>
 
         <service
-            android:name=".firebase.MomolabFirebaseService"
+            android:name=".firebase.AidiFirebaseService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
