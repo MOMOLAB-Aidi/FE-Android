@@ -50,6 +50,11 @@ class SettingFragment : Fragment() {
         viewModel.getMyPage()
         observeMyPageResult()
 
+        binding.recordCreateTitleTv.setOnClickListener { navigateToAlarmSetting() }
+        binding.recordCreateContentTv.setOnClickListener { navigateToAlarmSetting() }
+        binding.recordTipTitleTv.setOnClickListener { navigateToAlarmSetting() }
+        binding.recordTipContentTv.setOnClickListener { navigateToAlarmSetting() }
+
         binding.changePasswordTitleTv.setOnClickListener { navigateToPassword() }
         binding.changePasswordContentTv.setOnClickListener { navigateToPassword() }
 
@@ -67,6 +72,13 @@ class SettingFragment : Fragment() {
                 logoutManager.logout()
             }
         }
+    }
+
+    private fun navigateToAlarmSetting() {
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.main_frm, AlarmSettingFragment())
+            .addToBackStack(null)
+            .commit()
     }
 
     private fun navigateToPassword() {
