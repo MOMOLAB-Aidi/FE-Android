@@ -164,7 +164,7 @@
                             android:gravity="center_vertical"
                             android:orientation="horizontal"
                             android:paddingHorizontal="16dp"
-                            android:paddingVertical="5dp">
+                            android:paddingVertical="15dp">
 
                             <TextView
                                 android:layout_width="0dp"
@@ -176,10 +176,13 @@
                                 android:textColor="@color/text_primary"
                                 android:textSize="14sp" />
 
-                            <com.google.android.material.switchmaterial.SwitchMaterial
+                            <androidx.appcompat.widget.SwitchCompat
                                 android:id="@+id/dialysis_alarm_switch"
+                                style="@style/category_toggle"
                                 android:layout_width="wrap_content"
-                                android:layout_height="wrap_content" />
+                                android:layout_height="20dp"
+                                app:thumbTint="@null"
+                                app:trackTint="@null" />
                         </LinearLayout>
 
                         <TextView
@@ -429,6 +432,7 @@
                             <LinearLayout
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
+                                android:layout_marginBottom="5dp"
                                 android:layout_weight="1"
                                 android:orientation="vertical">
 
@@ -526,6 +530,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="16dp"
+                            android:layout_marginBottom="5dp"
                             android:background="#F9FAFB"
                             android:gravity="center_vertical"
                             android:orientation="horizontal"
@@ -558,10 +563,13 @@
                                     android:textSize="12sp" />
                             </LinearLayout>
 
-                            <com.google.android.material.switchmaterial.SwitchMaterial
+                            <androidx.appcompat.widget.SwitchCompat
                                 android:id="@+id/record_alarm_switch"
+                                style="@style/category_toggle"
                                 android:layout_width="wrap_content"
-                                android:layout_height="wrap_content" />
+                                android:layout_height="20dp"
+                                app:thumbTint="@null"
+                                app:trackTint="@null" />
                         </LinearLayout>
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
