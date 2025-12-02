@@ -176,11 +176,11 @@ class StatsFragment : Fragment() {
             position = XAxis.XAxisPosition.BOTTOM
             granularity = 1f
             setDrawGridLines(false)
+            setDrawAxisLine(false)
 
-            // 라벨은 항상 7개 강제
             axisMinimum = -0.5f
             axisMaximum = labels.size - 0.5f
-            setLabelCount(labels.size, /*force=*/true)
+            setLabelCount(labels.size, /*force=*/false)
 
             valueFormatter = object : ValueFormatter() {
                 override fun getFormattedValue(value: Float): String {
@@ -274,10 +274,9 @@ class StatsFragment : Fragment() {
             setDrawGridLines(false)
             setDrawAxisLine(false)
 
-            // 라벨은 항상 7개 강제
             axisMinimum = -0.5f
             axisMaximum = labels.size - 0.5f
-            setLabelCount(labels.size, /*force=*/true)
+            setLabelCount(labels.size, /*force=*/false)
 
             valueFormatter = object : ValueFormatter() {
                 override fun getFormattedValue(value: Float): String {
