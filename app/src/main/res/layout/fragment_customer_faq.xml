@@ -1,0 +1,566 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/main_bg">
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/faq_scroll_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:paddingBottom="40dp"
+        android:fillViewport="true"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp"
+                android:backgroundTint="#C7DFFF">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_help_sv" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:fontFamily="@font/noto_sans_kr_medium"
+                            android:includeFontPadding="false"
+                            android:text="자주 묻는 질문"
+                            android:textColor="@color/text_primary"
+                            android:textSize="15sp" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:fontFamily="@font/noto_sans_kr_regular"
+                        android:includeFontPadding="false"
+                        android:text="궁금하신 내용을 빠르게 찾아보세요."
+                        android:textColor="@color/secondary_text"
+                        android:textSize="13sp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <LinearLayout
+                android:id="@+id/faq_list_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/white"
+                    android:layout_marginBottom="12dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="0dp">
+
+                    <LinearLayout
+                        android:id="@+id/faq1_question_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/noto_sans_kr_medium"
+                            android:includeFontPadding="false"
+                            android:text="Q."
+                            android:textColor="@color/main_1"
+                            android:textSize="15sp" />
+
+                        <TextView
+                            android:id="@+id/faq1_question_tv"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:fontFamily="@font/noto_sans_kr_regular"
+                            android:includeFontPadding="false"
+                            android:text="복막투석 기록은 어떻게 작성하나요?"
+                            android:textColor="@color/text_primary"
+                            android:textSize="14sp"
+                            android:ellipsize="end"
+                            android:maxLines="2"
+                            android:layout_weight="1" />
+
+                        <ImageView
+                            android:id="@+id/faq1_arrow_iv"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_arrow_down_sv"
+                            android:contentDescription="@null"
+                            app:tint="@color/gray" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/faq1_answer_tv"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="16dp"
+                        android:layout_marginBottom="16dp"
+                        android:fontFamily="@font/noto_sans_kr_regular"
+                        android:includeFontPadding="false"
+                        android:textColor="@color/secondary_text"
+                        android:textSize="13sp"
+                        android:visibility="gone"
+                        android:text="@string/faq1_answer" />
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/white"
+                    android:layout_marginBottom="12dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="0dp">
+
+                    <LinearLayout
+                        android:id="@+id/faq2_question_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/noto_sans_kr_medium"
+                            android:includeFontPadding="false"
+                            android:text="Q."
+                            android:textColor="@color/main_1"
+                            android:textSize="15sp" />
+
+                        <TextView
+                            android:id="@+id/faq2_question_tv"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:fontFamily="@font/noto_sans_kr_regular"
+                            android:includeFontPadding="false"
+                            android:text="OCR 기능은 어떻게 사용하나요?"
+                            android:textColor="@color/text_primary"
+                            android:textSize="14sp"
+                            android:ellipsize="end"
+                            android:maxLines="2"
+                            android:layout_weight="1" />
+
+                        <ImageView
+                            android:id="@+id/faq2_arrow_iv"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_arrow_down_sv"
+                            android:contentDescription="@null"
+                            app:tint="@color/gray" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/faq2_answer_tv"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="16dp"
+                        android:layout_marginBottom="16dp"
+                        android:fontFamily="@font/noto_sans_kr_regular"
+                        android:includeFontPadding="false"
+                        android:textColor="@color/secondary_text"
+                        android:textSize="13sp"
+                        android:visibility="gone"
+                        android:text="@string/faq2_answer" />
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/white"
+                    android:layout_marginBottom="12dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="0dp">
+
+                    <LinearLayout
+                        android:id="@+id/faq3_question_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/noto_sans_kr_medium"
+                            android:includeFontPadding="false"
+                            android:text="Q."
+                            android:textColor="@color/main_1"
+                            android:textSize="15sp" />
+
+                        <TextView
+                            android:id="@+id/faq3_question_tv"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:fontFamily="@font/noto_sans_kr_regular"
+                            android:includeFontPadding="false"
+                            android:text="알림 시간은 어떻게 설정하나요?"
+                            android:textColor="@color/text_primary"
+                            android:textSize="14sp"
+                            android:ellipsize="end"
+                            android:maxLines="2"
+                            android:layout_weight="1" />
+
+                        <ImageView
+                            android:id="@+id/faq3_arrow_iv"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_arrow_down_sv"
+                            android:contentDescription="@null"
+                            app:tint="@color/gray" />
+                    </LinearLayout>
+                    <TextView
+                        android:id="@+id/faq3_answer_tv"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="16dp"
+                        android:layout_marginBottom="16dp"
+                        android:fontFamily="@font/noto_sans_kr_regular"
+                        android:includeFontPadding="false"
+                        android:textColor="@color/secondary_text"
+                        android:textSize="13sp"
+                        android:visibility="gone"
+                        android:text="@string/faq3_answer" />
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/white"
+                    android:layout_marginBottom="12dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="0dp">
+
+                    <LinearLayout
+                        android:id="@+id/faq4_question_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/noto_sans_kr_medium"
+                            android:includeFontPadding="false"
+                            android:text="Q."
+                            android:textColor="@color/main_1"
+                            android:textSize="15sp" />
+
+                        <TextView
+                            android:id="@+id/faq4_question_tv"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:fontFamily="@font/noto_sans_kr_regular"
+                            android:includeFontPadding="false"
+                            android:text="기록한 데이터는 어떻게 조회하나요?"
+                            android:textColor="@color/text_primary"
+                            android:textSize="14sp"
+                            android:ellipsize="end"
+                            android:maxLines="2"
+                            android:layout_weight="1" />
+
+                        <ImageView
+                            android:id="@+id/faq4_arrow_iv"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_arrow_down_sv"
+                            android:contentDescription="@null"
+                            app:tint="@color/gray" />
+                    </LinearLayout>
+                    <TextView
+                        android:id="@+id/faq4_answer_tv"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="16dp"
+                        android:layout_marginBottom="16dp"
+                        android:fontFamily="@font/noto_sans_kr_regular"
+                        android:includeFontPadding="false"
+                        android:textColor="@color/secondary_text"
+                        android:textSize="13sp"
+                        android:visibility="gone"
+                        android:text="@string/faq4_answer" />
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/white"
+                    android:layout_marginBottom="12dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="0dp">
+
+                    <LinearLayout
+                        android:id="@+id/faq5_question_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/noto_sans_kr_medium"
+                            android:includeFontPadding="false"
+                            android:text="Q."
+                            android:textColor="@color/main_1"
+                            android:textSize="15sp" />
+
+                        <TextView
+                            android:id="@+id/faq5_question_tv"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:fontFamily="@font/noto_sans_kr_regular"
+                            android:includeFontPadding="false"
+                            android:text="통계는 어떤 정보를 보여주나요?"
+                            android:textColor="@color/text_primary"
+                            android:textSize="14sp"
+                            android:ellipsize="end"
+                            android:maxLines="2"
+                            android:layout_weight="1" />
+
+                        <ImageView
+                            android:id="@+id/faq5_arrow_iv"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_arrow_down_sv"
+                            android:contentDescription="@null"
+                            app:tint="@color/gray" />
+                    </LinearLayout>
+                    <TextView
+                        android:id="@+id/faq5_answer_tv"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="16dp"
+                        android:layout_marginBottom="16dp"
+                        android:fontFamily="@font/noto_sans_kr_regular"
+                        android:includeFontPadding="false"
+                        android:textColor="@color/secondary_text"
+                        android:textSize="13sp"
+                        android:visibility="gone"
+                        android:text="@string/faq5_answer" />
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/white"
+                    android:layout_marginBottom="12dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="0dp">
+
+                    <LinearLayout
+                        android:id="@+id/faq6_question_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/noto_sans_kr_medium"
+                            android:includeFontPadding="false"
+                            android:text="Q."
+                            android:textColor="@color/main_1"
+                            android:textSize="15sp" />
+
+                        <TextView
+                            android:id="@+id/faq6_question_tv"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:fontFamily="@font/noto_sans_kr_regular"
+                            android:includeFontPadding="false"
+                            android:text="AI 상담은 어떤 내용을 질문할 수 있나요?"
+                            android:textColor="@color/text_primary"
+                            android:textSize="14sp"
+                            android:ellipsize="end"
+                            android:maxLines="2"
+                            android:layout_weight="1" />
+
+                        <ImageView
+                            android:id="@+id/faq6_arrow_iv"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_arrow_down_sv"
+                            android:contentDescription="@null"
+                            app:tint="@color/gray" />
+                    </LinearLayout>
+                    <TextView
+                        android:id="@+id/faq6_answer_tv"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="16dp"
+                        android:layout_marginBottom="16dp"
+                        android:fontFamily="@font/noto_sans_kr_regular"
+                        android:includeFontPadding="false"
+                        android:textColor="@color/secondary_text"
+                        android:textSize="13sp"
+                        android:visibility="gone"
+                        android:text="@string/faq6_answer" />
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/white"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="0dp">
+
+                    <LinearLayout
+                        android:id="@+id/faq7_question_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/noto_sans_kr_medium"
+                            android:includeFontPadding="false"
+                            android:text="Q."
+                            android:textColor="@color/main_1"
+                            android:textSize="15sp" />
+
+                        <TextView
+                            android:id="@+id/faq7_question_tv"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:fontFamily="@font/noto_sans_kr_regular"
+                            android:includeFontPadding="false"
+                            android:text="비밀번호를 잊어버렸어요."
+                            android:textColor="@color/text_primary"
+                            android:textSize="14sp"
+                            android:ellipsize="end"
+                            android:maxLines="2"
+                            android:layout_weight="1" />
+
+                        <ImageView
+                            android:id="@+id/faq7_arrow_iv"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_arrow_down_sv"
+                            android:contentDescription="@null"
+                            app:tint="@color/gray" />
+                    </LinearLayout>
+                    <TextView
+                        android:id="@+id/faq7_answer_tv"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="16dp"
+                        android:layout_marginBottom="16dp"
+                        android:fontFamily="@font/noto_sans_kr_regular"
+                        android:includeFontPadding="false"
+                        android:textColor="@color/secondary_text"
+                        android:textSize="13sp"
+                        android:visibility="gone"
+                        android:text="@string/faq7_answer" />
+                </com.google.android.material.card.MaterialCardView>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:orientation="vertical"
+                android:gravity="center_horizontal"
+                android:layout_marginTop="32dp"
+                android:background="@drawable/rounded_white_bg"
+                android:layout_marginBottom="32dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:fontFamily="@font/noto_sans_kr_regular"
+                    android:includeFontPadding="false"
+                    android:text="원하는 답변을 찾지 못하셨나요?"
+                    android:textColor="@color/secondary_text"
+                    android:textSize="13sp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/go_inquiry_button"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:text="고객센터 문의하기"
+                    android:textSize="14sp"
+                    app:cornerRadius="10dp"
+                    android:fontFamily="@font/noto_sans_kr_medium"
+                    app:strokeColor="@color/main_1"
+                    app:strokeWidth="1dp"
+                    android:textColor="@color/main_1"
+                    app:icon="@drawable/ic_right_arrow_sv"
+                    app:iconGravity="textEnd"
+                    app:iconTint="@color/main_1"
+                    app:iconPadding="4dp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

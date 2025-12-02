@@ -50,9 +50,22 @@ class SettingFragment : Fragment() {
         viewModel.getMyPage()
         observeMyPageResult()
 
-        binding.changePasswordTitleTv.setOnClickListener { navigateToPassword() }
+        binding.recordCreateTitleTv.setOnClickListener { navigateToAlarmSetting() }
+        binding.recordCreateContentTv.setOnClickListener { navigateToAlarmSetting() }
+        binding.recordTipTitleTv.setOnClickListener { navigateToAlarmSetting() }
+        binding.recordTipContentTv.setOnClickListener { navigateToAlarmSetting() }
 
+        binding.changePasswordTitleTv.setOnClickListener { navigateToPassword() }
         binding.changePasswordContentTv.setOnClickListener { navigateToPassword() }
+
+        binding.controlDataTitleTv.setOnClickListener { navigateToPersonalInformationPolicy() }
+        binding.controlDataContentTv.setOnClickListener { navigateToPersonalInformationPolicy() }
+
+        binding.agreementsTitleTv.setOnClickListener { navigateToTermsOfService() }
+        binding.agreementsContentTv.setOnClickListener { navigateToTermsOfService() }
+
+        binding.contactTitleTv.setOnClickListener { navigateToCustomerService() }
+        binding.contactContentTv.setOnClickListener { navigateToCustomerService() }
 
         binding.logoutBtn.setOnClickListener {
             viewLifecycleOwner.lifecycleScope.launch {
@@ -61,9 +74,37 @@ class SettingFragment : Fragment() {
         }
     }
 
+    private fun navigateToAlarmSetting() {
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.main_frm, AlarmSettingFragment())
+            .addToBackStack(null)
+            .commit()
+    }
+
     private fun navigateToPassword() {
         parentFragmentManager.beginTransaction()
             .replace(R.id.main_frm, PasswordFragment())
+            .addToBackStack(null)
+            .commit()
+    }
+
+    private fun navigateToPersonalInformationPolicy() {
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.main_frm, PersonalInformationPolicyFragment())
+            .addToBackStack(null)
+            .commit()
+    }
+
+    private fun navigateToTermsOfService() {
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.main_frm, TermsOfServiceFragment())
+            .addToBackStack(null)
+            .commit()
+    }
+
+    private fun navigateToCustomerService() {
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.main_frm, CustomerServiceFragment())
             .addToBackStack(null)
             .commit()
     }

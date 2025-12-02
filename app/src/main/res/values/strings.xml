@@ -6,4 +6,12 @@
     <string name="no_uf_data">제수량 기록이 없습니다.</string>
     <string name="password_info">•  최소 8자 이상\n•  숫자 포함\n•  특수문자 포함 권장</string>
     <string name="security_tip">•  정기적으로 비밀번호를 변경하세요\n•  개인 정보가 포함된 비밀번호는 피하세요\n•  비밀번호를 타인과 공유하지 마세요</string>
+
+    <string name="faq1_answer">A. 하단 네비게이션의 &quot;기록&quot; 탭을 선택하면 수기 작성 또는 사진 인식(OCR) 두 가지 방법으로 기록을 작성할 수 있습니다. 공통 정보(날짜, 체중, 혈압, 혈당)를 먼저 입력한 후, 회차별 정보를 순차적으로 입력하시면 됩니다.</string>
+    <string name="faq2_answer">A. 기록 작성 시 &quot;사진 인식&quot; 버튼을 선택하면 카메라가 실행됩니다. 복막투석 기록지를 촬영하면 AI가 자동으로 데이터를 인식하여 입력란에 채워줍니다. 인식된 내용을 확인하고 필요시 수정할 수 있습니다.</string>
+    <string name="faq3_answer">A. 홈 화면 우측 상단의 설정 아이콘을 클릭하고 &quot;알림 설정&quot; 메뉴에서 투석 시간, 복용 알림, 기록 작성 알림 시간을 각각 설정할 수 있습니다.</string>
+    <string name="faq4_answer">A. 홈 화면의 &quot;전체보기&quot; 텍스트를 클릭하면 캘린더를 통해 날짜별로 기록을 조회할 수 있습니다. 기록이 있는 날짜는 파란색 점으로 표시되며, 날짜를 선택하면 해당 날짜의 상세 기록을 확인할 수 있습니다.</string>
+    <string name="faq5_answer">A. &quot;통계&quot; 탭에서 최근 7일간의 체중 변화, 제수량 추이, 그리고 혈압 통계를 데이터와 그래프로 확인할 수 있습니다. 이를 통해 건강 상태의 변화를 한눈에 파악할 수 있습니다.</string>
+    <string name="faq6_answer">A. AI 상담에서는 복막투석 관련 일반적인 질문, 식단 관리, 합병증 예방 등에 대해 질문할 수 있습니다. 다만, AI 상담은 참고용이며 응급 상황이나 중요한 의료 결정은 반드시 담당 의료진과 상담하셔야 합니다.</string>
+    <string name="faq7_answer">A. 병원측에 이메일로 문의하거나 전화를 하여 비밀번호를 변경해주시길 바랍니다.</string>
 </resources>
