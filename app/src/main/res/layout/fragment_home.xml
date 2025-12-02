@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false"
-        android:paddingBottom="100dp">
+        android:paddingBottom="60dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -143,7 +143,7 @@
                             android:layout_marginTop="5dp"
                             android:layout_marginStart="12dp"
                             android:fontFamily="@font/noto_sans_kr_medium"
-                            tools:text="오늘의 복막투석 관리 TIP"
+                            android:text="오늘의 복막투석 관리 TIP"
                             android:textColor="#7B3306"
                             android:textSize="15sp"
                             android:includeFontPadding="false"

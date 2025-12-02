@@ -6,6 +6,7 @@ import com.example.momolabfe.remote.auth.repository.PreferenceRepository
 import com.example.momolabfe.remote.auth.repository.SharedPreferencesRepository
 import com.example.momolabfe.remote.auth.service.AuthService
 import com.example.momolabfe.remote.consult.service.ConsultService
+import com.example.momolabfe.remote.education.service.EducationService
 import com.example.momolabfe.remote.fcm.service.FcmService
 import com.example.momolabfe.remote.stats.service.StatsService
 import com.example.momolabfe.remote.user.service.UserService
@@ -51,6 +52,12 @@ class ApiModule {
     @Singleton
     fun provideFcmApi(@AuthRetrofit retrofit: Retrofit): FcmService {
         return retrofit.create(FcmService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideEduApi(@AuthRetrofit retrofit: Retrofit): EducationService {
+        return retrofit.create(EducationService::class.java)
     }
 
     @Provides
