@@ -3,7 +3,6 @@ package com.example.momolabfe.remote.fcm.repository
 import android.util.Log
 import com.example.momolabfe.remote.fcm.model.FcmTokenRequest
 import com.example.momolabfe.remote.fcm.service.FcmService
-import com.example.momolabfe.utils.handleApiResponseUnit
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -20,7 +19,8 @@ class FcmRepository @Inject constructor(
         Log.d("FcmRepository", "FCM 토큰 등록 API 호출 코드: ${response.code()}")
 
         if (!response.isSuccessful) {
-            throw RuntimeException("FCM 토큰 등록 실패: code=${response.code()}")
+            val errorBody = response.errorBody()?.string()
+            throw RuntimeException("FCM 토큰 등록 실패: code=${response.code()}, body=$errorBody")
         }
 
         Unit

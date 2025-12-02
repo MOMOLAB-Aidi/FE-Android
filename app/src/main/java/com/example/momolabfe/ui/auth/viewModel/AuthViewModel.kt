@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.momolabfe.BuildConfig
 import com.example.momolabfe.remote.auth.model.LoginRequest
 import com.example.momolabfe.remote.auth.model.TokenResponse
 import com.example.momolabfe.remote.auth.repository.AuthRepository
@@ -70,7 +71,9 @@ class AuthViewModel @Inject constructor(
             return
         }
 
-        Log.d("FCM", "로그인 후 서버에 보낼 FCM 토큰: $fcmToken")
+        if (BuildConfig.DEBUG) {
+            Log.d("FCM", "로그인 후 서버에 보낼 FCM 토큰: ${fcmToken.take(10)}...")
+        }
 
         val result = fcmRepository.registerFcmToken(fcmToken)
 
