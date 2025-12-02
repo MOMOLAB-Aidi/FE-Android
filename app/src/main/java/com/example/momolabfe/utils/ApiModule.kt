@@ -56,7 +56,7 @@ class ApiModule {
 
     @Provides
     @Singleton
-    fun provideEduApi(@AuthRetrofit retrofit: Retrofit): EducationService {
+    fun provideEduApi(@NoAuthRetrofit retrofit: Retrofit): EducationService {
         return retrofit.create(EducationService::class.java)
     }
 

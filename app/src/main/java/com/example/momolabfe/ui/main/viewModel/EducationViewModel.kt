@@ -7,9 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.momolabfe.remote.education.model.EducationResponse
 import com.example.momolabfe.remote.education.repository.EducationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -20,9 +17,6 @@ class EducationViewModel @Inject constructor(
 
     private val _errorMessage = MutableLiveData<String?>()
     val errorMessage: LiveData<String?> get() = _errorMessage
-
-    private val _passwordSuccess = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
-    val passwordSuccess: SharedFlow<Unit> = _passwordSuccess.asSharedFlow()
 
     private val _getTipResult = MutableLiveData<EducationResponse>()
     val getTipResult: LiveData<EducationResponse> get() = _getTipResult

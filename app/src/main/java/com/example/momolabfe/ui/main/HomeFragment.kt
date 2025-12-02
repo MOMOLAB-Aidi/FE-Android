@@ -7,9 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import com.example.momolabfe.R
 import com.example.momolabfe.databinding.FragmentHomeBinding
 import com.example.momolabfe.databinding.ItemRecentRecordBinding
+import com.example.momolabfe.ui.main.viewModel.EducationViewModel
 import com.example.momolabfe.ui.record.RecordFragment
 import com.example.momolabfe.ui.record.RecordInfoFragment
 import com.example.momolabfe.ui.record.RecordListFragment
@@ -17,17 +19,20 @@ import com.example.momolabfe.ui.record.viewModel.RecordViewModel
 import com.example.momolabfe.ui.setting.SettingFragment
 import com.example.momolabfe.ui.stats.StatsFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 
+@AndroidEntryPoint
 class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: RecordViewModel by activityViewModels()
+    private val recordViewModel: RecordViewModel by activityViewModels()
+    private val educationViewModel: EducationViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,10 +51,13 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        observeTodayTipResult()
+        educationViewModel.getTodayTip()
+
         setupObservers()
-        viewModel.getRecentRecords()
-        viewModel.getWeeklyAvgRecords()
-        viewModel.getTodayExchangeSummary()
+        recordViewModel.getRecentRecords()
+        recordViewModel.getWeeklyAvgRecords()
+        recordViewModel.getTodayExchangeSummary()
 
         try {
             // 날짜 포맷
@@ -94,7 +102,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupObservers() {
-        viewModel.todayExchangeSummary.observe(viewLifecycleOwner) { summary ->
+        recordViewModel.todayExchangeSummary.observe(viewLifecycleOwner) { summary ->
             if (summary == null || !summary.hasRecord) {
                 // 오늘 기록이 없을 때 기본 표시
                 binding.completeContentTv.text = "-회"
@@ -106,7 +114,7 @@ class HomeFragment : Fragment() {
             binding.ufContentTv.text = String.format(Locale.KOREA, "%dg", summary.totalUf)
         }
 
-        viewModel.recordlistItems.observe(viewLifecycleOwner) { itemList ->
+        recordViewModel.recordlistItems.observe(viewLifecycleOwner) { itemList ->
             val container = binding.recentRecordContainer
             container.removeAllViews()
 
@@ -154,7 +162,7 @@ class HomeFragment : Fragment() {
             }
         }
 
-        viewModel.weeklyAverageData.observe(viewLifecycleOwner) { weeklyAvgResponse ->
+        recordViewModel.weeklyAverageData.observe(viewLifecycleOwner) { weeklyAvgResponse ->
 
             if (weeklyAvgResponse != null) {
 
@@ -192,8 +200,22 @@ class HomeFragment : Fragment() {
             }
         }
 
-        viewModel.errorMessage.observe(viewLifecycleOwner) { errorMsg ->
+        recordViewModel.errorMessage.observe(viewLifecycleOwner) { errorMsg ->
             Log.e("HOME_FRAGMENT", errorMsg.toString())
+        }
+    }
+
+    private fun observeTodayTipResult() {
+        educationViewModel.getTipResult.observe(viewLifecycleOwner) { result ->
+            result?.let {
+                binding.tipBodyTv.text = it.body
+            }
+        }
+
+        educationViewModel.errorMessage.observe(viewLifecycleOwner) { message ->
+            message?.let {
+                Log.e("TodayTip", "오늘의 복막투석 관리 TIP 조회 실패: $it")
+            }
         }
     }
 
