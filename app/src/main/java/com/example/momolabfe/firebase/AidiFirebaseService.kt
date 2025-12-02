@@ -1,9 +1,7 @@
 package com.example.momolabfe.firebase
 
 import android.util.Log
-import com.example.momolabfe.remote.fcm.model.FcmTokenRequest
 import com.example.momolabfe.remote.fcm.repository.FcmRepository
-import com.example.momolabfe.remote.fcm.service.FcmService
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import dagger.hilt.android.AndroidEntryPoint
