@@ -1,5 +1,6 @@
 package com.example.momolabfe.ui.consult
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -31,7 +32,7 @@ class ConsultHistoryFragment : Fragment() {
                     .commit()
             },
             onDelete = { item ->
-                viewModel.deleteConsult(item.sessionId)
+                showDeleteConfirmDialog(item.sessionId)
             }
         )
     }
@@ -69,6 +70,20 @@ class ConsultHistoryFragment : Fragment() {
         viewModel.history.observe(viewLifecycleOwner) { list ->
             historyAdapter.submitList(list)
         }
+    }
+
+    private fun showDeleteConfirmDialog(sessionId: String) {
+        AlertDialog.Builder(requireContext())
+            .setTitle("상담 삭제")
+            .setMessage("해당 상담 기록을 삭제하시겠습니까?\n\n삭제 후에는 되돌릴 수 없습니다.")
+            .setNegativeButton("취소") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .setPositiveButton("삭제") { dialog, _ ->
+                dialog.dismiss()
+                viewModel.deleteConsult(sessionId)
+            }
+            .show()
     }
 
     override fun onDestroyView() {
