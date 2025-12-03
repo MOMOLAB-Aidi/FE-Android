@@ -244,7 +244,7 @@
                             android:layout_marginTop="4dp"
                             android:fontFamily="@font/noto_sans_kr_regular"
                             android:includeFontPadding="false"
-                            android:text="• 체중, 혈압, 공복 혈당, 소변 횟수, 혼탁도\n• 투석 기록 (배액량, 주입량, 제수량)\n• 투석 시간 및 회차 정보\n• 특이사항 및 메모"
+                            android:text="• 체중, 혈압, 공복 혈당, 소변 횟수, 혼탁도\n• 투석 기록 (배액량, 주입량, 주입액 농도, 제수량)\n• 투석 시간 및 회차 정보\n• 특이사항 및 메모"
                             android:textColor="@color/secondary_text"
                             android:textSize="13sp" />
 

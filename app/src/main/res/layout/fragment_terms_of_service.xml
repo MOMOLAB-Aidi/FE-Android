@@ -74,6 +74,8 @@
                     android:layout_marginBottom="12dp"
                     app:cardBackgroundColor="#C7DFFF"
                     app:cardCornerRadius="16dp"
+                    app:strokeWidth="0dp"
+                    android:elevation="0dp"
                     app:cardUseCompatPadding="true">
 
                     <LinearLayout
@@ -99,7 +101,7 @@
                                 android:layout_marginStart="8dp"
                                 android:fontFamily="@font/noto_sans_kr_regular"
                                 android:includeFontPadding="false"
-                                android:text="최종 수정일: 2025년 1월 1일"
+                                android:text="최종 수정일: 2025년 12월 2일"
                                 android:textColor="@color/text_primary"
                                 android:textSize="14sp" />
 
@@ -511,7 +513,7 @@
                             android:layout_marginTop="12dp"
                             android:fontFamily="@font/noto_sans_kr_regular"
                             android:includeFontPadding="false"
-                            android:text="본 약관은 2025년 1월 1일부터 시행됩니다."
+                            android:text="본 약관은 2025년 12월 2일부터 시행됩니다."
                             android:textColor="@color/secondary_text"
                             android:textSize="13sp" />
 
