@@ -168,11 +168,26 @@
         app:layout_constraintStart_toEndOf="@id/id_save_checkbox"
         app:layout_constraintTop_toTopOf="@id/id_save_checkbox"/>
 
+    <TextView
+        android:id="@+id/login_error_tv"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:textColor="@color/red"
+        android:textSize="13sp"
+        android:includeFontPadding="false"
+        android:fontFamily="@font/noto_sans_kr_regular"
+        app:layout_constraintTop_toBottomOf="@id/id_save_tv"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/login_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="15dp"
         android:text="로그인"
         android:textSize="15sp"
         android:fontFamily="@font/noto_sans_kr_regular"
@@ -181,7 +196,7 @@
         android:backgroundTint="@color/text_primary"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/id_save_tv"
+        app:layout_constraintTop_toBottomOf="@id/login_error_tv"
         android:layout_marginStart="30dp"
         android:layout_marginEnd="30dp"/>
 

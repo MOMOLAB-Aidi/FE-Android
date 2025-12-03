@@ -8,20 +8,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton
-import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.momolabfe.R
-import com.example.momolabfe.databinding.BottomSheetForgetPasswordBinding
 import com.example.momolabfe.remote.auth.model.LoginRequest
 import com.example.momolabfe.databinding.FragmentLoginBinding
 import com.example.momolabfe.ui.auth.viewModel.AuthViewModel
 import com.example.momolabfe.ui.main.HomeFragment
-import com.example.momolabfe.ui.record.BottomSheetRecordDeleteFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -73,7 +71,7 @@ class LoginFragment : Fragment() {
             val password = binding.passwordEt.text.toString()
 
             if (loginId.isBlank() || password.isBlank()) {
-                Toast.makeText(requireContext(), "아이디와 비밀번호를 모두 입력해주세요.", Toast.LENGTH_SHORT).show()
+                showError("아이디와 비밀번호를 모두 입력해주세요.")
                 return@setOnClickListener
             }
 
@@ -97,6 +95,24 @@ class LoginFragment : Fragment() {
 
             BottomSheetForgetPasswordFragment().show(parentFragmentManager, "BottomSheetForgetPassword")
         }
+
+        binding.idEt.addTextChangedListener {
+            clearError()
+        }
+
+        binding.passwordEt.addTextChangedListener {
+            clearError()
+        }
+    }
+
+    private fun showError(message: String) {
+        binding.loginErrorTv.text = message
+        binding.loginErrorTv.visibility = View.VISIBLE
+    }
+
+    private fun clearError() {
+        binding.loginErrorTv.text = ""
+        binding.loginErrorTv.visibility = View.GONE
     }
 
     private fun setupPasswordToggle() {
@@ -132,7 +148,7 @@ class LoginFragment : Fragment() {
         viewModel.errorMessage.observe(viewLifecycleOwner) { message ->
             message?.let {
                 Log.e("Login", "로그인 실패: $it")
-                Toast.makeText(requireContext(), "아이디 또는 비밀번호가 일치하지 않습니다.", Toast.LENGTH_SHORT).show()
+                showError("아이디 또는 비밀번호가 일치하지 않습니다.")
             }
         }
     }
