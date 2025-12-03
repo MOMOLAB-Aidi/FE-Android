@@ -1,28 +1,22 @@
 package com.example.momolabfe.ui.consult
 
 import android.app.Dialog
-import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.momolabfe.R
 import com.example.momolabfe.databinding.FragmentConsultBinding
 import com.example.momolabfe.remote.consult.model.ChatRequest
 import com.example.momolabfe.remote.consult.model.SessionEndRequest
 import com.example.momolabfe.ui.consult.adapter.ChatAdapter
-import com.example.momolabfe.ui.consult.adapter.ConsultHistoryAdapter
 import com.example.momolabfe.ui.consult.viewModel.ConsultViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import androidx.core.graphics.drawable.toDrawable
-import com.example.momolabfe.utils.dpToPx
 
 class ConsultFragment : Fragment() {
 
@@ -66,7 +60,10 @@ class ConsultFragment : Fragment() {
         }
 
         binding.historyIv.setOnClickListener {
-            showConsultHistoryDialog()
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.main_frm, ConsultHistoryFragment())
+                .addToBackStack(null)
+                .commit()
         }
 
         binding.sendBtn.setOnClickListener {
@@ -207,70 +204,6 @@ class ConsultFragment : Fragment() {
     private fun showQuickQuestions() {
         binding.quickQuestionLabel.visibility = View.VISIBLE
         binding.quickQuestionGroup.visibility = View.VISIBLE
-    }
-
-    private fun showConsultHistoryDialog() {
-        historyDialog?.dismiss()
-        val dialog = Dialog(requireContext())
-        historyDialog = dialog
-        val inflater = LayoutInflater.from(requireContext())
-        val view = inflater.inflate(R.layout.dialog_consult_history, null)
-
-        dialog.setContentView(view)
-
-        // 배경 둥근 모서리가 잘 보이도록 투명 처리
-        dialog.window?.setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
-        dialog.window?.setLayout(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        )
-
-        // 닫기 버튼
-        val closeIv = view.findViewById<ImageView>(R.id.close_iv)
-        closeIv.setOnClickListener {
-            dialog.dismiss()
-        }
-
-        val historyRv = view.findViewById<RecyclerView>(R.id.consult_history_rv)
-        val historyAdapter = ConsultHistoryAdapter(
-            onClick = { item ->
-                dialog.dismiss()
-
-                val fragment = ConsultHistoryDetailFragment.newInstance(item.sessionId)
-
-                parentFragmentManager.beginTransaction()
-                    .replace(R.id.main_frm, fragment)
-                    .addToBackStack(null)
-                    .commit()
-            },
-            onDelete = { item ->
-                viewModel.deleteConsult(item.sessionId)
-            }
-        )
-
-        historyRv.apply {
-            layoutManager = LinearLayoutManager(requireContext())
-            adapter = historyAdapter
-            itemAnimator = null
-        }
-
-        viewModel.history.observe(viewLifecycleOwner) { list ->
-            if (dialog.isShowing) {
-                historyAdapter.submitList(list)
-            }
-        }
-
-        viewModel.getConsultList(skip = 0, limit = 50)
-        dialog.show()
-
-        // 양옆 여백 + 높이 설정
-        val metrics = resources.displayMetrics
-        val screenWidth = metrics.widthPixels
-        val horizontalMarginPx = dpToPx(20) * 2
-        val dialogWidth = screenWidth - horizontalMarginPx
-        val dialogHeight = dpToPx(380)
-
-        dialog.window?.setLayout(dialogWidth, dialogHeight)
     }
 
     override fun onDestroyView() {
