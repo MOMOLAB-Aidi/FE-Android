@@ -631,6 +631,9 @@ class RecordEditFragment : Fragment() {
     }
 
     private fun applyDialogWindow(dialog: AlertDialog) {
+
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
         dialog.setOnShowListener {
             dialog.window?.let { window ->
                 val layoutParams = window.attributes
