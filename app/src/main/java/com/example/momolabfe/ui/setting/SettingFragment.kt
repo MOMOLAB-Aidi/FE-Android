@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import com.example.momolabfe.R
 import com.example.momolabfe.databinding.FragmentSettingBinding
@@ -28,7 +28,7 @@ class SettingFragment : Fragment() {
     private val DATE_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy년 M월 d일")
     private val LAST_LOGIN_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH:mm:ss")
 
-    private val viewModel: SettingViewModel by viewModels()
+    private val viewModel: SettingViewModel by activityViewModels()
 
     @Inject
     lateinit var logoutManager: LogoutManager
@@ -135,6 +135,8 @@ class SettingFragment : Fragment() {
             }
         }
     }
+
+
 
     override fun onDestroyView() {
         super.onDestroyView()
