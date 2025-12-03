@@ -28,10 +28,10 @@ interface ConsultService {
     @POST("/api/v1/consults/end")
     suspend fun endConsult(@Body request: SessionEndRequest): Response<SessionEndResponse>
 
-    @GET("/api/v1/consults/history")
+    @GET("/api/v1/consults")
     suspend fun getConsultList(@Query("skip") skip: Int, @Query("limit") limit: Int): Response<List<GetConsultResponse>>
 
-    @GET("/api/v1/consults/history/{session_id}")
+    @GET("/api/v1/consults/{session_id}")
     suspend fun getConsult(@Path("session_id") sessionId: String): Response<List<ConsultDetailResponse>>
 
     @DELETE("/api/v1/consults/{session_id}")
