@@ -2,6 +2,7 @@ package com.example.momolabfe.remote.consult.repository
 
 import com.example.momolabfe.remote.consult.model.ChatRequest
 import com.example.momolabfe.remote.consult.model.ConsultDetailResponse
+import com.example.momolabfe.remote.consult.model.ConsultSessionSummaryRow
 import com.example.momolabfe.remote.consult.model.GetConsultResponse
 import com.example.momolabfe.remote.consult.model.SessionEndRequest
 import com.example.momolabfe.remote.consult.model.SessionEndResponse
@@ -93,5 +94,14 @@ class ConsultRepository @Inject constructor(
             throw ApiException(response.code(), "특정 세션 상담 기록 삭제 실패: HTTP ${response.code()}")
         }
         Unit
+    }
+
+    // 특정 상담 세션 요약
+    suspend fun summaryConsult(sessionId: String): Result<ConsultSessionSummaryRow> = runCatching {
+        val response = consultService.summaryConsult(sessionId)
+        if (!response.isSuccessful) {
+            throw ApiException(response.code(), "상담 세션 요약 실패: HTTP ${response.code()}")
+        }
+        response.body() ?: throw ApiException(response.code(), "빈 본문")
     }
 }

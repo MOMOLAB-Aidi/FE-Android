@@ -15,11 +15,17 @@ data class SessionEndResponse (
 data class GetConsultResponse (
     @SerializedName("session_id") val sessionId: String,
     @SerializedName("ended_at") val endedAt: String,
-    @SerializedName("first_user_question") val firstUserQuestion: String
+    @SerializedName("first_user_question") val firstUserQuestion: String?,
+    @SerializedName("summary") val summary: String?
 )
 
 data class ConsultDetailResponse (
     @SerializedName("role") val role: MessageRole,
     @SerializedName("content") val content: String,
     @SerializedName("created_at") val createdAt: String
+)
+
+data class ConsultSessionSummaryRow (
+    @SerializedName("session_id") val sessionId: String,
+    @SerializedName("summary") val summary: String
 )

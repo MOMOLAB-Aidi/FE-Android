@@ -43,7 +43,9 @@ class ConsultHistoryAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: GetConsultResponse) {
-            val rawTitle = item.firstUserQuestion.ifBlank { "새로운 상담" }
+            val rawTitle = item.firstUserQuestion
+                ?.takeIf { it.isNotBlank() }
+                ?: "새로운 상담"
 
             val displayTitle = if (rawTitle.length > MAX_TITLE_LENGTH) {
                 rawTitle.take(MAX_TITLE_LENGTH) + "…" // 20자 + …
@@ -58,6 +60,10 @@ class ConsultHistoryAdapter(
             }
 
             binding.dateTv.text = formatEndedAt(item.endedAt)
+
+            binding.summaryTv.text = item.summary
+                ?.takeIf { it.isNotBlank() }
+                ?: ""
 
             binding.titleTv.setOnClickListener {
                 onClick(item)

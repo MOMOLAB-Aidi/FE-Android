@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.momolabfe.remote.consult.model.ChatRequest
 import com.example.momolabfe.remote.consult.model.ConsultDetailResponse
+import com.example.momolabfe.remote.consult.model.ConsultSessionSummaryRow
 import com.example.momolabfe.remote.consult.model.GetConsultResponse
 import com.example.momolabfe.remote.consult.model.MessageRole
 import com.example.momolabfe.remote.consult.model.SessionEndRequest
@@ -39,6 +40,9 @@ class ConsultViewModel @Inject constructor(
 
     private val _consult = MutableLiveData<List<ConsultDetailResponse>>()
     val consult: LiveData<List<ConsultDetailResponse>> get() = _consult
+
+    private val _summaryResult = MutableLiveData<ConsultSessionSummaryRow>()
+    val summaryResult: LiveData<ConsultSessionSummaryRow> get() = _summaryResult
 
     private val _deleteSuccess = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
     val deleteSuccess: SharedFlow<Unit> = _deleteSuccess.asSharedFlow()
@@ -163,6 +167,18 @@ class ConsultViewModel @Inject constructor(
                 _deleteSuccess.tryEmit(Unit)
             }.onFailure { e ->
                 _errorMessage.value = e.localizedMessage ?: "특정 세션 상담 기록 삭제에 실패했습니다."
+            }
+        }
+    }
+
+    // 특정 상담 세션 요약
+    fun summaryConsult(sessionId: String) {
+        viewModelScope.launch {
+            val result = consultRepository.summaryConsult(sessionId)
+            result.onSuccess { response ->
+                _summaryResult.value = response
+            }.onFailure { e ->
+                _errorMessage.value = e.localizedMessage ?: "특정 상담 세션 요약에 실패했습니다."
             }
         }
     }

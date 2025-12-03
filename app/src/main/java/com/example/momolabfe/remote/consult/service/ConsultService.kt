@@ -2,6 +2,7 @@ package com.example.momolabfe.remote.consult.service
 
 import com.example.momolabfe.remote.consult.model.ChatRequest
 import com.example.momolabfe.remote.consult.model.ConsultDetailResponse
+import com.example.momolabfe.remote.consult.model.ConsultSessionSummaryRow
 import com.example.momolabfe.remote.consult.model.GetConsultResponse
 import com.example.momolabfe.remote.consult.model.SessionEndRequest
 import com.example.momolabfe.remote.consult.model.SessionEndResponse
@@ -36,4 +37,7 @@ interface ConsultService {
 
     @DELETE("/api/v1/consults/{session_id}")
     suspend fun deleteConsult(@Path("session_id") sessionId: String): Response<Unit>
+
+    @POST("/api/v1/consults/{session_id}/summary")
+    suspend fun summaryConsult(@Path("session_id") sessionId: String): Response<ConsultSessionSummaryRow>
 }
