@@ -57,9 +57,7 @@ class ConsultHistoryAdapter(
                 paintFlags = paintFlags or Paint.UNDERLINE_TEXT_FLAG
             }
 
-            binding.dateTv.text = formatStartedAt(item.startedAt)
-
-            binding.messageCountTv.text = "• ${item.messageCount}개 메시지"
+            binding.dateTv.text = formatEndedAt(item.endedAt)
 
             binding.titleTv.setOnClickListener {
                 onClick(item)
@@ -70,14 +68,14 @@ class ConsultHistoryAdapter(
             }
         }
 
-        private fun formatStartedAt(raw: String): String {
+        private fun formatEndedAt(raw: String): String {
             return try {
                 val dt = LocalDateTime.parse(raw, INPUT_FORMATTER)
                 val datePart = dt.format(DATE_FORMATTER)
                 val timePart = dt.format(TIME_FORMATTER)
                 "$datePart\n$timePart"
             } catch (e: Exception) {
-                // 파싱 실패 시 raw 그대로 보여줌 (최소 망가지진 않게)
+                // 파싱 실패 시 raw 그대로 보여줌
                 raw
             }
         }
