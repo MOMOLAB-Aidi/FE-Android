@@ -9,3 +9,8 @@ data class MyPageResponse (
     @SerializedName("recordPeriod") val recordPeriod: String,
     @SerializedName("lastLoginAt") val lastLoginAt: String
 )
+
+data class HospitalInfoResponse (
+    @SerializedName("name") val name: String,
+    @SerializedName("emergencyPhone") val emergencyPhone: String
+)

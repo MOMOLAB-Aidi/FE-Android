@@ -2,17 +2,22 @@ package com.example.momolabfe.ui.setting
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import com.example.momolabfe.databinding.FragmentCustomerEmergencyBinding
+import com.example.momolabfe.ui.setting.viewModel.SettingViewModel
 
 class CustomerEmergencyFragment : Fragment() {
 
     private var _binding: FragmentCustomerEmergencyBinding? = null
     private val binding get() = _binding!!
+
+    private val viewModel: SettingViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -26,10 +31,28 @@ class CustomerEmergencyFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        viewModel.getHospitalInfo()
+        observeHospitalResult()
+
         binding.emergencyCallBtn.setOnClickListener {
             val phone = binding.emergencyPhoneTv.text.toString()
             val intent = Intent(Intent.ACTION_DIAL, "tel:$phone".toUri())
             startActivity(intent)
+        }
+    }
+
+    private fun observeHospitalResult() {
+        viewModel.getHospitalResult.observe(viewLifecycleOwner) { result ->
+            result?.let {
+                binding.emergencyHospitalNameTv.text = it.name
+                binding.emergencyPhoneTv.text = it.emergencyPhone
+            }
+        }
+
+        viewModel.errorMessage.observe(viewLifecycleOwner) { message ->
+            message?.let {
+                Log.e("HospitalInfo", "자주 가는 병원 조회 실패: $it")
+            }
         }
     }
 

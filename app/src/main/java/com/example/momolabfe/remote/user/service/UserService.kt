@@ -1,5 +1,6 @@
 package com.example.momolabfe.remote.user.service
 
+import com.example.momolabfe.remote.user.model.HospitalInfoResponse
 import com.example.momolabfe.remote.user.model.MyPageResponse
 import com.example.momolabfe.remote.user.model.UpdatePassword
 import com.example.momolabfe.utils.ApiResponse
@@ -15,4 +16,7 @@ interface UserService {
 
     @PATCH("/api/v1/users/password")
     suspend fun updatePassword(@Body request: UpdatePassword): Response<ApiResponse<Unit>>
+
+    @GET("/api/v1/users/hospital")
+    suspend fun getHospitalInfo(): Response<ApiResponse<HospitalInfoResponse>>
 }

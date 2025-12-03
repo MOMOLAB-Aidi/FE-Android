@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.momolabfe.remote.user.model.HospitalInfoResponse
 import com.example.momolabfe.remote.user.model.MyPageResponse
 import com.example.momolabfe.remote.user.model.UpdatePassword
 import com.example.momolabfe.remote.user.repository.UserRepository
@@ -31,6 +32,9 @@ class SettingViewModel @Inject constructor(
     private val _passwordResult = MutableLiveData<Unit?>()
     val passwordResult: LiveData<Unit?> get() = _passwordResult
 
+    private val _getHospitalResult = MutableLiveData<HospitalInfoResponse>()
+    val getHospitalResult: LiveData<HospitalInfoResponse> get() = _getHospitalResult
+
     // 마이페이지 조회
     fun getMyPage() {
         viewModelScope.launch {
@@ -51,6 +55,18 @@ class SettingViewModel @Inject constructor(
                 _passwordSuccess.tryEmit(Unit)
             }.onFailure { e ->
                 _errorMessage.value = e.localizedMessage ?: "비밀번호 재설정에 실패했습니다."
+            }
+        }
+    }
+
+    // 자주 가는 병원 조회
+    fun getHospitalInfo() {
+        viewModelScope.launch {
+            val result = userRepository.getHospitalInfo()
+            result.onSuccess {
+                _getHospitalResult.value = it
+            }.onFailure { e ->
+                _errorMessage.value = e.localizedMessage ?: "자주 가는 병원 조회에 실패했습니다."
             }
         }
     }
