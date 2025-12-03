@@ -59,7 +59,7 @@
             android:layout_marginBottom="20dp"
             android:fontFamily="@font/noto_sans_kr_regular"
             android:includeFontPadding="false"
-            android:text="상담 기록 목록 조회"
+            android:text="상담 기록 조회"
             android:textColor="@color/white"
             android:textSize="15sp"
             app:layout_constraintBottom_toBottomOf="parent"

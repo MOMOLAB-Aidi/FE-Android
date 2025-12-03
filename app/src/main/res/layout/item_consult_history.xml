@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="10dp"
@@ -18,53 +19,54 @@
             android:id="@+id/title_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
+            android:layout_marginStart="5dp"
             android:layout_marginTop="20dp"
-            android:text="새로운 상담"
+            tools:text="새로운 상담"
             android:textColor="@color/text_primary"
             android:textSize="15sp"
             android:textStyle="bold"
             android:fontFamily="@font/noto_sans_kr_regular"
             android:includeFontPadding="false"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/date_iv"
             app:layout_constraintTop_toTopOf="parent"/>
 
         <ImageView
             android:id="@+id/date_iv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginStart="20dp"
             android:src="@drawable/ic_calendar_gray_sv"
-            app:layout_constraintStart_toStartOf="@id/title_tv"
-            app:layout_constraintTop_toBottomOf="@id/title_tv"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/title_tv"/>
 
         <TextView
             android:id="@+id/date_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:layout_marginBottom="20dp"
-            android:text="2025년 11월 19일\n오후 17:22"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="5dp"
+            tools:text="2025년 11월 19일 오후 17:22"
             android:textColor="@color/secondary_text"
             android:textSize="12sp"
             android:fontFamily="@font/noto_sans_kr_regular"
             android:includeFontPadding="false"
-            app:layout_constraintStart_toEndOf="@id/date_iv"
-            app:layout_constraintTop_toTopOf="@id/date_iv"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintEnd_toEndOf="@id/delete_iv"
+            app:layout_constraintTop_toBottomOf="@id/delete_iv"/>
 
         <TextView
-            android:id="@+id/message_count_tv"
+            android:id="@+id/summary_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="50dp"
-            android:text="• 1개 메시지"
+            android:layout_marginTop="30dp"
+            android:layout_marginBottom="20dp"
+            android:text="상담 요약 내용 블라블라"
             android:textColor="@color/secondary_text"
             android:textSize="12sp"
             android:fontFamily="@font/noto_sans_kr_regular"
             android:includeFontPadding="false"
-            app:layout_constraintTop_toTopOf="@id/date_tv"
-            app:layout_constraintEnd_toEndOf="@id/delete_iv"/>
+            app:layout_constraintTop_toBottomOf="@id/date_iv"
+            app:layout_constraintStart_toStartOf="@id/date_iv"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
         <ImageView
             android:id="@+id/delete_iv"
@@ -72,7 +74,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="20dp"
             android:src="@drawable/ic_trash_gray_sv"
-            app:layout_constraintTop_toTopOf="@id/date_tv"
+            app:layout_constraintTop_toTopOf="@id/title_tv"
             app:layout_constraintEnd_toEndOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
