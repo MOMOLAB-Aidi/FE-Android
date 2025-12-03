@@ -101,7 +101,6 @@ class HomeFragment : Fragment() {
         }
 
         binding.tipRefreshIv.setOnClickListener {
-            binding.tipRefreshIv.isEnabled = false
             educationViewModel.getTodayTip()
         }
     }
@@ -218,7 +217,6 @@ class HomeFragment : Fragment() {
         }
 
         educationViewModel.errorMessage.observe(viewLifecycleOwner) { message ->
-            binding.tipRefreshIv.isEnabled = true
             message?.let {
                 Log.e("TodayTip", "오늘의 복막투석 관리 TIP 조회 실패: $it")
             }
