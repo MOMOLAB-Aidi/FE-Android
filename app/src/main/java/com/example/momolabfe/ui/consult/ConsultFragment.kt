@@ -22,6 +22,8 @@ import com.example.momolabfe.remote.consult.model.SessionEndRequest
 import com.example.momolabfe.ui.consult.adapter.ChatAdapter
 import com.example.momolabfe.ui.consult.viewModel.ConsultViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class ConsultFragment : Fragment() {
@@ -36,13 +38,13 @@ class ConsultFragment : Fragment() {
     private val chatAdapter by lazy { ChatAdapter() }
 
     private var lastItemCount: Int = 0 // 마지막 아이템 개수 기억
-    private var historyDialog: Dialog? = null // 다이얼로그 생명주기 관리 용도
-
     private var navigateToHistoryOnEnd: Boolean = false // 이번 세션 종료 후 히스토리 화면으로 이동할지 여부
 
     // 요약 완료를 기다리는 세션 ID + 요약 중 다이얼로그
     private var waitingSummaryForSessionId: String? = null
     private var summaryDialog: Dialog? = null
+
+    private var summaryTimeoutJob: Job? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -137,27 +139,6 @@ class ConsultFragment : Fragment() {
             binding.sendBtn.isEnabled = false // 전송 버튼 잠깐 비활성화
             viewModel.chatStream(request) // 채팅 스트리밍 시작
             binding.messageInput.text?.clear() // 입력창 비우기
-        }
-
-        binding.plusIv.setOnClickListener {
-
-            // 유저가 실제로 질문을 했는지 확인
-            val hadConversation = viewModel.messages.value
-                ?.any { msg -> msg.isUser && msg.text.isNotBlank() } == true
-
-            // 이전 세션 종료 요청
-            currentSessionId?.let { oldSessionId ->
-                if (hadConversation) {
-                    navigateToHistoryOnEnd = false
-                    val request = SessionEndRequest(sessionId = oldSessionId)
-                    viewModel.endConsult(request)
-                }
-            }
-
-            viewModel.resetMessages()
-            viewModel.startConsult()
-            showQuickQuestions()
-            binding.endIv.visibility = View.GONE
         }
 
         // Chip 빠른 질문
@@ -261,8 +242,15 @@ class ConsultFragment : Fragment() {
         viewModel.summaryResult.observe(viewLifecycleOwner) { summaryRow ->
             if (summaryRow == null) return@observe
 
-            // 현재 기다리던 세션 요약인지 확인
-            if (summaryRow.sessionId != waitingSummaryForSessionId) return@observe
+            // 현재 기다리던 세션이 아니면 무시하되, 대기 중이었다면 정리
+            if (summaryRow.sessionId != waitingSummaryForSessionId) {
+                if (waitingSummaryForSessionId != null) {
+                    Log.w("ConsultFragment", "예상치 못한 세션의 요약 수신")
+                    hideSummaryDialog()
+                    waitingSummaryForSessionId = null
+                }
+                return@observe
+            }
 
             waitingSummaryForSessionId = null // 더 이상 기다릴 세션 없음
 
@@ -335,16 +323,26 @@ class ConsultFragment : Fragment() {
             }
             show()
         }
+
+        // 30초 타임아웃 설정
+        summaryTimeoutJob = viewLifecycleOwner.lifecycleScope.launch {
+            delay(30_000)
+            hideSummaryDialog()
+            Toast.makeText(requireContext(), "요약 생성 시간이 초과되었습니다.", Toast.LENGTH_SHORT).show()
+            waitingSummaryForSessionId = null
+        }
     }
 
     private fun hideSummaryDialog() {
+        summaryTimeoutJob?.cancel()
+        summaryTimeoutJob = null
         summaryDialog?.dismiss()
         summaryDialog = null
     }
 
     override fun onDestroyView() {
-        historyDialog?.dismiss()
-        historyDialog = null
+        summaryDialog?.dismiss()
+        summaryDialog = null
         super.onDestroyView()
         _binding = null
     }
