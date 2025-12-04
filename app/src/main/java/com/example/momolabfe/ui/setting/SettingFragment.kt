@@ -52,8 +52,8 @@ class SettingFragment : Fragment() {
 
         binding.recordCreateTitleTv.setOnClickListener { navigateToAlarmSetting() }
         binding.recordCreateContentTv.setOnClickListener { navigateToAlarmSetting() }
-        binding.recordTipTitleTv.setOnClickListener { navigateToAlarmSetting() }
-        binding.recordTipContentTv.setOnClickListener { navigateToAlarmSetting() }
+        binding.recordTimeTitleTv.setOnClickListener { navigateToAlarmSetting() }
+        binding.recordTimeContentTv.setOnClickListener { navigateToAlarmSetting() }
 
         binding.changePasswordTitleTv.setOnClickListener { navigateToPassword() }
         binding.changePasswordContentTv.setOnClickListener { navigateToPassword() }

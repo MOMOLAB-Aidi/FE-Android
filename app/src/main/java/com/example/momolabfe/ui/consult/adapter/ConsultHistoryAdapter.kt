@@ -3,10 +3,10 @@ package com.example.momolabfe.ui.consult.adapter
 import android.graphics.Paint
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.momolabfe.R
 import com.example.momolabfe.databinding.ItemConsultHistoryBinding
 import com.example.momolabfe.remote.consult.model.GetConsultResponse
 import java.time.LocalDateTime
@@ -59,9 +59,10 @@ class ConsultHistoryAdapter(
 
             binding.dateTv.text = formatEndedAt(item.endedAt)
 
-            binding.summaryTv.text = item.summary
-                ?.takeIf { it.isNotBlank() }
-                ?: binding.root.context.getString(R.string.summary_generating)
+            binding.summaryTv.apply {
+                text = item.summary.orEmpty()
+                isVisible = !item.summary.isNullOrBlank()
+            }
 
             binding.titleTv.setOnClickListener {
                 onClick(item)

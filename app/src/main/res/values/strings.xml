@@ -26,5 +26,4 @@
     <string name="emergency_message">갑작스러운 호흡곤란, 의식 저하, 심한 흉통·복통이 있을 경우 가까운 응급실로 즉시 이동하세요.\n\n- 119에 전화 후, 복막투석 환자임을 먼저 알리세요.\n- 주치의 또는 투석 담당 의료진의 연락처를 미리 휴대폰에 저장해 두면 도움이 됩니다.\n- 이동 중에는 혼자 있지 않도록 보호자와 함께 움직이세요.</string>
 
     <string name="typing_indicator">답변을 생성하고 있습니다 • • •</string>
-    <string name="summary_generating">요약 생성 중...</string>
 </resources>

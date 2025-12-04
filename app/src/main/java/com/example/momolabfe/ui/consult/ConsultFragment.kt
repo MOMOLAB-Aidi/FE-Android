@@ -40,6 +40,10 @@ class ConsultFragment : Fragment() {
 
     private var navigateToHistoryOnEnd: Boolean = false // 이번 세션 종료 후 히스토리 화면으로 이동할지 여부
 
+    // 요약 완료를 기다리는 세션 ID + 요약 중 다이얼로그
+    private var waitingSummaryForSessionId: String? = null
+    private var summaryDialog: Dialog? = null
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -61,7 +65,6 @@ class ConsultFragment : Fragment() {
 
         // 이전 세션의 말풍선/이벤트/에러 모두 정리
         viewModel.resetMessages()
-        viewModel.clearEndConsultSuccess()
         viewModel.clearError()
 
         setupRecyclerView()
@@ -248,25 +251,43 @@ class ConsultFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.endConsultSuccess.collect { endedSessionId ->
-                    viewModel.summaryConsult(endedSessionId)
+                    // end 버튼으로 종료한 경우 요약 완료까지 기다렸다가 히스토리로 이동
                     if (navigateToHistoryOnEnd) {
-                        currentSessionId = null
-                        viewModel.resetMessages()
-                        binding.endIv.visibility = View.GONE
-                        parentFragmentManager.beginTransaction()
-                            .replace(R.id.main_frm, ConsultHistoryFragment())
-                            .addToBackStack(null)
-                            .commit()
+                        waitingSummaryForSessionId = endedSessionId
+
+                        if (summaryDialog?.isShowing != true) {
+                            summaryDialog = AlertDialog.Builder(requireContext())
+                                .setMessage("이번 상담 내용을 정리하고 있어요.\n잠시만 기다려 주세요.")
+                                .setCancelable(false)
+                                .create()
+                            summaryDialog?.show()
+                        }
+
+                        viewModel.summaryConsult(endedSessionId)
+                        navigateToHistoryOnEnd = false // 한 번 처리 후 플래그 초기화
+                    } else {
+                        viewModel.summaryConsult(endedSessionId)
                     }
-                    navigateToHistoryOnEnd = false
                 }
             }
         }
 
         viewModel.summaryResult.observe(viewLifecycleOwner) { summary ->
-            if (summary != null) {
-                Log.d("ConsultFragment", "요약 생성 완료: $summary")
-            }
+            if (summary == null) return@observe
+
+            val targetSessionId = waitingSummaryForSessionId ?: return@observe
+
+            Log.d("ConsultFragment", "요약 생성 완료: $summary (session=$targetSessionId)")
+
+            // 다이얼로그 닫기
+            summaryDialog?.dismiss()
+            summaryDialog = null
+            waitingSummaryForSessionId = null
+
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.main_frm, ConsultHistoryFragment())
+                .addToBackStack(null)
+                .commit()
         }
 
         viewModel.errorMessage.observe(viewLifecycleOwner) { errorMsg ->
