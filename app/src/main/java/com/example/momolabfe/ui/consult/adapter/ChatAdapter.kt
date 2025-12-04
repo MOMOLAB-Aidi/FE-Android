@@ -81,7 +81,7 @@ class ChatAdapter :
         fun bind(item: ChatMessage) {
             if (item.isTyping) {
                 // 타이핑 인디케이터 + 애니메이션 효과
-                binding.agentMsgTv.text = "• • •"
+                binding.agentMsgTv.text = "답변을 생성하고 있습니다 • • •"
                 binding.agentMsgTv.startAnimation(getTypingAnimation(binding.root.context))
             } else {
                 // 애니메이션 제거 + 실제 응답 표시

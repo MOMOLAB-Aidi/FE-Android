@@ -73,7 +73,6 @@ class ConsultFragment : Fragment() {
         binding.endIv.setOnClickListener {
             val sessionId = currentSessionId
             if (sessionId.isNullOrBlank()) {
-                Toast.makeText(requireContext(), "종료할 상담 세션이 없습니다.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
@@ -89,7 +88,7 @@ class ConsultFragment : Fragment() {
                 }
                 .setPositiveButton("종료") { dialog, _ ->
                     dialog.dismiss()
-                    endSessionAndOpenHistory()
+                    endSession()
                 }
                 .show()
         }
@@ -121,18 +120,14 @@ class ConsultFragment : Fragment() {
             )
 
             binding.sendBtn.isEnabled = false // 전송 버튼 잠깐 비활성화
-
             viewModel.chatStream(request) // 채팅 스트리밍 시작
-
             binding.messageInput.text?.clear() // 입력창 비우기
         }
 
         binding.plusIv.setOnClickListener {
-            endCurrentSessionIfNeeded()
             viewModel.resetMessages()
             viewModel.startConsult()
             showQuickQuestions()
-
             binding.endIv.visibility = View.GONE
         }
 
@@ -197,11 +192,11 @@ class ConsultFragment : Fragment() {
             }
 
             // 유저 메시지가 하나라도 있는지 체크
-            val hasUserMessage = list.any { message ->
-                message.isUser
+            val hasAgentReply = list.any { msg ->
+                !msg.isUser && msg.text.isNotBlank()
             }
 
-            val shouldShowEndButton = (currentSessionId != null) && hasUserMessage
+            val shouldShowEndButton = (currentSessionId != null) && hasAgentReply
 
             binding.endIv.visibility = if (shouldShowEndButton) View.VISIBLE else View.GONE
 
@@ -209,6 +204,27 @@ class ConsultFragment : Fragment() {
             if (!viewModel.isStreamingNow()) {
                 setupSendButtonState()
             }
+        }
+
+        viewModel.endConsultSuccess.observe(viewLifecycleOwner) { endedSessionId ->
+            if (endedSessionId.isNullOrBlank()) return@observe
+
+            // 요약 생성 요청
+            viewModel.summaryConsult(endedSessionId)
+
+            // 클라이언트 상태 정리
+            currentSessionId = null
+            viewModel.resetMessages()
+            binding.endIv.visibility = View.GONE
+
+            // 상담 기록 화면으로 이동
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.main_frm, ConsultHistoryFragment())
+                .addToBackStack(null)
+                .commit()
+
+            // 이벤트 1회성 소비
+            viewModel.clearEndConsultSuccess()
         }
 
         viewModel.summaryResult.observe(viewLifecycleOwner) { summary ->
@@ -230,37 +246,6 @@ class ConsultFragment : Fragment() {
         binding.messageInput.setSelection(text.length)
     }
 
-    private fun endCurrentSessionIfNeeded() {
-        val sessionId = currentSessionId ?: return  // 세션 없으면 아무것도 안 함
-
-        val request = SessionEndRequest(sessionId = sessionId)
-        viewModel.endConsult(request)
-
-        viewModel.summaryConsult(sessionId) // 해당 세션에 대해 요약 생성 요청
-
-        currentSessionId = null // 클라이언트 쪽 상태 초기화
-    }
-
-    private fun endSessionAndOpenHistory() {
-        val sessionId = currentSessionId ?: run {
-            Toast.makeText(requireContext(), "종료할 상담 세션이 없습니다.", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        // 세션 종료 요청
-        val request = SessionEndRequest(sessionId = sessionId)
-        viewModel.endConsult(request)
-
-        viewModel.summaryConsult(sessionId)
-
-        currentSessionId = null
-
-        parentFragmentManager.beginTransaction()
-            .replace(R.id.main_frm, ConsultHistoryFragment())
-            .addToBackStack(null)
-            .commit()
-    }
-
     // 빠른 질문 영역 숨기기
     private fun hideQuickQuestions() {
         binding.quickQuestionLabel.visibility = View.GONE
@@ -273,8 +258,17 @@ class ConsultFragment : Fragment() {
         binding.quickQuestionGroup.visibility = View.VISIBLE
     }
 
+    private fun endSession() {
+        val sessionId = currentSessionId ?: run {
+            Toast.makeText(requireContext(), "종료할 상담 세션이 없습니다.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val request = SessionEndRequest(sessionId = sessionId)
+        viewModel.endConsult(request)
+    }
+
     override fun onDestroyView() {
-        endCurrentSessionIfNeeded()
         historyDialog?.dismiss()
         historyDialog = null
         super.onDestroyView()
