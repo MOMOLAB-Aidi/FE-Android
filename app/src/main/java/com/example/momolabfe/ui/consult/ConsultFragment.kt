@@ -53,6 +53,11 @@ class ConsultFragment : Fragment() {
 
         binding.endIv.visibility = View.GONE
 
+        // 이전 세션의 말풍선/이벤트/에러 모두 정리
+        viewModel.resetMessages()
+        viewModel.clearEndConsultSuccess()
+        viewModel.clearError()
+
         setupRecyclerView()
         setupObservers()
         showQuickQuestions()
@@ -198,12 +203,23 @@ class ConsultFragment : Fragment() {
                 lastItemCount = newSize
             }
 
-            // 유저 메시지가 하나라도 있는지 체크
-            val hasAgentReply = list.any { msg ->
-                !msg.isUser && msg.text.isNotBlank()
+            // 첫 번째 사용자 메시지의 인덱스 찾기
+            val firstUserIndex = list.indexOfFirst { msg ->
+                msg.isUser && msg.text.isNotBlank()
             }
 
-            val shouldShowEndButton = (currentSessionId != null) && hasAgentReply
+            // 그 이후에 에이전트 답변이 있는지 확인
+            val hasAgentReplyAfterUser = if (firstUserIndex == -1) {
+                false
+            } else {
+                list.drop(firstUserIndex + 1).any { msg ->
+                    !msg.isUser && msg.text.isNotBlank()
+                }
+            }
+
+            val hasActiveSession = !currentSessionId.isNullOrBlank()
+
+            val shouldShowEndButton = hasActiveSession && hasAgentReplyAfterUser
 
             binding.endIv.visibility = if (shouldShowEndButton) View.VISIBLE else View.GONE
 

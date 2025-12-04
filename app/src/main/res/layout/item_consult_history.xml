@@ -57,17 +57,19 @@
 
         <TextView
             android:id="@+id/summary_tv"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
             android:text="상담 요약 내용 블라블라"
             android:textColor="@color/secondary_text"
             android:textSize="12sp"
+            android:maxLines="2"
+            android:ellipsize="end"
             android:fontFamily="@font/noto_sans_kr_regular"
             android:includeFontPadding="false"
             app:layout_constraintTop_toBottomOf="@id/title_tv"
             app:layout_constraintStart_toStartOf="@id/title_tv"
-            app:layout_constraintEnd_toEndOf="@id/delete_iv"/>
+            app:layout_constraintEnd_toStartOf="@id/delete_iv"/>
 
         <ImageView
             android:id="@+id/delete_iv"

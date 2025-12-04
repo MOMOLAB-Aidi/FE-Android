@@ -63,7 +63,7 @@ class ConsultHistoryAdapter(
 
             binding.summaryTv.text = item.summary
                 ?.takeIf { it.isNotBlank() }
-                ?: ""
+                ?: "요약 생성 중..."
 
             binding.titleTv.setOnClickListener {
                 onClick(item)
@@ -77,11 +77,9 @@ class ConsultHistoryAdapter(
         private fun formatEndedAt(raw: String): String {
             return try {
                 val dt = LocalDateTime.parse(raw, INPUT_FORMATTER)
-                val datePart = dt.format(DATE_FORMATTER)
-                val timePart = dt.format(TIME_FORMATTER)
-                "$datePart\n$timePart"
+                val formatter = DateTimeFormatter.ofPattern("yyyy년 M월 d일 a h:mm", Locale.KOREA)
+                dt.format(formatter)
             } catch (e: Exception) {
-                // 파싱 실패 시 raw 그대로 보여줌
                 raw
             }
         }
