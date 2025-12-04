@@ -66,7 +66,8 @@
             android:fontFamily="@font/noto_sans_kr_regular"
             android:includeFontPadding="false"
             app:layout_constraintTop_toBottomOf="@id/title_tv"
-            app:layout_constraintStart_toStartOf="@id/title_tv" />
+            app:layout_constraintStart_toStartOf="@id/title_tv"
+            app:layout_constraintEnd_toEndOf="@id/delete_iv"/>
 
         <ImageView
             android:id="@+id/delete_iv"
