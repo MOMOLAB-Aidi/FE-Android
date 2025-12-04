@@ -11,6 +11,9 @@ import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.momolabfe.R
 import com.example.momolabfe.databinding.FragmentConsultBinding
@@ -19,6 +22,7 @@ import com.example.momolabfe.remote.consult.model.SessionEndRequest
 import com.example.momolabfe.ui.consult.adapter.ChatAdapter
 import com.example.momolabfe.ui.consult.viewModel.ConsultViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.coroutines.launch
 
 class ConsultFragment : Fragment() {
 
@@ -241,28 +245,22 @@ class ConsultFragment : Fragment() {
             }
         }
 
-        viewModel.endConsultSuccess.observe(viewLifecycleOwner) { endedSessionId ->
-            if (endedSessionId.isNullOrBlank()) return@observe
-
-            // 요약 생성 요청
-            viewModel.summaryConsult(endedSessionId)
-
-            if (navigateToHistoryOnEnd) {
-                // 종료 버튼으로 끝낸 경우: 히스토리로 이동
-                currentSessionId = null
-                viewModel.resetMessages()
-                binding.endIv.visibility = View.GONE
-
-                parentFragmentManager.beginTransaction()
-                    .replace(R.id.main_frm, ConsultHistoryFragment())
-                    .addToBackStack(null)
-                    .commit()
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.endConsultSuccess.collect { endedSessionId ->
+                    viewModel.summaryConsult(endedSessionId)
+                    if (navigateToHistoryOnEnd) {
+                        currentSessionId = null
+                        viewModel.resetMessages()
+                        binding.endIv.visibility = View.GONE
+                        parentFragmentManager.beginTransaction()
+                            .replace(R.id.main_frm, ConsultHistoryFragment())
+                            .addToBackStack(null)
+                            .commit()
+                    }
+                    navigateToHistoryOnEnd = false
+                }
             }
-            // 한 번 쓰고 항상 초기화
-            navigateToHistoryOnEnd = false
-
-            // 이벤트 1회성 소비
-            viewModel.clearEndConsultSuccess()
         }
 
         viewModel.summaryResult.observe(viewLifecycleOwner) { summary ->

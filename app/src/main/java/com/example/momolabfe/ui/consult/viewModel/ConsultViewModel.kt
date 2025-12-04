@@ -35,8 +35,8 @@ class ConsultViewModel @Inject constructor(
     private val _endConsult = MutableLiveData<SessionEndResponse>()
     val endConsult: LiveData<SessionEndResponse> get() = _endConsult
 
-    private val _endConsultSuccess = MutableLiveData<String?>()
-    val endConsultSuccess: LiveData<String?> = _endConsultSuccess
+    private val _endConsultSuccess = MutableSharedFlow<String>(extraBufferCapacity = 1)
+    val endConsultSuccess: SharedFlow<String> = _endConsultSuccess.asSharedFlow()
 
     private val _history = MutableLiveData<List<GetConsultResponse>>()
     val history: LiveData<List<GetConsultResponse>> get() = _history
@@ -115,7 +115,7 @@ class ConsultViewModel @Inject constructor(
             val result = consultRepository.endConsult(request)
             result.onSuccess { response ->
                 _endConsult.value = response
-                _endConsultSuccess.value = request.sessionId
+                _endConsultSuccess.tryEmit(request.sessionId)
             }.onFailure { e ->
                 _errorMessage.value = e.localizedMessage ?: "상담 종료에 실패했습니다."
             }
@@ -259,9 +259,5 @@ class ConsultViewModel @Inject constructor(
 
     fun clearError() {
         _errorMessage.value = null
-    }
-
-    fun clearEndConsultSuccess() {
-        _endConsultSuccess.value = null
     }
 }
