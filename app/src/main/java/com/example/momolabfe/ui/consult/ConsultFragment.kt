@@ -252,10 +252,8 @@ class ConsultFragment : Fragment() {
                 return@observe
             }
 
+            hideSummaryDialog()
             waitingSummaryForSessionId = null // 더 이상 기다릴 세션 없음
-
-            summaryDialog?.dismiss()
-            summaryDialog = null
 
             Log.d("ConsultFragment", "요약 생성 완료: ${summaryRow.summary}")
 
@@ -324,7 +322,8 @@ class ConsultFragment : Fragment() {
             show()
         }
 
-        // 30초 타임아웃 설정
+        // 30초 타임아웃 설정 (기존 Job 정리 후 새로 생성)
+        summaryTimeoutJob?.cancel()
         summaryTimeoutJob = viewLifecycleOwner.lifecycleScope.launch {
             delay(30_000)
             hideSummaryDialog()
@@ -341,8 +340,7 @@ class ConsultFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-        summaryDialog?.dismiss()
-        summaryDialog = null
+        hideSummaryDialog()
         super.onDestroyView()
         _binding = null
     }
