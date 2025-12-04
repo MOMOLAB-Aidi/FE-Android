@@ -1,7 +1,9 @@
 package com.example.momolabfe.ui.consult
 
+import android.app.AlertDialog
 import android.app.Dialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +11,9 @@ import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.momolabfe.R
 import com.example.momolabfe.databinding.FragmentConsultBinding
@@ -17,6 +22,7 @@ import com.example.momolabfe.remote.consult.model.SessionEndRequest
 import com.example.momolabfe.ui.consult.adapter.ChatAdapter
 import com.example.momolabfe.ui.consult.viewModel.ConsultViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.coroutines.launch
 
 class ConsultFragment : Fragment() {
 
@@ -31,6 +37,8 @@ class ConsultFragment : Fragment() {
 
     private var lastItemCount: Int = 0 // 마지막 아이템 개수 기억
     private var historyDialog: Dialog? = null // 다이얼로그 생명주기 관리 용도
+
+    private var navigateToHistoryOnEnd: Boolean = false // 이번 세션 종료 후 히스토리 화면으로 이동할지 여부
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -49,6 +57,13 @@ class ConsultFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.endIv.visibility = View.GONE
+
+        // 이전 세션의 말풍선/이벤트/에러 모두 정리
+        viewModel.resetMessages()
+        viewModel.clearEndConsultSuccess()
+        viewModel.clearError()
+
         setupRecyclerView()
         setupObservers()
         showQuickQuestions()
@@ -64,6 +79,30 @@ class ConsultFragment : Fragment() {
                 .replace(R.id.main_frm, ConsultHistoryFragment())
                 .addToBackStack(null)
                 .commit()
+        }
+
+        binding.endIv.setOnClickListener {
+            val sessionId = currentSessionId
+            if (sessionId.isNullOrBlank()) {
+                return@setOnClickListener
+            }
+
+            AlertDialog.Builder(requireContext())
+                .setTitle("상담 종료")
+                .setMessage(
+                    "현재 상담을 종료하시겠습니까?\n\n" +
+                    "대화 내용은 상담 기록에서 확인할 수 있고,\n" +
+                    "이 세션에서는 더 이상 대화를 이어갈 수 없습니다."
+                )
+                .setNegativeButton("취소") { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .setPositiveButton("종료") { dialog, _ ->
+                    dialog.dismiss()
+                    navigateToHistoryOnEnd = true
+                    endSession()
+                }
+                .show()
         }
 
         binding.sendBtn.setOnClickListener {
@@ -93,17 +132,29 @@ class ConsultFragment : Fragment() {
             )
 
             binding.sendBtn.isEnabled = false // 전송 버튼 잠깐 비활성화
-
             viewModel.chatStream(request) // 채팅 스트리밍 시작
-
             binding.messageInput.text?.clear() // 입력창 비우기
         }
 
         binding.plusIv.setOnClickListener {
-            endCurrentSessionIfNeeded()
+
+            // 유저가 실제로 질문을 했는지 확인
+            val hadConversation = viewModel.messages.value
+                ?.any { msg -> msg.isUser && msg.text.isNotBlank() } == true
+
+            // 이전 세션 종료 요청
+            currentSessionId?.let { oldSessionId ->
+                if (hadConversation) {
+                    navigateToHistoryOnEnd = false
+                    val request = SessionEndRequest(sessionId = oldSessionId)
+                    viewModel.endConsult(request)
+                }
+            }
+
             viewModel.resetMessages()
             viewModel.startConsult()
             showQuickQuestions()
+            binding.endIv.visibility = View.GONE
         }
 
         // Chip 빠른 질문
@@ -152,22 +203,69 @@ class ConsultFragment : Fragment() {
         viewModel.startConsult.observe(viewLifecycleOwner) { response ->
             currentSessionId = response.sessionId
             viewModel.resetMessages()
+            binding.endIv.visibility = View.GONE
         }
 
         viewModel.messages.observe(viewLifecycleOwner) { list ->
+            val binding = _binding ?: return@observe // 뷰가 사라졌으면 그냥 리턴
+            val recyclerView = binding.chatRv
+
             val newSize = list.size
 
             chatAdapter.submitList(list) {
                 // 새 말풍선이 추가된 경우에만 스크롤
                 if (newSize > lastItemCount && newSize > 0) {
-                    binding.chatRv.scrollToPosition(newSize - 1)
+                    recyclerView.scrollToPosition(newSize - 1)
                 }
                 lastItemCount = newSize
             }
 
+            // 첫 번째 사용자 메시지의 인덱스 찾기
+            val firstUserIndex = list.indexOfFirst { msg ->
+                msg.isUser && msg.text.isNotBlank()
+            }
+
+            // 그 이후에 에이전트 답변이 있는지 확인
+            val hasAgentReplyAfterUser = if (firstUserIndex == -1) {
+                false
+            } else {
+                list.drop(firstUserIndex + 1).any { msg ->
+                    !msg.isUser && msg.text.isNotBlank()
+                }
+            }
+
+            val hasActiveSession = !currentSessionId.isNullOrBlank()
+            val shouldShowEndButton = hasActiveSession && hasAgentReplyAfterUser
+
+            binding.endIv.visibility = if (shouldShowEndButton) View.VISIBLE else View.GONE
+
             // 스트리밍 완료 시 버튼 상태 복원
             if (!viewModel.isStreamingNow()) {
                 setupSendButtonState()
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.endConsultSuccess.collect { endedSessionId ->
+                    viewModel.summaryConsult(endedSessionId)
+                    if (navigateToHistoryOnEnd) {
+                        currentSessionId = null
+                        viewModel.resetMessages()
+                        binding.endIv.visibility = View.GONE
+                        parentFragmentManager.beginTransaction()
+                            .replace(R.id.main_frm, ConsultHistoryFragment())
+                            .addToBackStack(null)
+                            .commit()
+                    }
+                    navigateToHistoryOnEnd = false
+                }
+            }
+        }
+
+        viewModel.summaryResult.observe(viewLifecycleOwner) { summary ->
+            if (summary != null) {
+                Log.d("ConsultFragment", "요약 생성 완료: $summary")
             }
         }
 
@@ -184,16 +282,6 @@ class ConsultFragment : Fragment() {
         binding.messageInput.setSelection(text.length)
     }
 
-    private fun endCurrentSessionIfNeeded() {
-        val sessionId = currentSessionId ?: return  // 세션 없으면 아무것도 안 함
-
-        val request = SessionEndRequest(sessionId = sessionId)
-        viewModel.endConsult(request)
-
-        // 클라이언트 쪽 상태 초기화
-        currentSessionId = null
-    }
-
     // 빠른 질문 영역 숨기기
     private fun hideQuickQuestions() {
         binding.quickQuestionLabel.visibility = View.GONE
@@ -206,8 +294,17 @@ class ConsultFragment : Fragment() {
         binding.quickQuestionGroup.visibility = View.VISIBLE
     }
 
+    private fun endSession() {
+        val sessionId = currentSessionId ?: run {
+            Toast.makeText(requireContext(), "종료할 상담 세션이 없습니다.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val request = SessionEndRequest(sessionId = sessionId)
+        viewModel.endConsult(request)
+    }
+
     override fun onDestroyView() {
-        endCurrentSessionIfNeeded()
         historyDialog?.dismiss()
         historyDialog = null
         super.onDestroyView()
