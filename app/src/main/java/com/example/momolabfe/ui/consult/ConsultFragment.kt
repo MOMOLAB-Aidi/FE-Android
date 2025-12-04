@@ -125,6 +125,13 @@ class ConsultFragment : Fragment() {
         }
 
         binding.plusIv.setOnClickListener {
+            // 이전 세션은 서버에 종료 요청
+            currentSessionId?.let { oldSessionId ->
+                val request = SessionEndRequest(sessionId = oldSessionId)
+                viewModel.endConsult(request)
+                viewModel.summaryConsult(oldSessionId)
+            }
+
             viewModel.resetMessages()
             viewModel.startConsult()
             showQuickQuestions()
