@@ -251,47 +251,44 @@ class ConsultFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.endConsultSuccess.collect { endedSessionId ->
-                    // end 버튼으로 종료한 경우 요약 완료까지 기다렸다가 히스토리로 이동
-                    if (navigateToHistoryOnEnd) {
-                        waitingSummaryForSessionId = endedSessionId
-
-                        if (summaryDialog?.isShowing != true) {
-                            summaryDialog = AlertDialog.Builder(requireContext())
-                                .setMessage("이번 상담 내용을 정리하고 있어요.\n잠시만 기다려 주세요.")
-                                .setCancelable(false)
-                                .create()
-                            summaryDialog?.show()
-                        }
-
-                        viewModel.summaryConsult(endedSessionId)
-                        navigateToHistoryOnEnd = false // 한 번 처리 후 플래그 초기화
-                    } else {
-                        viewModel.summaryConsult(endedSessionId)
-                    }
+                    waitingSummaryForSessionId = endedSessionId
+                    showSummaryDialog()
+                    viewModel.summaryConsult(endedSessionId)
                 }
             }
         }
 
-        viewModel.summaryResult.observe(viewLifecycleOwner) { summary ->
-            if (summary == null) return@observe
+        viewModel.summaryResult.observe(viewLifecycleOwner) { summaryRow ->
+            if (summaryRow == null) return@observe
 
-            val targetSessionId = waitingSummaryForSessionId ?: return@observe
+            // 현재 기다리던 세션 요약인지 확인
+            if (summaryRow.sessionId != waitingSummaryForSessionId) return@observe
 
-            Log.d("ConsultFragment", "요약 생성 완료: $summary (session=$targetSessionId)")
+            waitingSummaryForSessionId = null // 더 이상 기다릴 세션 없음
 
-            // 다이얼로그 닫기
             summaryDialog?.dismiss()
             summaryDialog = null
-            waitingSummaryForSessionId = null
 
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.main_frm, ConsultHistoryFragment())
-                .addToBackStack(null)
-                .commit()
+            Log.d("ConsultFragment", "요약 생성 완료: ${summaryRow.summary}")
+
+            // 종료 버튼으로 끝낸 경우에만 히스토리로 이동
+            if (navigateToHistoryOnEnd) {
+                currentSessionId = null
+                viewModel.resetMessages()
+                binding.endIv.visibility = View.GONE
+
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.main_frm, ConsultHistoryFragment())
+                    .addToBackStack(null)
+                    .commit()
+
+                navigateToHistoryOnEnd = false
+            }
         }
 
         viewModel.errorMessage.observe(viewLifecycleOwner) { errorMsg ->
             if (errorMsg != null) {
+                hideSummaryDialog()
                 Toast.makeText(requireContext(), errorMsg, Toast.LENGTH_SHORT).show()
                 viewModel.clearError()
             }
@@ -323,6 +320,26 @@ class ConsultFragment : Fragment() {
 
         val request = SessionEndRequest(sessionId = sessionId)
         viewModel.endConsult(request)
+    }
+
+    private fun showSummaryDialog() {
+        if (summaryDialog?.isShowing == true) return
+
+        summaryDialog = Dialog(requireContext()).apply {
+            setContentView(R.layout.dialog_summary_loading)
+            setCancelable(false)
+            setCanceledOnTouchOutside(false)
+            window?.setBackgroundDrawableResource(android.R.color.transparent)
+            window?.attributes = window?.attributes?.apply {
+                width = ViewGroup.LayoutParams.MATCH_PARENT
+            }
+            show()
+        }
+    }
+
+    private fun hideSummaryDialog() {
+        summaryDialog?.dismiss()
+        summaryDialog = null
     }
 
     override fun onDestroyView() {
