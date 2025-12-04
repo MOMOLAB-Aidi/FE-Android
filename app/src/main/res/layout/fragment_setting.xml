@@ -290,7 +290,7 @@
                         app:layout_constraintTop_toTopOf="@id/notification_iv"/>
 
                     <ImageView
-                        android:id="@+id/record_create_iv"
+                        android:id="@+id/record_time_iv"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="40dp"
@@ -298,6 +298,53 @@
                         android:src="@drawable/ic_notification_gray_sv"
                         app:layout_constraintTop_toBottomOf="@id/notification_tv"
                         app:layout_constraintStart_toStartOf="@id/notification_iv"/>
+
+                    <TextView
+                        android:id="@+id/record_time_title_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:text="투석 시간 알림"
+                        android:textColor="@color/text_primary"
+                        android:textSize="15sp"
+                        android:includeFontPadding="false"
+                        android:fontFamily="@font/noto_sans_kr_regular"
+                        app:layout_constraintTop_toTopOf="@id/record_time_iv"
+                        app:layout_constraintStart_toEndOf="@id/record_time_iv"/>
+
+                    <TextView
+                        android:id="@+id/record_time_content_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="ON >"
+                        android:textColor="@color/text_primary"
+                        android:textSize="15sp"
+                        android:includeFontPadding="false"
+                        android:fontFamily="@font/noto_sans_kr_regular"
+                        app:layout_constraintTop_toTopOf="@id/record_time_title_tv"
+                        app:layout_constraintEnd_toEndOf="@id/record_create_content_tv" />
+
+                    <ImageView
+                        android:id="@+id/horizon_01_iv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginEnd="20dp"
+                        android:layout_marginTop="20dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/ic_horizon_sv"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/record_time_iv"/>
+
+                    <ImageView
+                        android:id="@+id/record_create_iv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:src="@drawable/ic_notification_gray_sv"
+                        app:layout_constraintTop_toBottomOf="@id/horizon_01_iv"
+                        app:layout_constraintStart_toStartOf="@id/record_time_iv"/>
 
                     <TextView
                         android:id="@+id/record_create_title_tv"
@@ -317,61 +364,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="25dp"
-                        android:text="ON >"
-                        android:textColor="@color/text_primary"
-                        android:textSize="15sp"
-                        android:includeFontPadding="false"
-                        android:fontFamily="@font/noto_sans_kr_regular"
-                        app:layout_constraintTop_toTopOf="@id/record_create_title_tv"
-                        app:layout_constraintEnd_toEndOf="parent"/>
-
-                    <ImageView
-                        android:id="@+id/horizon_01_iv"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
-                        android:layout_marginEnd="20dp"
-                        android:layout_marginTop="20dp"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/ic_horizon_sv"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/record_create_content_tv"/>
-
-                    <ImageView
-                        android:id="@+id/record_tip_iv"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
-                        android:src="@drawable/ic_notification_gray_sv"
-                        app:layout_constraintTop_toBottomOf="@id/horizon_01_iv"
-                        app:layout_constraintStart_toStartOf="@id/record_create_iv"/>
-
-                    <TextView
-                        android:id="@+id/record_tip_title_tv"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="5dp"
-                        android:text="가이드라인 알림"
-                        android:textColor="@color/text_primary"
-                        android:textSize="15sp"
-                        android:includeFontPadding="false"
-                        android:fontFamily="@font/noto_sans_kr_regular"
-                        app:layout_constraintTop_toTopOf="@id/record_tip_iv"
-                        app:layout_constraintStart_toEndOf="@id/record_tip_iv"/>
-
-                    <TextView
-                        android:id="@+id/record_tip_content_tv"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
                         android:layout_marginBottom="30dp"
                         android:text="ON >"
                         android:textColor="@color/text_primary"
                         android:textSize="15sp"
                         android:includeFontPadding="false"
                         android:fontFamily="@font/noto_sans_kr_regular"
-                        app:layout_constraintTop_toTopOf="@id/record_tip_title_tv"
-                        app:layout_constraintEnd_toEndOf="@id/record_create_content_tv"
+                        app:layout_constraintTop_toTopOf="@id/record_create_title_tv"
+                        app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent"/>
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
