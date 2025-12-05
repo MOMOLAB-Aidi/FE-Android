@@ -241,11 +241,10 @@ class ConsultFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.summaryUiState.collect { state ->
-                    // 현재 요약 중인 세션이 우리가 기다리는 세션인지 확인
-                    val isMySession = state.targetSessionId != null &&
-                            state.targetSessionId == waitingSummaryForSessionId
-
-                    if (state.isSummarizing && isMySession && navigateToHistoryOnEnd) {
+                    if (state.isSummarizing &&
+                        state.targetSessionId != null &&
+                        state.navigateToHistoryOnEnd
+                    ) {
                         showSummaryDialog()
                     } else {
                         hideSummaryDialog()
@@ -288,7 +287,7 @@ class ConsultFragment : Fragment() {
                 val msg = if (waitingSummaryForSessionId != null && navigateToHistoryOnEnd) {
                     waitingSummaryForSessionId = null
                     navigateToHistoryOnEnd = false
-                    "요약 생성 중 오류가 발생했어요.\n상담 기록 화면에서 다시 시도해 주세요."
+                    getString(R.string.summary_error_message)
                 } else {
                     errorMsg
                 }
@@ -368,8 +367,7 @@ class ConsultFragment : Fragment() {
 
                 Toast.makeText(
                     requireContext(),
-                    "요약 생성이 지연되어 기록 화면으로 이동합니다.\n" +
-                            "기록에서 '요약 다시 생성'을 눌러 나중에 다시 시도할 수 있어요.",
+                    getString(R.string.summary_timeout_message),
                     Toast.LENGTH_LONG
                 ).show()
 
