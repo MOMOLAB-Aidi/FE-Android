@@ -26,5 +26,13 @@
     <string name="emergency_message">갑작스러운 호흡곤란, 의식 저하, 심한 흉통·복통이 있을 경우 가까운 응급실로 즉시 이동하세요.\n\n- 119에 전화 후, 복막투석 환자임을 먼저 알리세요.\n- 주치의 또는 투석 담당 의료진의 연락처를 미리 휴대폰에 저장해 두면 도움이 됩니다.\n- 이동 중에는 혼자 있지 않도록 보호자와 함께 움직이세요.</string>
 
     <string name="typing_indicator">답변을 생성하고 있습니다 • • •</string>
-    <string name="summary_generating">요약 생성 중...</string>
+
+    <string name="summary_loading_message">이번 상담 내용을 정리하고 있어요...</string>
+    <string name="summary_loading_sub_message">잠시만 기다리면 요약이 상담 기록에 저장됩니다.</string>
+
+    <string name="summary_not_generated">아직 요약이 생성되지 않았어요.</string>
+    <string name="retry_summary">요약 다시 생성</string>
+
+    <string name="summary_error_message">요약 생성 중 오류가 발생했어요.\n상담 기록 화면에서 다시 시도해 주세요.</string>
+    <string name="summary_timeout_message">요약 생성이 지연되어 기록 화면으로 이동합니다.\n기록에서 \'요약 다시 생성\'을 눌러 나중에 다시 시도할 수 있어요.</string>
 </resources>

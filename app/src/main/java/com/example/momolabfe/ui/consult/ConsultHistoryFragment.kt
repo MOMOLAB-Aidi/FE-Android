@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -33,6 +34,10 @@ class ConsultHistoryFragment : Fragment() {
             },
             onDelete = { item ->
                 showDeleteConfirmDialog(item.sessionId)
+            },
+            onRetrySummary = { item ->
+                viewModel.summaryConsult(item.sessionId)
+                Toast.makeText(requireContext(), "요약을 다시 생성하고 있어요.", Toast.LENGTH_SHORT).show()
             }
         )
     }
@@ -69,6 +74,19 @@ class ConsultHistoryFragment : Fragment() {
     private fun setupObservers() {
         viewModel.history.observe(viewLifecycleOwner) { list ->
             historyAdapter.submitList(list)
+        }
+
+        viewModel.summaryResult.observe(viewLifecycleOwner) { row ->
+            if (row == null) return@observe
+
+            viewModel.applySummaryToHistory(row) // 기록 화면에서 재시도한 요약도 이걸로 반영
+        }
+
+        viewModel.errorMessage.observe(viewLifecycleOwner) { msg ->
+            msg?.let {
+                Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+                viewModel.clearError()
+            }
         }
     }
 
