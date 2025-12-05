@@ -37,7 +37,7 @@ class ConsultHistoryFragment : Fragment() {
             },
             onRetrySummary = { item ->
                 viewModel.retrySummaryFromHistory(item.sessionId)
-                Toast.makeText(requireContext(), "요약을 다시 생성하고 있어요.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "요약을 생성하고 있어요.", Toast.LENGTH_SHORT).show()
             }
         )
     }
