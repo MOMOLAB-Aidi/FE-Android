@@ -255,7 +255,7 @@ class ConsultFragment : Fragment() {
             hideSummaryDialog()
             waitingSummaryForSessionId = null // 더 이상 기다릴 세션 없음
 
-            Log.d("ConsultFragment", "요약 생성 완료: ${summaryRow.summary}")
+            Log.d("ConsultFragment", "요약 생성 완료 (sessionId=${summaryRow.sessionId}, length=${summaryRow.summary.length})")
 
             // 종료 버튼으로 끝낸 경우에만 히스토리로 이동
             if (navigateToHistoryOnEnd) {
@@ -329,6 +329,7 @@ class ConsultFragment : Fragment() {
             hideSummaryDialog()
             Toast.makeText(requireContext(), "요약 생성 시간이 초과되었습니다.", Toast.LENGTH_SHORT).show()
             waitingSummaryForSessionId = null
+            navigateToHistoryOnEnd = false
         }
     }
 
