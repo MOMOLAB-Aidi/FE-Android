@@ -113,6 +113,7 @@ class ConsultViewModel @Inject constructor(
                 _errorMessage.value = e.localizedMessage ?: "에이전트 대화 중 오류가 발생했습니다."
             } finally {
                 isStreaming = false
+                markAgentMessageCompleted()
             }
         }
     }
@@ -186,28 +187,21 @@ class ConsultViewModel @Inject constructor(
     // 특정 상담 세션 요약
     fun summaryConsult(sessionId: String) {
         viewModelScope.launch {
-            // 요약 시작 상태 세팅
-            _summaryUiState.value = SummaryUiState(
-                isSummarizing = true,
-                targetSessionId = sessionId
-            )
 
             val result = consultRepository.summaryConsult(sessionId)
             result.onSuccess { response ->
                 _summaryResult.value = response
 
                 // 요약 종료 상태로 리셋
-                _summaryUiState.value = SummaryUiState(
-                    isSummarizing = false,
-                    targetSessionId = null
+                _summaryUiState.value = _summaryUiState.value.copy(
+                    isSummarizing = false
                 )
             }.onFailure { e ->
                 _errorMessage.value = e.localizedMessage ?: "특정 상담 세션 요약에 실패했습니다."
 
                 // 실패해도 상태는 종료로 리셋
-                _summaryUiState.value = SummaryUiState(
-                    isSummarizing = false,
-                    targetSessionId = null
+                _summaryUiState.value = _summaryUiState.value.copy(
+                    isSummarizing = false
                 )
             }
         }
@@ -258,7 +252,6 @@ class ConsultViewModel @Inject constructor(
             val last = current.last()
             current[current.lastIndex] = last.copy(
                 text = fullText,
-                isTyping = false
             )
         } else {
             // 에이전트 말풍선이 없으면 새로 하나 생성
@@ -267,7 +260,7 @@ class ConsultViewModel @Inject constructor(
                     id = nextId(),
                     text = fullText,
                     isUser = false,
-                    isTyping = false
+                    isTyping = true
                 )
             )
         }
@@ -283,6 +276,40 @@ class ConsultViewModel @Inject constructor(
         val old = current[index]
         current[index] = old.copy(summary = row.summary)
         _history.value = current
+    }
+
+    // 답변 완료 마킹 함수
+    private fun markAgentMessageCompleted() {
+        val current = _messages.value.orEmpty().toMutableList()
+        if (current.isNotEmpty() && !current.last().isUser) {
+            val last = current.last()
+            if (last.isTyping) {
+                current[current.lastIndex] = last.copy(isTyping = false)
+                _messages.value = current
+            }
+        }
+    }
+
+    // 상담 화면에서 종료 버튼으로 끝냈을 때 호출
+    fun startSummaryFromConsultEnd(sessionId: String) {
+        _summaryUiState.value = SummaryUiState(
+            isSummarizing = true,
+            targetSessionId = sessionId,
+            navigateToHistoryOnEnd = true
+        )
+
+        summaryConsult(sessionId)
+    }
+
+    // 기록 화면에서 "요약 다시 생성" 눌렀을 때 호출
+    fun retrySummaryFromHistory(sessionId: String) {
+        _summaryUiState.value = SummaryUiState(
+            isSummarizing = true,
+            targetSessionId = sessionId,
+            navigateToHistoryOnEnd = false
+        )
+
+        summaryConsult(sessionId)
     }
 
     // 새 상담 시작 시 히스토리 초기화

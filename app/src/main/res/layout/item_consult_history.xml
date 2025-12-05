@@ -76,7 +76,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
-            android:text="요약 다시 생성"
+            tools:text="요약 다시 생성"
             android:textColor="@color/secondary_text"
             android:textSize="12sp"
             android:visibility="gone"

@@ -65,8 +65,8 @@ class ConsultFragment : Fragment() {
 
         binding.endIv.visibility = View.GONE
 
-        // 이전 세션의 말풍선/이벤트/에러 모두 정리
-        viewModel.resetMessages()
+        currentSessionId = null // 이전 세션 ID 무효화
+        viewModel.resetMessages() // 말풍선 / 에이전트 버퍼 모두 초기화
         viewModel.clearError()
 
         setupRecyclerView()
@@ -74,10 +74,7 @@ class ConsultFragment : Fragment() {
         showQuickQuestions()
         setupSendButtonState()
 
-        // 처음 진입 시 세션 없으면 상담 세션 생성
-        if (currentSessionId == null) {
-            viewModel.startConsult()
-        }
+        viewModel.startConsult()
 
         binding.historyIv.setOnClickListener {
             parentFragmentManager.beginTransaction()
@@ -186,7 +183,6 @@ class ConsultFragment : Fragment() {
     private fun setupObservers() {
         viewModel.startConsult.observe(viewLifecycleOwner) { response ->
             currentSessionId = response.sessionId
-            viewModel.resetMessages()
             binding.endIv.visibility = View.GONE
         }
 
@@ -213,13 +209,18 @@ class ConsultFragment : Fragment() {
             val hasAgentReplyAfterUser = if (firstUserIndex == -1) {
                 false
             } else {
-                list.drop(firstUserIndex + 1).any { msg ->
-                    !msg.isUser && msg.text.isNotBlank()
-                }
+                list
+                    .drop(firstUserIndex + 1)
+                    .any { msg ->
+                        !msg.isUser &&
+                                msg.text.isNotBlank() &&
+                                !msg.isTyping // 스트리밍 중인 말풍선은 제외
+                    }
             }
 
             val hasActiveSession = !currentSessionId.isNullOrBlank()
-            val shouldShowEndButton = hasActiveSession && hasAgentReplyAfterUser
+            val shouldShowEndButton =
+                hasActiveSession && hasAgentReplyAfterUser && !viewModel.isStreamingNow()
 
             binding.endIv.visibility = if (shouldShowEndButton) View.VISIBLE else View.GONE
 
@@ -233,7 +234,7 @@ class ConsultFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.endConsultSuccess.collect { endedSessionId ->
                     waitingSummaryForSessionId = endedSessionId
-                    viewModel.summaryConsult(endedSessionId)
+                    viewModel.startSummaryFromConsultEnd(endedSessionId)
                 }
             }
         }
