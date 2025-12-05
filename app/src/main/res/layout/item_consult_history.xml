@@ -71,6 +71,19 @@
             app:layout_constraintStart_toStartOf="@id/title_tv"
             app:layout_constraintEnd_toStartOf="@id/delete_iv"/>
 
+        <TextView
+            android:id="@+id/retry_summary_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:text="요약 다시 생성"
+            android:textColor="@color/secondary_text"
+            android:textSize="12sp"
+            android:fontFamily="@font/noto_sans_kr_regular"
+            android:includeFontPadding="false"
+            app:layout_constraintTop_toBottomOf="@id/title_tv"
+            app:layout_constraintStart_toStartOf="@id/title_tv"/>
+
         <ImageView
             android:id="@+id/delete_iv"
             android:layout_width="wrap_content"

@@ -233,8 +233,23 @@ class ConsultFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.endConsultSuccess.collect { endedSessionId ->
                     waitingSummaryForSessionId = endedSessionId
-                    showSummaryDialog()
                     viewModel.summaryConsult(endedSessionId)
+                }
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.summaryUiState.collect { state ->
+                    // 현재 요약 중인 세션이 우리가 기다리는 세션인지 확인
+                    val isMySession = state.targetSessionId != null &&
+                            state.targetSessionId == waitingSummaryForSessionId
+
+                    if (state.isSummarizing && isMySession && navigateToHistoryOnEnd) {
+                        showSummaryDialog()
+                    } else {
+                        hideSummaryDialog()
+                    }
                 }
             }
         }
@@ -242,20 +257,14 @@ class ConsultFragment : Fragment() {
         viewModel.summaryResult.observe(viewLifecycleOwner) { summaryRow ->
             if (summaryRow == null) return@observe
 
-            // 현재 기다리던 세션이 아니면 무시하되, 대기 중이었다면 정리
-            if (summaryRow.sessionId != waitingSummaryForSessionId) {
-                if (waitingSummaryForSessionId != null) {
-                    Log.w("ConsultFragment", "예상치 못한 세션의 요약 수신")
-                    hideSummaryDialog()
-                    waitingSummaryForSessionId = null
-                }
-                return@observe
+            Log.d("ConsultFragment", "요약 생성 완료 (sessionId=${summaryRow.sessionId}, length=${summaryRow.summary.length})")
+
+            // 우리가 기다리던 세션이면 waitingSummaryForSessionId 비워주기
+            if (summaryRow.sessionId == waitingSummaryForSessionId) {
+                waitingSummaryForSessionId = null
             }
 
             hideSummaryDialog()
-            waitingSummaryForSessionId = null // 더 이상 기다릴 세션 없음
-
-            Log.d("ConsultFragment", "요약 생성 완료 (sessionId=${summaryRow.sessionId}, length=${summaryRow.summary.length})")
 
             // 종료 버튼으로 끝낸 경우에만 히스토리로 이동
             if (navigateToHistoryOnEnd) {
@@ -275,7 +284,16 @@ class ConsultFragment : Fragment() {
         viewModel.errorMessage.observe(viewLifecycleOwner) { errorMsg ->
             if (errorMsg != null) {
                 hideSummaryDialog()
-                Toast.makeText(requireContext(), errorMsg, Toast.LENGTH_SHORT).show()
+
+                val msg = if (waitingSummaryForSessionId != null && navigateToHistoryOnEnd) {
+                    waitingSummaryForSessionId = null
+                    navigateToHistoryOnEnd = false
+                    "요약 생성 중 오류가 발생했어요.\n상담 기록 화면에서 다시 시도해 주세요."
+                } else {
+                    errorMsg
+                }
+
+                Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
                 viewModel.clearError()
             }
         }
@@ -304,6 +322,10 @@ class ConsultFragment : Fragment() {
             return
         }
 
+        // 세션 종료
+        currentSessionId = null
+        binding.endIv.visibility = View.GONE
+
         val request = SessionEndRequest(sessionId = sessionId)
         viewModel.endConsult(request)
     }
@@ -326,10 +348,36 @@ class ConsultFragment : Fragment() {
         summaryTimeoutJob?.cancel()
         summaryTimeoutJob = viewLifecycleOwner.lifecycleScope.launch {
             delay(30_000)
-            hideSummaryDialog()
-            Toast.makeText(requireContext(), "요약 생성 시간이 초과되었습니다.", Toast.LENGTH_SHORT).show()
-            waitingSummaryForSessionId = null
+
+            if (!isAdded || _binding == null) return@launch // 뷰가 이미 파괴된 경우 안전하게 종료
+
+            summaryDialog?.dismiss()
+            summaryDialog = null
+            summaryTimeoutJob = null
+
+            // 지금 이 종료가 종료 버튼에서 온 것인지 플래그 복사
+            val shouldNavigateToHistory = navigateToHistoryOnEnd
             navigateToHistoryOnEnd = false
+            waitingSummaryForSessionId = null
+
+            if (shouldNavigateToHistory) {
+                // 세션은 끝났다고 보고 정리
+                currentSessionId = null
+                viewModel.resetMessages()
+                binding.endIv.visibility = View.GONE
+
+                Toast.makeText(
+                    requireContext(),
+                    "요약 생성이 지연되어 기록 화면으로 이동합니다.\n" +
+                            "기록에서 '요약 다시 생성'을 눌러 나중에 다시 시도할 수 있어요.",
+                    Toast.LENGTH_LONG
+                ).show()
+
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.main_frm, ConsultHistoryFragment())
+                    .addToBackStack(null)
+                    .commit()
+            }
         }
     }
 

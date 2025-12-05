@@ -14,10 +14,14 @@ import com.example.momolabfe.remote.consult.model.SessionEndResponse
 import com.example.momolabfe.remote.consult.model.StartConsultResponse
 import com.example.momolabfe.remote.consult.repository.ConsultRepository
 import com.example.momolabfe.ui.consult.data.ChatMessage
+import com.example.momolabfe.ui.consult.data.SummaryUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -65,6 +69,10 @@ class ConsultViewModel @Inject constructor(
     // 동시에 여러 번 스트리밍 되는 것 방지용 플래그
     private var isStreaming: Boolean = false
     fun isStreamingNow(): Boolean = isStreaming
+
+    // 요약 UI 상태 (요약 중인지, 어떤 세션인지)
+    private val _summaryUiState = MutableStateFlow(SummaryUiState())
+    val summaryUiState: StateFlow<SummaryUiState> = _summaryUiState.asStateFlow()
 
     // 상담 시작
     fun startConsult() {
@@ -178,11 +186,29 @@ class ConsultViewModel @Inject constructor(
     // 특정 상담 세션 요약
     fun summaryConsult(sessionId: String) {
         viewModelScope.launch {
+            // 요약 시작 상태 세팅
+            _summaryUiState.value = SummaryUiState(
+                isSummarizing = true,
+                targetSessionId = sessionId
+            )
+
             val result = consultRepository.summaryConsult(sessionId)
             result.onSuccess { response ->
                 _summaryResult.value = response
+
+                // 요약 종료 상태로 리셋
+                _summaryUiState.value = SummaryUiState(
+                    isSummarizing = false,
+                    targetSessionId = null
+                )
             }.onFailure { e ->
                 _errorMessage.value = e.localizedMessage ?: "특정 상담 세션 요약에 실패했습니다."
+
+                // 실패해도 상태는 종료로 리셋
+                _summaryUiState.value = SummaryUiState(
+                    isSummarizing = false,
+                    targetSessionId = null
+                )
             }
         }
     }
@@ -247,6 +273,16 @@ class ConsultViewModel @Inject constructor(
         }
         _messages.value = current
         _agentMessage.value = fullText
+    }
+
+    fun applySummaryToHistory(row: ConsultSessionSummaryRow) {
+        val current = _history.value?.toMutableList() ?: return
+        val index = current.indexOfFirst { it.sessionId == row.sessionId }
+        if (index == -1) return
+
+        val old = current[index]
+        current[index] = old.copy(summary = row.summary)
+        _history.value = current
     }
 
     // 새 상담 시작 시 히스토리 초기화

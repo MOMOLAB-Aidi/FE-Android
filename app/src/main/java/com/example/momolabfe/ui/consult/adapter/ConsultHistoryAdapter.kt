@@ -2,6 +2,7 @@ package com.example.momolabfe.ui.consult.adapter
 
 import android.graphics.Paint
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
@@ -15,7 +16,8 @@ import java.util.Locale
 
 class ConsultHistoryAdapter(
     private val onClick: (GetConsultResponse) -> Unit = {},
-    private val onDelete: (GetConsultResponse) -> Unit = {}
+    private val onDelete: (GetConsultResponse) -> Unit = {},
+    private val onRetrySummary: (GetConsultResponse) -> Unit = {}
 ) : ListAdapter<GetConsultResponse, ConsultHistoryAdapter.HistoryViewHolder>(DiffCallback) {
 
     companion object {
@@ -53,15 +55,26 @@ class ConsultHistoryAdapter(
 
             binding.titleTv.apply {
                 text = displayTitle
-
                 paintFlags = paintFlags or Paint.UNDERLINE_TEXT_FLAG
+                setOnClickListener { onClick(item) }
             }
 
             binding.dateTv.text = formatEndedAt(item.endedAt)
 
-            binding.summaryTv.apply {
-                text = item.summary.orEmpty()
-                isVisible = !item.summary.isNullOrBlank()
+            // 요약 / 요약 재생성 버튼 처리
+            if (item.summary.isNullOrBlank()) {
+                binding.summaryTv.text = "아직 요약이 생성되지 않았어요."
+                binding.retrySummaryTv.apply {
+                    visibility = View.VISIBLE
+                    text = "요약 다시 생성"
+                    setOnClickListener { onRetrySummary(item) }
+                }
+            } else {
+                binding.summaryTv.text = item.summary
+                binding.retrySummaryTv.apply {
+                    visibility = View.GONE
+                    setOnClickListener(null)
+                }
             }
 
             binding.titleTv.setOnClickListener {
