@@ -36,7 +36,7 @@ class ConsultHistoryFragment : Fragment() {
                 showDeleteConfirmDialog(item.sessionId)
             },
             onRetrySummary = { item ->
-                viewModel.summaryConsult(item.sessionId)
+                viewModel.retrySummaryFromHistory(item.sessionId)
                 Toast.makeText(requireContext(), "요약을 다시 생성하고 있어요.", Toast.LENGTH_SHORT).show()
             }
         )
