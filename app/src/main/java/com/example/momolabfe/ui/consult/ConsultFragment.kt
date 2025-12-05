@@ -77,10 +77,37 @@ class ConsultFragment : Fragment() {
         viewModel.startConsult()
 
         binding.historyIv.setOnClickListener {
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.main_frm, ConsultHistoryFragment())
-                .addToBackStack(null)
-                .commit()
+            val sessionId = currentSessionId
+
+            // 진행 중인 상담 여부 판단
+            val hasConversation = viewModel.messages.value
+                ?.any { msg -> msg.isUser && msg.text.isNotBlank() } == true
+
+            if (!sessionId.isNullOrBlank() && hasConversation) {
+                // 상담이 진행 중인데 히스토리 버튼을 클릭한 경우
+                AlertDialog.Builder(requireContext())
+                    .setTitle("기록 조회")
+                    .setMessage("현재 상담이 종료되지 않았습니다.\n기록을 조회하러 가시겠습니까?")
+                    .setNegativeButton("계속 상담") { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .setPositiveButton("기록 조회") { dialog, _ ->
+                        dialog.dismiss()
+                        endSession()
+
+                        parentFragmentManager.beginTransaction()
+                            .replace(R.id.main_frm, ConsultHistoryFragment())
+                            .addToBackStack(null)
+                            .commit()
+                    }
+                    .show()
+            } else {
+                // 진행 중인 상담이 없으면 바로 기록 화면으로 이동
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.main_frm, ConsultHistoryFragment())
+                    .addToBackStack(null)
+                    .commit()
+            }
         }
 
         binding.endIv.setOnClickListener {

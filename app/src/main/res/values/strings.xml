@@ -31,7 +31,7 @@
     <string name="summary_loading_sub_message">잠시만 기다리면 요약이 상담 기록에 저장됩니다.</string>
 
     <string name="summary_not_generated">아직 요약이 생성되지 않았어요.</string>
-    <string name="retry_summary">요약 다시 생성</string>
+    <string name="retry_summary">요약 생성</string>
 
     <string name="summary_error_message">요약 생성 중 오류가 발생했어요.\n상담 기록 화면에서 다시 시도해 주세요.</string>
     <string name="summary_timeout_message">요약 생성이 지연되어 기록 화면으로 이동합니다.\n기록에서 \'요약 다시 생성\'을 눌러 나중에 다시 시도할 수 있어요.</string>
