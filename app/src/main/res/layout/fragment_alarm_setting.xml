@@ -52,7 +52,7 @@
                     android:layout_marginBottom="20dp"
                     android:fontFamily="@font/noto_sans_kr_regular"
                     android:includeFontPadding="false"
-                    android:text="기록 알림과 가이드라인 알림을 관리합니다."
+                    android:text="투석 시간 알림과 기록 알림을 관리합니다."
                     android:textColor="@color/white"
                     android:textSize="17sp"
                     app:layout_constraintBottom_toBottomOf="parent"
