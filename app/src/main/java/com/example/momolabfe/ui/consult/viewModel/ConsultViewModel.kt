@@ -134,7 +134,6 @@ class ConsultViewModel @Inject constructor(
                             }
 
                             endedByToken = true
-
                             _autoEndSession.postValue(Unit) // 세션 자동 종료 신호 전송
 
                             return@collect

@@ -64,6 +64,7 @@ class ConsultFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.endIv.visibility = View.GONE
+        binding.plusIv.visibility = View.GONE
 
         currentSessionId = null // 이전 세션 ID 무효화
         viewModel.resetMessages() // 말풍선 / 에이전트 버퍼 모두 초기화
@@ -132,6 +133,14 @@ class ConsultFragment : Fragment() {
                     endSession()
                 }
                 .show()
+        }
+
+        binding.plusIv.setOnClickListener {
+            if (viewModel.isStreamingNow()) {
+                Toast.makeText(requireContext(), "이전 답변을 생성 중입니다.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            restartConsultSession()
         }
 
         binding.sendBtn.setOnClickListener {
@@ -211,6 +220,7 @@ class ConsultFragment : Fragment() {
         viewModel.startConsult.observe(viewLifecycleOwner) { response ->
             currentSessionId = response.sessionId
             binding.endIv.visibility = View.GONE
+            binding.plusIv.visibility = View.GONE
         }
 
         viewModel.messages.observe(viewLifecycleOwner) { list ->
@@ -285,6 +295,7 @@ class ConsultFragment : Fragment() {
             // 토큰 초과로 서버에서 이미 세션이 종료된 상태
             currentSessionId = null
             binding.endIv.visibility = View.GONE
+            binding.plusIv.visibility = View.VISIBLE
         }
 
         viewModel.summaryResult.observe(viewLifecycleOwner) { summaryRow ->
@@ -418,6 +429,17 @@ class ConsultFragment : Fragment() {
         summaryTimeoutJob = null
         summaryDialog?.dismiss()
         summaryDialog = null
+    }
+
+    private fun restartConsultSession() {
+        currentSessionId = null
+
+        viewModel.resetMessages()
+        showQuickQuestions()
+        binding.endIv.visibility = View.GONE
+        binding.plusIv.visibility = View.GONE
+
+        viewModel.startConsult() // 새 상담 시작
     }
 
     override fun onDestroyView() {

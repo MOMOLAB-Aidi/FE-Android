@@ -16,8 +16,7 @@ import com.example.momolabfe.databinding.ItemChatAgentBinding
 import com.example.momolabfe.databinding.ItemChatUserBinding
 import com.example.momolabfe.ui.consult.data.ChatMessage
 
-class ChatAdapter :
-    ListAdapter<ChatMessage, RecyclerView.ViewHolder>(DiffCallback) {
+class ChatAdapter : ListAdapter<ChatMessage, RecyclerView.ViewHolder>(DiffCallback) {
 
     private var typingAnimation: Animation? = null
     private fun getTypingAnimation(context: Context): Animation {
@@ -42,7 +41,8 @@ class ChatAdapter :
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if (getItem(position).isUser) TYPE_USER else TYPE_AGENT
+        val item = getItem(position)
+        return if (item.isUser) TYPE_USER else TYPE_AGENT
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
