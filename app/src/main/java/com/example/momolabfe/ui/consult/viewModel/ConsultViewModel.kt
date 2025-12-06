@@ -75,8 +75,8 @@ class ConsultViewModel @Inject constructor(
     val summaryUiState: StateFlow<SummaryUiState> = _summaryUiState.asStateFlow()
 
     // 자동 토큰 종료 이벤트
-    private val _autoEndSession = MutableLiveData<Unit>()
-    val autoEndSession: LiveData<Unit> get() = _autoEndSession
+    private val _autoEndSession = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+    val autoEndSession: SharedFlow<Unit> = _autoEndSession.asSharedFlow()
 
     // 상담 시작
     fun startConsult() {
@@ -116,7 +116,7 @@ class ConsultViewModel @Inject constructor(
                             val warnText = chunk.removePrefix("[TOKEN_WARN]").trim()
 
                             if (warnText.isNotEmpty()) {
-                                appendAgentMessage("**[세션 경고]** $warnText")
+                                appendTokenWarningMessage("[세션 경고] $warnText")
                             }
 
                             // 경고는 스트리밍 버퍼에 포함시키지 않음
@@ -130,11 +130,11 @@ class ConsultViewModel @Inject constructor(
                             removeTypingBubble()
 
                             if (endText.isNotEmpty()) {
-                                appendAgentMessage("**[세션 종료 안내]** $endText")
+                                appendSessionEndMessage("[세션 종료 안내] $endText")
                             }
 
                             endedByToken = true
-                            _autoEndSession.postValue(Unit) // 세션 자동 종료 신호 전송
+                            _autoEndSession.tryEmit(Unit) // 세션 자동 종료 신호 전송
 
                             return@collect
                         }
@@ -374,6 +374,33 @@ class ConsultViewModel @Inject constructor(
             current.removeAt(idx)
             _messages.value = current
         }
+    }
+
+    // 토큰 경고 메시지
+    private fun appendTokenWarningMessage(text: String) {
+        val current = _messages.value.orEmpty().toMutableList()
+        current.add(
+            ChatMessage(
+                id = nextId(),
+                text = text,
+                isUser = false,
+                isTokenWarning = true
+            )
+        )
+        _messages.value = current
+    }
+
+    // 세션 종료 안내 메시지
+    private fun appendSessionEndMessage(text: String) {
+        val current = _messages.value.orEmpty().toMutableList()
+        current.add(
+            ChatMessage(
+                id = nextId(),
+                text = text,
+                isUser = false,
+            )
+        )
+        _messages.value = current
     }
 
     // 새 상담 시작 시 히스토리 초기화

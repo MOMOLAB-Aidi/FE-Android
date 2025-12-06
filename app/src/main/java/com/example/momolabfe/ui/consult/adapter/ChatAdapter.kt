@@ -97,6 +97,7 @@ class ChatAdapter : ListAdapter<ChatMessage, RecyclerView.ViewHolder>(DiffCallba
                 // 경고 문구는 마크다운 파싱 필요 없으면 그냥 text
                 binding.agentMsgTv.text = item.text
             } else {
+                binding.agentMsgTv.setTextColor(binding.root.context.getColor(R.color.text_primary))
                 binding.agentMsgTv.setTypeface(null, Typeface.NORMAL)
 
                 // 마크다운 처리
