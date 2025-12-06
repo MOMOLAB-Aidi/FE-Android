@@ -74,6 +74,10 @@ class ConsultViewModel @Inject constructor(
     private val _summaryUiState = MutableStateFlow(SummaryUiState())
     val summaryUiState: StateFlow<SummaryUiState> = _summaryUiState.asStateFlow()
 
+    // 자동 토큰 종료 이벤트
+    private val _autoEndSession = MutableLiveData<Unit>()
+    val autoEndSession: LiveData<Unit> get() = _autoEndSession
+
     // 상담 시작
     fun startConsult() {
         viewModelScope.launch {
@@ -99,13 +103,49 @@ class ConsultViewModel @Inject constructor(
         viewModelScope.launch {
             isStreaming = true
             var buffer = ""
+            var endedByToken = false // [TOKEN_END]로 종료됐는지 여부
 
             showAgentTyping()
 
             try {
-                // chunk 들어올 때마다 버퍼 누적 + 그 버퍼로 마지막 에이전트 말풍선 갱신
                 consultRepository.chatStream(request)
                     .collect { chunk ->
+
+                        // 토큰 경고 처리
+                        if (chunk.startsWith("[TOKEN_WARN]")) {
+                            val warnText = chunk.removePrefix("[TOKEN_WARN]").trim()
+
+                            if (warnText.isNotEmpty()) {
+                                appendAgentMessage("**[세션 경고]** $warnText")
+                            }
+
+                            // 경고는 스트리밍 버퍼에 포함시키지 않음
+                            return@collect
+                        }
+
+                        // 토큰 한도 종료 안내 처리
+                        if (chunk.startsWith("[TOKEN_END]")) {
+                            val endText = chunk.removePrefix("[TOKEN_END]").trim()
+
+                            removeTypingBubble()
+
+                            if (endText.isNotEmpty()) {
+                                appendAgentMessage("**[세션 종료 안내]** $endText")
+                            }
+
+                            endedByToken = true
+
+                            _autoEndSession.postValue(Unit) // 세션 자동 종료 신호 전송
+
+                            return@collect
+                        }
+
+                        // 이미 [TOKEN_END]로 종료 처리된 상태라면 모든 chunk 무시
+                        if (endedByToken) {
+                            return@collect
+                        }
+
+                        // LLM 응답 스트리밍 처리
                         buffer += chunk
                         updateAgentStreamingMessage(buffer)
                     }
@@ -113,7 +153,10 @@ class ConsultViewModel @Inject constructor(
                 _errorMessage.value = e.localizedMessage ?: "에이전트 대화 중 오류가 발생했습니다."
             } finally {
                 isStreaming = false
-                markAgentMessageCompleted()
+
+                if (!endedByToken) {
+                    markAgentMessageCompleted()
+                }
             }
         }
     }
@@ -185,7 +228,7 @@ class ConsultViewModel @Inject constructor(
     }
 
     // 특정 상담 세션 요약
-    fun summaryConsult(sessionId: String) {
+    private fun summaryConsult(sessionId: String) {
         viewModelScope.launch {
 
             val result = consultRepository.summaryConsult(sessionId)
@@ -248,13 +291,18 @@ class ConsultViewModel @Inject constructor(
     private fun updateAgentStreamingMessage(fullText: String) {
         val current = _messages.value.orEmpty().toMutableList()
 
-        if (current.isNotEmpty() && !current.last().isUser) {
-            val last = current.last()
-            current[current.lastIndex] = last.copy(
+        // 마지막 타이핑 중인 에이전트 말풍선 찾기
+        val lastTypingIndex = current.indexOfLast { msg ->
+            !msg.isUser && msg.isTyping
+        }
+
+        if (lastTypingIndex != -1) {
+            val last = current[lastTypingIndex]
+            current[lastTypingIndex] = last.copy(
                 text = fullText,
             )
         } else {
-            // 에이전트 말풍선이 없으면 새로 하나 생성
+            // 타이핑 말풍선이 없으면 새로 생성
             current.add(
                 ChatMessage(
                     id = nextId(),
@@ -264,6 +312,7 @@ class ConsultViewModel @Inject constructor(
                 )
             )
         }
+
         _messages.value = current
         _agentMessage.value = fullText
     }
@@ -281,12 +330,16 @@ class ConsultViewModel @Inject constructor(
     // 답변 완료 마킹 함수
     private fun markAgentMessageCompleted() {
         val current = _messages.value.orEmpty().toMutableList()
-        if (current.isNotEmpty() && !current.last().isUser) {
-            val last = current.last()
-            if (last.isTyping) {
-                current[current.lastIndex] = last.copy(isTyping = false)
-                _messages.value = current
-            }
+
+        // 마지막 타이핑 중인 에이전트 말풍선 찾아서 isTyping = false로 변경
+        val idx = current.indexOfLast { msg ->
+            !msg.isUser && msg.isTyping
+        }
+
+        if (idx != -1) {
+            val last = current[idx]
+            current[idx] = last.copy(isTyping = false)
+            _messages.value = current
         }
     }
 
@@ -310,6 +363,18 @@ class ConsultViewModel @Inject constructor(
         )
 
         summaryConsult(sessionId)
+    }
+
+    // 타이핑 말풍선 제거
+    private fun removeTypingBubble() {
+        val current = _messages.value.orEmpty().toMutableList()
+        val idx = current.indexOfLast { msg ->
+            !msg.isUser && msg.isTyping
+        }
+        if (idx != -1) {
+            current.removeAt(idx)
+            _messages.value = current
+        }
     }
 
     // 새 상담 시작 시 히스토리 초기화

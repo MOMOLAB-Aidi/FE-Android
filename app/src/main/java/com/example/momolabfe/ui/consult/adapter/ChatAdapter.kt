@@ -1,6 +1,7 @@
 package com.example.momolabfe.ui.consult.adapter
 
 import android.content.Context
+import android.graphics.Typeface
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.view.animation.Animation
@@ -83,9 +84,22 @@ class ChatAdapter :
                 // 타이핑 인디케이터 + 애니메이션 효과
                 binding.agentMsgTv.text = binding.root.context.getString(R.string.typing_indicator)
                 binding.agentMsgTv.startAnimation(getTypingAnimation(binding.root.context))
+                return
+            }
+
+            binding.agentMsgTv.clearAnimation()
+
+            if (item.isTokenWarning) {
+                // 토큰 경고 말풍선 스타일
+                binding.agentMsgTv.setTextColor(binding.root.context.getColor(R.color.red))
+                binding.agentMsgTv.setTypeface(null, Typeface.BOLD)
+
+                // 경고 문구는 마크다운 파싱 필요 없으면 그냥 text
+                binding.agentMsgTv.text = item.text
             } else {
-                // 애니메이션 제거 + 실제 응답 표시
-                binding.agentMsgTv.clearAnimation()
+                binding.agentMsgTv.setTypeface(null, Typeface.NORMAL)
+
+                // 마크다운 처리
                 setMarkdownBold(binding.agentMsgTv, item.text)
             }
         }

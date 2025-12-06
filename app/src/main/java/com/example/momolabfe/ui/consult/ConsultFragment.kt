@@ -281,6 +281,12 @@ class ConsultFragment : Fragment() {
             }
         }
 
+        viewModel.autoEndSession.observe(viewLifecycleOwner) {
+            // 토큰 초과로 서버에서 이미 세션이 종료된 상태
+            currentSessionId = null
+            binding.endIv.visibility = View.GONE
+        }
+
         viewModel.summaryResult.observe(viewLifecycleOwner) { summaryRow ->
             if (summaryRow == null) return@observe
 
