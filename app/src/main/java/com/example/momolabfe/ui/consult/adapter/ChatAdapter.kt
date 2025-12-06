@@ -41,8 +41,7 @@ class ChatAdapter : ListAdapter<ChatMessage, RecyclerView.ViewHolder>(DiffCallba
     }
 
     override fun getItemViewType(position: Int): Int {
-        val item = getItem(position)
-        return if (item.isUser) TYPE_USER else TYPE_AGENT
+        return if (getItem(position).isUser) TYPE_USER else TYPE_AGENT
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
