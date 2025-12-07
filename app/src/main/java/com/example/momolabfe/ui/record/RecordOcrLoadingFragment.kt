@@ -231,7 +231,6 @@ class RecordOcrLoadingFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-        activity?.findViewById<BottomNavigationView>(R.id.main_bnv)?.visibility = View.VISIBLE
         super.onDestroyView()
         _binding = null
     }
