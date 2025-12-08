@@ -223,7 +223,9 @@ class ConsultFragment : Fragment() {
                         if (utteranceId == currentTtsUtteranceId) {
                             currentTtsUtteranceId = null
                             view.post {
-                                chatAdapter.onTtsFinished()
+                                if (_binding != null) {
+                                    chatAdapter.onTtsFinished()
+                                }
                             }
                         }
                     }
@@ -233,7 +235,9 @@ class ConsultFragment : Fragment() {
                         if (utteranceId == currentTtsUtteranceId) {
                             currentTtsUtteranceId = null
                             view.post {
-                                chatAdapter.onTtsFinished()
+                                if (_binding != null) {
+                                    chatAdapter.onTtsFinished()
+                                }
                             }
                         }
                     }
@@ -534,7 +538,7 @@ class ConsultFragment : Fragment() {
 
         // 5. 제수량 등: "100 g" → "100 그램"
         result = result.replace(
-            Regex("(\\d+)\\s*g", RegexOption.IGNORE_CASE)
+            Regex("(\\d+)\\s*g\\b", RegexOption.IGNORE_CASE)
         ) { match ->
             "${match.groupValues[1]} 그램"
         }
@@ -582,6 +586,7 @@ class ConsultFragment : Fragment() {
         hideSummaryDialog()
         super.onDestroyView()
         tts?.stop()
+        chatAdapter.onTtsFinished()
         _binding = null
     }
 

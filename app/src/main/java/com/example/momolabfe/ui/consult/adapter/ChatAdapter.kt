@@ -191,13 +191,15 @@ class ChatAdapter(
 
             binding.userSpeakerIv.setOnClickListener {
 
+                val speakText = binding.userMsgTv.text.toString()
+
                 if (playingUserMessageId == item.id) {
                     playingUserMessageId = null
-                    onUserSpeakToggle?.invoke(item.text, false)
+                    onUserSpeakToggle?.invoke(speakText, false)
                 } else {
                     playingUserMessageId = item.id
                     playingAgentMessageId = null
-                    onUserSpeakToggle?.invoke(item.text, true)
+                    onUserSpeakToggle?.invoke(speakText, true)
                 }
 
                 notifyDataSetChanged()
