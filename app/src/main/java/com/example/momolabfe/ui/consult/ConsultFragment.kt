@@ -3,6 +3,7 @@ package com.example.momolabfe.ui.consult
 import android.app.AlertDialog
 import android.app.Dialog
 import android.os.Bundle
+import android.speech.tts.TextToSpeech
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -25,6 +26,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 class ConsultFragment : Fragment() {
 
@@ -35,7 +37,12 @@ class ConsultFragment : Fragment() {
 
     // 발급받은 세션 ID 관리
     private var currentSessionId: String? = null
-    private val chatAdapter by lazy { ChatAdapter() }
+    private val chatAdapter by lazy {
+        ChatAdapter(
+            onAgentSpeakClick = { text -> speak(text) },
+            onUserSpeakClick = { text -> speak(text) }
+        )
+    }
 
     private var lastItemCount: Int = 0 // 마지막 아이템 개수 기억
     private var navigateToHistoryOnEnd: Boolean = false // 이번 세션 종료 후 히스토리 화면으로 이동할지 여부
@@ -45,6 +52,8 @@ class ConsultFragment : Fragment() {
     private var summaryDialog: Dialog? = null
 
     private var summaryTimeoutJob: Job? = null
+
+    private var tts: TextToSpeech? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -186,6 +195,12 @@ class ConsultFragment : Fragment() {
         }
         binding.chip4.setOnClickListener {
             setQuickQuestion("혈압이 높아요")
+        }
+
+        tts = TextToSpeech(requireContext()) { status ->
+            if (status == TextToSpeech.SUCCESS) {
+                tts?.setLanguage(Locale.KOREAN)
+            }
         }
     }
 
@@ -446,9 +461,28 @@ class ConsultFragment : Fragment() {
         viewModel.startConsult() // 새 상담 시작
     }
 
+    fun speak(text: String) {
+        val clean = text.trim()
+        if (clean.isEmpty()) return
+
+        tts?.speak(
+            clean,
+            TextToSpeech.QUEUE_FLUSH,
+            null,
+            "CONSULT_TTS_${System.currentTimeMillis()}"
+        )
+    }
+
     override fun onDestroyView() {
         hideSummaryDialog()
         super.onDestroyView()
+        tts?.stop()
         _binding = null
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        tts?.shutdown()
+        tts = null
     }
 }

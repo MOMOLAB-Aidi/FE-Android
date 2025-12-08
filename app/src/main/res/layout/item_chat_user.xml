@@ -44,4 +44,12 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <ImageView
+        android:id="@+id/user_speaker_iv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_speaker_sv"
+        app:layout_constraintTop_toBottomOf="@id/user_bubble_cv"
+        app:layout_constraintStart_toStartOf="@id/user_bubble_cv"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

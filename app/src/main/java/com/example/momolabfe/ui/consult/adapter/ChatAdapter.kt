@@ -3,6 +3,7 @@ package com.example.momolabfe.ui.consult.adapter
 import android.content.Context
 import android.graphics.Typeface
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
@@ -16,7 +17,10 @@ import com.example.momolabfe.databinding.ItemChatAgentBinding
 import com.example.momolabfe.databinding.ItemChatUserBinding
 import com.example.momolabfe.ui.consult.data.ChatMessage
 
-class ChatAdapter : ListAdapter<ChatMessage, RecyclerView.ViewHolder>(DiffCallback) {
+class ChatAdapter(
+    private val onAgentSpeakClick: ((String) -> Unit)? = null,
+    private val onUserSpeakClick: ((String) -> Unit)? = null
+) : ListAdapter<ChatMessage, RecyclerView.ViewHolder>(DiffCallback) {
 
     private var typingAnimation: Animation? = null
     private fun getTypingAnimation(context: Context): Animation {
@@ -114,6 +118,17 @@ class ChatAdapter : ListAdapter<ChatMessage, RecyclerView.ViewHolder>(DiffCallba
                     setMarkdownBold(binding.agentMsgTv, item.text)
                 }
             }
+
+            // 에이전트 말풍선 TTS 버튼 설정
+            val canSpeak = !item.text.isNullOrBlank() && !item.isTyping
+            binding.agentSpeakerIv.visibility = if (canSpeak) View.VISIBLE else View.GONE
+            if (canSpeak) {
+                binding.agentSpeakerIv.setOnClickListener {
+                    onAgentSpeakClick?.invoke(item.text)
+                }
+            } else {
+                binding.agentSpeakerIv.setOnClickListener(null)
+            }
         }
     }
 
@@ -123,6 +138,16 @@ class ChatAdapter : ListAdapter<ChatMessage, RecyclerView.ViewHolder>(DiffCallba
 
         fun bind(item: ChatMessage) {
             binding.userMsgTv.text = item.text
+
+            val canSpeak = !item.text.isNullOrBlank()
+            binding.userSpeakerIv.visibility = if (canSpeak) View.VISIBLE else View.GONE
+            if (canSpeak) {
+                binding.userSpeakerIv.setOnClickListener {
+                    onUserSpeakClick?.invoke(item.text)
+                }
+            } else {
+                binding.userSpeakerIv.setOnClickListener(null)
+            }
         }
     }
 
