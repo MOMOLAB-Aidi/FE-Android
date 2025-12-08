@@ -499,8 +499,24 @@ class ConsultFragment : Fragment() {
         viewModel.startConsult() // 새 상담 시작
     }
 
+    private fun cleanTextForTts(text: String): String {
+        var result = text
+
+        // "문장.2." → "문장. 2."
+        result = result.replace(Regex("\\.(\\d)")) {
+            ". ${it.groupValues[1]}"
+        }
+
+        // "1.혈압" → "1. 혈압"
+        result = result.replace(Regex("(\\d)\\.")) {
+            "${it.groupValues[1]}. "
+        }
+
+        return result.trim()
+    }
+
     private fun speak(text: String) {
-        val clean = text.trim()
+        val clean = cleanTextForTts(text)
         if (clean.isEmpty()) return
 
         val utteranceId = "CONSULT_TTS_${System.currentTimeMillis()}"
