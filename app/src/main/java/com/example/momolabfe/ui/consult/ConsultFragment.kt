@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
+import android.speech.tts.UtteranceProgressListener
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -66,6 +67,7 @@ class ConsultFragment : Fragment() {
     private var summaryTimeoutJob: Job? = null
 
     private var tts: TextToSpeech? = null
+    private var currentTtsUtteranceId: String? = null // 현재 재생 중인 TTS ID
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -212,6 +214,30 @@ class ConsultFragment : Fragment() {
         tts = TextToSpeech(requireContext()) { status ->
             if (status == TextToSpeech.SUCCESS) {
                 tts?.setLanguage(Locale.KOREAN)
+
+                tts?.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
+                    override fun onStart(utteranceId: String?) {}
+
+                    override fun onDone(utteranceId: String?) {
+                        // 현재 관리하는 utterance에 대해서만 처리
+                        if (utteranceId == currentTtsUtteranceId) {
+                            currentTtsUtteranceId = null
+                            view.post {
+                                chatAdapter.onTtsFinished()
+                            }
+                        }
+                    }
+
+                    @Deprecated("DEPRECATION")
+                    override fun onError(utteranceId: String?) {
+                        if (utteranceId == currentTtsUtteranceId) {
+                            currentTtsUtteranceId = null
+                            view.post {
+                                chatAdapter.onTtsFinished()
+                            }
+                        }
+                    }
+                })
             }
         }
     }
@@ -477,16 +503,21 @@ class ConsultFragment : Fragment() {
         val clean = text.trim()
         if (clean.isEmpty()) return
 
+        val utteranceId = "CONSULT_TTS_${System.currentTimeMillis()}"
+        currentTtsUtteranceId = utteranceId
+
         tts?.speak(
             clean,
             TextToSpeech.QUEUE_FLUSH,
             null,
-            "CONSULT_TTS_${System.currentTimeMillis()}"
+            utteranceId
         )
     }
 
     private fun stopSpeak() {
+        currentTtsUtteranceId = null
         tts?.stop()
+        chatAdapter.onTtsFinished()
     }
 
     override fun onDestroyView() {

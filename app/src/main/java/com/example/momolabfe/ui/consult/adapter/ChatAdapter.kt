@@ -34,6 +34,12 @@ class ChatAdapter(
         }
     }
 
+    fun onTtsFinished() {
+        playingAgentMessageId = null
+        playingUserMessageId = null
+        notifyDataSetChanged()
+    }
+
     companion object {
         private const val TYPE_AGENT = 0
         private const val TYPE_USER = 1
