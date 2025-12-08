@@ -149,12 +149,15 @@ class ChatAdapter(
             }
 
             binding.agentSpeakerIv.setOnClickListener {
+                val speakText = binding.agentMsgTv.text.toString() // 화면에 실제로 보이는 텍스트 기준으로 읽기
+
                 if (playingAgentMessageId == item.id) {
                     playingAgentMessageId = null
-                    onAgentSpeakerToggle?.invoke(item.text, false) // 음성 중지 요청
+                    onAgentSpeakerToggle?.invoke(speakText, false) // 음성 중지 요청
                 } else {
                     playingAgentMessageId = item.id
-                    onAgentSpeakerToggle?.invoke(item.text, true) // 음성 재생 요청
+                    playingUserMessageId = null // 사용자 쪽 재생 중이면 끄기
+                    onAgentSpeakerToggle?.invoke(speakText, true) // 음성 재생 요청
                 }
 
                 notifyDataSetChanged()
@@ -187,6 +190,7 @@ class ChatAdapter(
             }
 
             binding.userSpeakerIv.setOnClickListener {
+
                 if (playingUserMessageId == item.id) {
                     playingUserMessageId = null
                     onUserSpeakToggle?.invoke(item.text, false)
