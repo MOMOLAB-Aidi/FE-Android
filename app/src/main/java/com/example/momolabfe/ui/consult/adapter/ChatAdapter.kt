@@ -79,6 +79,9 @@ class ChatAdapter : ListAdapter<ChatMessage, RecyclerView.ViewHolder>(DiffCallba
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: ChatMessage) {
+
+            val context = binding.root.context
+
             if (item.isTyping) {
                 // 타이핑 인디케이터 + 애니메이션 효과
                 binding.agentMsgTv.text = binding.root.context.getString(R.string.typing_indicator)
@@ -88,19 +91,28 @@ class ChatAdapter : ListAdapter<ChatMessage, RecyclerView.ViewHolder>(DiffCallba
 
             binding.agentMsgTv.clearAnimation()
 
-            if (item.isTokenWarning) {
-                // 토큰 경고 말풍선 스타일
-                binding.agentMsgTv.setTextColor(binding.root.context.getColor(R.color.red))
-                binding.agentMsgTv.setTypeface(null, Typeface.BOLD)
 
-                // 경고 문구는 마크다운 파싱 필요 없으면 그냥 text
-                binding.agentMsgTv.text = item.text
-            } else {
-                binding.agentMsgTv.setTextColor(binding.root.context.getColor(R.color.text_primary))
-                binding.agentMsgTv.setTypeface(null, Typeface.NORMAL)
+            when {
+                // 세션 경고
+                item.isTokenWarning -> {
+                    binding.agentMsgTv.setTextColor(context.getColor(R.color.warning_yellow))
+                    binding.agentMsgTv.setTypeface(null, Typeface.BOLD)
+                    binding.agentMsgTv.text = item.text
+                }
 
-                // 마크다운 처리
-                setMarkdownBold(binding.agentMsgTv, item.text)
+                // 세션 종료
+                item.isSessionEnd -> {
+                    binding.agentMsgTv.setTextColor(context.getColor(R.color.red))
+                    binding.agentMsgTv.setTypeface(null, Typeface.BOLD)
+                    binding.agentMsgTv.text = item.text
+                }
+
+                // 일반 에이전트 답변
+                else -> {
+                    binding.agentMsgTv.setTextColor(context.getColor(R.color.text_primary))
+                    binding.agentMsgTv.setTypeface(null, Typeface.NORMAL)
+                    setMarkdownBold(binding.agentMsgTv, item.text)
+                }
             }
         }
     }

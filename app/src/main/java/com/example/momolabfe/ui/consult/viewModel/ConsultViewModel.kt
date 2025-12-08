@@ -104,8 +104,10 @@ class ConsultViewModel @Inject constructor(
             isStreaming = true
             var buffer = ""
             var endedByToken = false // [TOKEN_END]로 종료됐는지 여부
+            var typingShown = false // "답변 생성 중.." 말풍선이 실제로 화면에 나갔는지 여부
 
             showAgentTyping()
+            typingShown = true
 
             try {
                 consultRepository.chatStream(request)
@@ -116,7 +118,15 @@ class ConsultViewModel @Inject constructor(
                             val warnText = chunk.removePrefix("[TOKEN_WARN]").trim()
 
                             if (warnText.isNotEmpty()) {
+                                if (typingShown) {
+                                    removeTypingBubble()
+                                    typingShown = false
+                                }
+
                                 appendTokenWarningMessage("[세션 경고] $warnText")
+
+                                showAgentTyping()
+                                typingShown = true
                             }
 
                             // 경고는 스트리밍 버퍼에 포함시키지 않음
@@ -127,7 +137,11 @@ class ConsultViewModel @Inject constructor(
                         if (chunk.startsWith("[TOKEN_END]")) {
                             val endText = chunk.removePrefix("[TOKEN_END]").trim()
 
-                            removeTypingBubble()
+                            // 타이핑 말풍선이 이미 켜져 있다면 제거
+                            if (typingShown) {
+                                removeTypingBubble()
+                                typingShown = false
+                            }
 
                             if (endText.isNotEmpty()) {
                                 appendSessionEndMessage("[세션 종료 안내] $endText")
@@ -398,6 +412,7 @@ class ConsultViewModel @Inject constructor(
                 id = nextId(),
                 text = text,
                 isUser = false,
+                isSessionEnd = true
             )
         )
         _messages.value = current
