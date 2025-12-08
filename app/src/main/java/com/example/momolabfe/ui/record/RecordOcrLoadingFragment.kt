@@ -12,8 +12,6 @@ import com.bumptech.glide.Glide
 import com.example.momolabfe.R
 import com.example.momolabfe.databinding.FragmentRecordOcrLoadingBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
