@@ -502,13 +502,55 @@ class ConsultFragment : Fragment() {
     private fun cleanTextForTts(text: String): String {
         var result = text
 
-        // "문장.2." → "문장. 2."
+        // 1. 혈압: "120/80 mmHg" → "120 에 80 밀리미터 에이치지"
+        result = result.replace(
+            Regex("(\\d+)\\s*/\\s*(\\d+)\\s*mmHg", RegexOption.IGNORE_CASE)
+        ) { match ->
+            val sys = match.groupValues[1]
+            val dia = match.groupValues[2]
+            "$sys 에 $dia 밀리미터 에이치지"
+        }
+
+        // 2. 수축기/이완기 혈압: "90 mmHg" → "90 밀리미터 에이치지"
+        result = result.replace(
+            Regex("(\\d+)\\s*mmHg", RegexOption.IGNORE_CASE)
+        ) { match ->
+            "${match.groupValues[1]} 밀리미터 에이치지"
+        }
+
+        // 3. 혈당: "100 mg/dL" → "100 밀리그램 퍼 데시리터"
+        result = result.replace(
+            Regex("(\\d+)\\s*mg/dL", RegexOption.IGNORE_CASE)
+        ) { match ->
+            "${match.groupValues[1]} 밀리그램 퍼 데시리터"
+        }
+
+        // 4. 체중: "70 kg" → "70 킬로그램"
+        result = result.replace(
+            Regex("(\\d+)\\s*kg", RegexOption.IGNORE_CASE)
+        ) { match ->
+            "${match.groupValues[1]} 킬로그램"
+        }
+
+        // 5. 제수량 등: "100 g" → "100 그램"
+        result = result.replace(
+            Regex("(\\d+)\\s*g", RegexOption.IGNORE_CASE)
+        ) { match ->
+            "${match.groupValues[1]} 그램"
+        }
+
+        // 6. 농도: "2.5 %" → "2.5 퍼센트"
+        result = result.replace(
+            Regex("(\\d+(?:\\.\\d+)?)\\s*%", RegexOption.IGNORE_CASE)
+        ) { match ->
+            "${match.groupValues[1]} 퍼센트"
+        }
+
+        // ".2" → ". 2",  "1.혈압" → "1. 혈압"
         result = result.replace(Regex("\\.(\\d)")) {
             ". ${it.groupValues[1]}"
         }
-
-        // "1.혈압" → "1. 혈압"
-        result = result.replace(Regex("(\\d)\\.")) {
+        result = result.replace(Regex("(\\d)\\.(?!\\d)")) {
             "${it.groupValues[1]}. "
         }
 
@@ -516,7 +558,7 @@ class ConsultFragment : Fragment() {
     }
 
     private fun speak(text: String) {
-        val clean = cleanTextForTts(text)
+        val clean = cleanTextForTts(text).trim()
         if (clean.isEmpty()) return
 
         val utteranceId = "CONSULT_TTS_${System.currentTimeMillis()}"
