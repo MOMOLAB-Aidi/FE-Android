@@ -39,8 +39,20 @@ class ConsultFragment : Fragment() {
     private var currentSessionId: String? = null
     private val chatAdapter by lazy {
         ChatAdapter(
-            onAgentSpeakClick = { text -> speak(text) },
-            onUserSpeakClick = { text -> speak(text) }
+            onAgentSpeakerToggle = { text, turnOn ->
+                if (turnOn) {
+                    speak(text)
+                } else {
+                    stopSpeak()
+                }
+            },
+            onUserSpeakToggle = { text, turnOn ->
+                if (turnOn) {
+                    speak(text)
+                } else {
+                    stopSpeak()
+                }
+            }
         )
     }
 
@@ -461,7 +473,7 @@ class ConsultFragment : Fragment() {
         viewModel.startConsult() // 새 상담 시작
     }
 
-    fun speak(text: String) {
+    private fun speak(text: String) {
         val clean = text.trim()
         if (clean.isEmpty()) return
 
@@ -471,6 +483,10 @@ class ConsultFragment : Fragment() {
             null,
             "CONSULT_TTS_${System.currentTimeMillis()}"
         )
+    }
+
+    private fun stopSpeak() {
+        tts?.stop()
     }
 
     override fun onDestroyView() {

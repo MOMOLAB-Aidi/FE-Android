@@ -18,11 +18,16 @@ import com.example.momolabfe.databinding.ItemChatUserBinding
 import com.example.momolabfe.ui.consult.data.ChatMessage
 
 class ChatAdapter(
-    private val onAgentSpeakClick: ((String) -> Unit)? = null,
-    private val onUserSpeakClick: ((String) -> Unit)? = null
+    private val onAgentSpeakerToggle: ((text: String, turnOn: Boolean) -> Unit)? = null,
+    private val onUserSpeakToggle: ((text: String, turnOn: Boolean) -> Unit)? = null
 ) : ListAdapter<ChatMessage, RecyclerView.ViewHolder>(DiffCallback) {
 
     private var typingAnimation: Animation? = null
+
+    // 현재 "재생 중"인 에이전트 메시지 ID
+    private var playingAgentMessageId: Long? = null // 현재 재생 중인 에이전트 메시지 ID
+    private var playingUserMessageId: Long? = null // 현재 재생 중인 사용자 메시지 ID
+
     private fun getTypingAnimation(context: Context): Animation {
         return typingAnimation ?: AnimationUtils.loadAnimation(context, R.anim.typing_blink).also {
             typingAnimation = it
@@ -95,7 +100,6 @@ class ChatAdapter(
 
             binding.agentMsgTv.clearAnimation()
 
-
             when {
                 // 세션 경고
                 item.isTokenWarning -> {
@@ -119,15 +123,35 @@ class ChatAdapter(
                 }
             }
 
-            // 에이전트 말풍선 TTS 버튼 설정
-            val canSpeak = !item.text.isNullOrBlank() && !item.isTyping
-            binding.agentSpeakerIv.visibility = if (canSpeak) View.VISIBLE else View.GONE
-            if (canSpeak) {
-                binding.agentSpeakerIv.setOnClickListener {
-                    onAgentSpeakClick?.invoke(item.text)
-                }
-            } else {
+            // 스피커 토글 처리
+            val hasText = item.text.isNotBlank()
+            val isPlaying = (item.id == playingAgentMessageId)
+
+            binding.agentSpeakerIv.setImageResource(
+                if (isPlaying) R.drawable.ic_speaker_on_sv
+                else R.drawable.ic_speaker_off_sv
+            )
+
+            // 콜백이 없거나 텍스트가 없으면 숨김
+            val canUseSpeaker = hasText && onAgentSpeakerToggle != null
+            binding.agentSpeakerIv.visibility =
+                if (canUseSpeaker) View.VISIBLE else View.GONE
+
+            if (!canUseSpeaker) {
                 binding.agentSpeakerIv.setOnClickListener(null)
+                return
+            }
+
+            binding.agentSpeakerIv.setOnClickListener {
+                if (playingAgentMessageId == item.id) {
+                    playingAgentMessageId = null
+                    onAgentSpeakerToggle?.invoke(item.text, false) // 음성 중지 요청
+                } else {
+                    playingAgentMessageId = item.id
+                    onAgentSpeakerToggle?.invoke(item.text, true) // 음성 재생 요청
+                }
+
+                notifyDataSetChanged()
             }
         }
     }
@@ -139,14 +163,34 @@ class ChatAdapter(
         fun bind(item: ChatMessage) {
             binding.userMsgTv.text = item.text
 
-            val canSpeak = !item.text.isNullOrBlank()
-            binding.userSpeakerIv.visibility = if (canSpeak) View.VISIBLE else View.GONE
-            if (canSpeak) {
-                binding.userSpeakerIv.setOnClickListener {
-                    onUserSpeakClick?.invoke(item.text)
-                }
-            } else {
+            val hasText = item.text.isNotBlank()
+            val isPlaying = (item.id == playingUserMessageId)
+
+            binding.userSpeakerIv.setImageResource(
+                if (isPlaying) R.drawable.ic_speaker_on_sv
+                else R.drawable.ic_speaker_off_sv
+            )
+
+            val canUseSpeaker = hasText && onUserSpeakToggle != null
+            binding.userSpeakerIv.visibility =
+                if (canUseSpeaker) View.VISIBLE else View.GONE
+
+            if (!canUseSpeaker) {
                 binding.userSpeakerIv.setOnClickListener(null)
+                return
+            }
+
+            binding.userSpeakerIv.setOnClickListener {
+                if (playingUserMessageId == item.id) {
+                    playingUserMessageId = null
+                    onUserSpeakToggle?.invoke(item.text, false)
+                } else {
+                    playingUserMessageId = item.id
+                    playingAgentMessageId = null
+                    onUserSpeakToggle?.invoke(item.text, true)
+                }
+
+                notifyDataSetChanged()
             }
         }
     }
