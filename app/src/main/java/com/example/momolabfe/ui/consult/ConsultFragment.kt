@@ -3,6 +3,8 @@ package com.example.momolabfe.ui.consult
 import android.app.AlertDialog
 import android.app.Dialog
 import android.os.Bundle
+import android.speech.tts.TextToSpeech
+import android.speech.tts.UtteranceProgressListener
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -25,6 +27,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 class ConsultFragment : Fragment() {
 
@@ -35,7 +38,24 @@ class ConsultFragment : Fragment() {
 
     // 발급받은 세션 ID 관리
     private var currentSessionId: String? = null
-    private val chatAdapter by lazy { ChatAdapter() }
+    private val chatAdapter by lazy {
+        ChatAdapter(
+            onAgentSpeakerToggle = { text, turnOn ->
+                if (turnOn) {
+                    speak(text)
+                } else {
+                    stopSpeak()
+                }
+            },
+            onUserSpeakToggle = { text, turnOn ->
+                if (turnOn) {
+                    speak(text)
+                } else {
+                    stopSpeak()
+                }
+            }
+        )
+    }
 
     private var lastItemCount: Int = 0 // 마지막 아이템 개수 기억
     private var navigateToHistoryOnEnd: Boolean = false // 이번 세션 종료 후 히스토리 화면으로 이동할지 여부
@@ -45,6 +65,9 @@ class ConsultFragment : Fragment() {
     private var summaryDialog: Dialog? = null
 
     private var summaryTimeoutJob: Job? = null
+
+    private var tts: TextToSpeech? = null
+    private var currentTtsUtteranceId: String? = null // 현재 재생 중인 TTS ID
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -186,6 +209,40 @@ class ConsultFragment : Fragment() {
         }
         binding.chip4.setOnClickListener {
             setQuickQuestion("혈압이 높아요")
+        }
+
+        tts = TextToSpeech(requireContext()) { status ->
+            if (status == TextToSpeech.SUCCESS) {
+                tts?.setLanguage(Locale.KOREAN)
+
+                tts?.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
+                    override fun onStart(utteranceId: String?) {}
+
+                    override fun onDone(utteranceId: String?) {
+                        // 현재 관리하는 utterance에 대해서만 처리
+                        if (utteranceId == currentTtsUtteranceId) {
+                            currentTtsUtteranceId = null
+                            view.post {
+                                if (_binding != null) {
+                                    chatAdapter.onTtsFinished()
+                                }
+                            }
+                        }
+                    }
+
+                    @Deprecated("DEPRECATION")
+                    override fun onError(utteranceId: String?) {
+                        if (utteranceId == currentTtsUtteranceId) {
+                            currentTtsUtteranceId = null
+                            view.post {
+                                if (_binding != null) {
+                                    chatAdapter.onTtsFinished()
+                                }
+                            }
+                        }
+                    }
+                })
+            }
         }
     }
 
@@ -446,9 +503,96 @@ class ConsultFragment : Fragment() {
         viewModel.startConsult() // 새 상담 시작
     }
 
+    private fun cleanTextForTts(text: String): String {
+        var result = text
+
+        // 1. 혈압: "120/80 mmHg" → "120 에 80 밀리미터 에이치지"
+        result = result.replace(
+            Regex("(\\d+)\\s*/\\s*(\\d+)\\s*mmHg", RegexOption.IGNORE_CASE)
+        ) { match ->
+            val sys = match.groupValues[1]
+            val dia = match.groupValues[2]
+            "$sys 에 $dia 밀리미터 에이치지"
+        }
+
+        // 2. 수축기/이완기 혈압: "90 mmHg" → "90 밀리미터 에이치지"
+        result = result.replace(
+            Regex("(\\d+)\\s*mmHg", RegexOption.IGNORE_CASE)
+        ) { match ->
+            "${match.groupValues[1]} 밀리미터 에이치지"
+        }
+
+        // 3. 혈당: "100 mg/dL" → "100 밀리그램 퍼 데시리터"
+        result = result.replace(
+            Regex("(\\d+)\\s*mg/dL", RegexOption.IGNORE_CASE)
+        ) { match ->
+            "${match.groupValues[1]} 밀리그램 퍼 데시리터"
+        }
+
+        // 4. 체중: "70 kg" → "70 킬로그램"
+        result = result.replace(
+            Regex("(\\d+)\\s*kg", RegexOption.IGNORE_CASE)
+        ) { match ->
+            "${match.groupValues[1]} 킬로그램"
+        }
+
+        // 5. 제수량 등: "100 g" → "100 그램"
+        result = result.replace(
+            Regex("(\\d+)\\s*g\\b", RegexOption.IGNORE_CASE)
+        ) { match ->
+            "${match.groupValues[1]} 그램"
+        }
+
+        // 6. 농도: "2.5 %" → "2.5 퍼센트"
+        result = result.replace(
+            Regex("(\\d+(?:\\.\\d+)?)\\s*%", RegexOption.IGNORE_CASE)
+        ) { match ->
+            "${match.groupValues[1]} 퍼센트"
+        }
+
+        // ".2" → ". 2",  "1.혈압" → "1. 혈압"
+        result = result.replace(Regex("\\.(\\d)")) {
+            ". ${it.groupValues[1]}"
+        }
+        result = result.replace(Regex("(\\d)\\.(?!\\d)")) {
+            "${it.groupValues[1]}. "
+        }
+
+        return result.trim()
+    }
+
+    private fun speak(text: String) {
+        val clean = cleanTextForTts(text).trim()
+        if (clean.isEmpty()) return
+
+        val utteranceId = "CONSULT_TTS_${System.currentTimeMillis()}"
+        currentTtsUtteranceId = utteranceId
+
+        tts?.speak(
+            clean,
+            TextToSpeech.QUEUE_FLUSH,
+            null,
+            utteranceId
+        )
+    }
+
+    private fun stopSpeak() {
+        currentTtsUtteranceId = null
+        tts?.stop()
+        chatAdapter.onTtsFinished()
+    }
+
     override fun onDestroyView() {
         hideSummaryDialog()
         super.onDestroyView()
+        tts?.stop()
+        chatAdapter.onTtsFinished()
         _binding = null
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        tts?.shutdown()
+        tts = null
     }
 }

@@ -3,6 +3,7 @@ package com.example.momolabfe.ui.consult.adapter
 import android.content.Context
 import android.graphics.Typeface
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
@@ -16,13 +17,27 @@ import com.example.momolabfe.databinding.ItemChatAgentBinding
 import com.example.momolabfe.databinding.ItemChatUserBinding
 import com.example.momolabfe.ui.consult.data.ChatMessage
 
-class ChatAdapter : ListAdapter<ChatMessage, RecyclerView.ViewHolder>(DiffCallback) {
+class ChatAdapter(
+    private val onAgentSpeakerToggle: ((text: String, turnOn: Boolean) -> Unit)? = null,
+    private val onUserSpeakToggle: ((text: String, turnOn: Boolean) -> Unit)? = null
+) : ListAdapter<ChatMessage, RecyclerView.ViewHolder>(DiffCallback) {
 
     private var typingAnimation: Animation? = null
+
+    // 현재 "재생 중"인 에이전트 메시지 ID
+    private var playingAgentMessageId: Long? = null // 현재 재생 중인 에이전트 메시지 ID
+    private var playingUserMessageId: Long? = null // 현재 재생 중인 사용자 메시지 ID
+
     private fun getTypingAnimation(context: Context): Animation {
         return typingAnimation ?: AnimationUtils.loadAnimation(context, R.anim.typing_blink).also {
             typingAnimation = it
         }
+    }
+
+    fun onTtsFinished() {
+        playingAgentMessageId = null
+        playingUserMessageId = null
+        notifyDataSetChanged()
     }
 
     companion object {
@@ -91,7 +106,6 @@ class ChatAdapter : ListAdapter<ChatMessage, RecyclerView.ViewHolder>(DiffCallba
 
             binding.agentMsgTv.clearAnimation()
 
-
             when {
                 // 세션 경고
                 item.isTokenWarning -> {
@@ -114,6 +128,40 @@ class ChatAdapter : ListAdapter<ChatMessage, RecyclerView.ViewHolder>(DiffCallba
                     setMarkdownBold(binding.agentMsgTv, item.text)
                 }
             }
+
+            // 스피커 토글 처리
+            val hasText = item.text.isNotBlank()
+            val isPlaying = (item.id == playingAgentMessageId)
+
+            binding.agentSpeakerIv.setImageResource(
+                if (isPlaying) R.drawable.ic_speaker_on_sv
+                else R.drawable.ic_speaker_off_sv
+            )
+
+            // 콜백이 없거나 텍스트가 없으면 숨김
+            val canUseSpeaker = hasText && onAgentSpeakerToggle != null
+            binding.agentSpeakerIv.visibility =
+                if (canUseSpeaker) View.VISIBLE else View.GONE
+
+            if (!canUseSpeaker) {
+                binding.agentSpeakerIv.setOnClickListener(null)
+                return
+            }
+
+            binding.agentSpeakerIv.setOnClickListener {
+                val speakText = binding.agentMsgTv.text.toString() // 화면에 실제로 보이는 텍스트 기준으로 읽기
+
+                if (playingAgentMessageId == item.id) {
+                    playingAgentMessageId = null
+                    onAgentSpeakerToggle?.invoke(speakText, false) // 음성 중지 요청
+                } else {
+                    playingAgentMessageId = item.id
+                    playingUserMessageId = null // 사용자 쪽 재생 중이면 끄기
+                    onAgentSpeakerToggle?.invoke(speakText, true) // 음성 재생 요청
+                }
+
+                notifyDataSetChanged()
+            }
         }
     }
 
@@ -123,6 +171,39 @@ class ChatAdapter : ListAdapter<ChatMessage, RecyclerView.ViewHolder>(DiffCallba
 
         fun bind(item: ChatMessage) {
             binding.userMsgTv.text = item.text
+
+            val hasText = item.text.isNotBlank()
+            val isPlaying = (item.id == playingUserMessageId)
+
+            binding.userSpeakerIv.setImageResource(
+                if (isPlaying) R.drawable.ic_speaker_on_sv
+                else R.drawable.ic_speaker_off_sv
+            )
+
+            val canUseSpeaker = hasText && onUserSpeakToggle != null
+            binding.userSpeakerIv.visibility =
+                if (canUseSpeaker) View.VISIBLE else View.GONE
+
+            if (!canUseSpeaker) {
+                binding.userSpeakerIv.setOnClickListener(null)
+                return
+            }
+
+            binding.userSpeakerIv.setOnClickListener {
+
+                val speakText = binding.userMsgTv.text.toString()
+
+                if (playingUserMessageId == item.id) {
+                    playingUserMessageId = null
+                    onUserSpeakToggle?.invoke(speakText, false)
+                } else {
+                    playingUserMessageId = item.id
+                    playingAgentMessageId = null
+                    onUserSpeakToggle?.invoke(speakText, true)
+                }
+
+                notifyDataSetChanged()
+            }
         }
     }
 
