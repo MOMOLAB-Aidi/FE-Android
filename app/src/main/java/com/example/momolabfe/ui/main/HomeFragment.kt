@@ -13,12 +13,10 @@ import com.example.momolabfe.R
 import com.example.momolabfe.databinding.FragmentHomeBinding
 import com.example.momolabfe.databinding.ItemRecentRecordBinding
 import com.example.momolabfe.ui.main.viewModel.EducationViewModel
-import com.example.momolabfe.ui.record.RecordFragment
 import com.example.momolabfe.ui.record.RecordInfoFragment
 import com.example.momolabfe.ui.record.RecordListFragment
 import com.example.momolabfe.ui.record.viewModel.RecordViewModel
 import com.example.momolabfe.ui.setting.SettingFragment
-import com.example.momolabfe.ui.stats.StatsFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
@@ -81,17 +79,13 @@ class HomeFragment : Fragment() {
         }
 
         binding.recordCv.setOnClickListener {
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.main_frm, RecordFragment())
-                .addToBackStack(null)
-                .commit()
+            val bottomNav = requireActivity().findViewById<BottomNavigationView>(R.id.main_bnv)
+            bottomNav.selectedItemId = R.id.fragment_record
         }
 
         binding.detailStatisticsBtn.setOnClickListener {
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.main_frm, StatsFragment())
-                .addToBackStack(null)
-                .commit()
+            val bottomNav = requireActivity().findViewById<BottomNavigationView>(R.id.main_bnv)
+            bottomNav.selectedItemId = R.id.fragment_statistics
         }
 
         binding.totalTv.setOnClickListener {
