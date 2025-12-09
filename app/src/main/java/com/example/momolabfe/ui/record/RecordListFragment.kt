@@ -14,7 +14,10 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.example.momolabfe.R
 import com.example.momolabfe.databinding.FragmentRecordListBinding
 import com.example.momolabfe.databinding.ItemExchangeDetailBinding
@@ -31,6 +34,7 @@ import com.kizitonwose.calendar.core.DayPosition
 import com.kizitonwose.calendar.view.CalendarView
 import com.kizitonwose.calendar.view.MonthDayBinder
 import com.kizitonwose.calendar.view.ViewContainer
+import kotlinx.coroutines.launch
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
@@ -250,16 +254,6 @@ class RecordListFragment : Fragment() {
             bottomSheet.show(parentFragmentManager, "BottomSheetRecordDelete")
         }
 
-        // 기록 삭제 성공 이벤트 수신
-        parentFragmentManager.setFragmentResultListener("record_delete", viewLifecycleOwner) { _, _ ->
-            // 현재 보여지는 달 기준으로 다시 조회
-            val year = visibleMonth.year
-            val monthValue = visibleMonth.monthValue
-
-            viewModel.getCalendar(year, monthValue)
-            viewModel.getRecordList(year, monthValue)
-        }
-
         hideDetailViews()
     }
 
@@ -367,6 +361,28 @@ class RecordListFragment : Fragment() {
                 hideDetailViews()
                 clearRecordViews()
                 renderExchanges(emptyList())
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.deleteSuccess.collect {
+
+                        Log.d("RECORD_LIST_FRAGMENT", "deleteSuccess 수신 - 캘린더/리스트 재조회 및 상세 초기화")
+
+                        val year = visibleMonth.year
+                        val monthValue = visibleMonth.monthValue
+
+                        viewModel.getCalendar(year, monthValue)
+                        viewModel.getRecordList(year, monthValue)
+
+                        selectedRecordId = null
+                        hideDetailViews()
+                        clearRecordViews()
+                        renderExchanges(emptyList())
+                    }
+                }
             }
         }
 

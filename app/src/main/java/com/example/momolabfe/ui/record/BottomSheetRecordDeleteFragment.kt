@@ -62,7 +62,6 @@ class BottomSheetRecordDeleteFragment : BottomSheetDialogFragment() {
                 launch {
                     viewModel.deleteSuccess.collect {
                         Log.d("BOTTOM_SHEET_RECORD_DELETE", "기록이 성공적으로 삭제되었습니다.")
-                        parentFragmentManager.setFragmentResult("record_delete", Bundle())
                         dismiss()
                     }
                 }
