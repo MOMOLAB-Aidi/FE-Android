@@ -587,25 +587,68 @@ class RecordWrite01Fragment : Fragment() {
 
             isOcrApplied = true  // 다시 덮어쓰지 않도록 플래그 ON
 
-            val recordDate = ocr.ocrData.recordDate
-            selectedDate = recordDate
+            val ocrData = ocr.ocrData
 
-            // 이 날짜가 속한 달 데이터 미리 요청
-            viewModel.getCalendar(recordDate.year, recordDate.monthValue)
+            val recordDate = ocrData.recordDate
+            if (recordDate != null) {
+                selectedDate = recordDate
 
-            binding.dateEt.setText(ocr.ocrData.recordDate.format(displayFormatter))
-            binding.weightEt.setText(ocr.ocrData.weight.toString())
-            binding.systolicEt.setText(ocr.ocrData.bloodPressure.systolic.toString())
-            binding.diastolicEt.setText(ocr.ocrData.bloodPressure.diastolic.toString())
-            binding.fastingGlucoseEt.setText(ocr.ocrData.fastingGlucose.toString())
-            binding.urineCountEt.setText(ocr.ocrData.urineCount.toString())
+                viewModel.getCalendar(recordDate.year, recordDate.monthValue) // 이 날짜가 속한 달 데이터 미리 요청
+                binding.dateEt.setText(recordDate.format(displayFormatter))
+            } else {
+                selectedDate = null
+                binding.dateEt.setText("")
+            }
+
+            val weight = ocrData.weight
+            if (weight != null) {
+                binding.weightEt.setText(weight.toString())
+            } else {
+                binding.weightEt.text?.clear()
+            }
+
+            val bp = ocrData.bloodPressure
+            if (bp != null) {
+                val sys = bp.systolic
+                val dia = bp.diastolic
+
+                if (sys != null) {
+                    binding.systolicEt.setText(sys.toString())
+                } else {
+                    binding.systolicEt.text?.clear()
+                }
+
+                if (dia != null) {
+                    binding.diastolicEt.setText(dia.toString())
+                } else {
+                    binding.diastolicEt.text?.clear()
+                }
+            } else {
+                binding.systolicEt.text?.clear()
+                binding.diastolicEt.text?.clear()
+            }
+
+            val fastingGlucose = ocrData.fastingGlucose
+            if (fastingGlucose != null) {
+                binding.fastingGlucoseEt.setText(fastingGlucose.toString())
+            } else {
+                binding.fastingGlucoseEt.text?.clear()
+            }
+
+            val urineCount = ocrData.urineCount
+            if (urineCount != null) {
+                binding.urineCountEt.setText(urineCount.toString())
+            } else {
+                binding.urineCountEt.text?.clear()
+            }
 
             binding.turbidityNCheckbox.isChecked = false
             binding.turbidityYCheckbox.isChecked = false
 
-            when (ocr.ocrData.turbidity) {
+            when (ocrData.turbidity) {
                 Turbidity.NONE -> binding.turbidityNCheckbox.isChecked = true
                 Turbidity.PRESENT -> binding.turbidityYCheckbox.isChecked = true
+                null -> {}
             }
 
             binding.notesEt.setText(ocr.ocrData.notes ?: "")
