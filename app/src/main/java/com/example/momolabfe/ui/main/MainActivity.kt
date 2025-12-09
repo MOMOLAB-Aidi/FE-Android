@@ -48,7 +48,7 @@ class MainActivity : AppCompatActivity() {
 
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
-                .replace(R.id.main_frm, LoginFragment())
+                .replace(R.id.main_frm, OnboardingFragment())
                 .commit()
         }
 
