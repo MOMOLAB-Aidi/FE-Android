@@ -244,13 +244,13 @@ class RecordWrite02Fragment : Fragment() {
         val newExchangeNo = exchangeList.size + 1
 
         val newExchange = OcrRecordExchangeData(
-            id = -1,
+            id = null,
             exchangeNo = newExchangeNo,
-            exchangeTime = LocalTime.now(),
-            drainVolume = -1,
-            fillConcentration = -1.0,
-            fillVolume = -1,
-            uf = -999
+            exchangeTime = null,
+            drainVolume = null,
+            fillConcentration = null,
+            fillVolume = null,
+            uf = null
         )
 
         exchangeList.add(newExchange)
@@ -269,13 +269,13 @@ class RecordWrite02Fragment : Fragment() {
         if (exchangesFromOcr.isEmpty()) {
             // 1회차 항목을 생성하여 추가
             val firstExchange = OcrRecordExchangeData(
-                id = -1, // 임시 ID
+                id = null,
                 exchangeNo = 1,
-                exchangeTime = LocalTime.now(),
-                drainVolume = -1,
-                fillConcentration = -1.0,
-                fillVolume = -1,
-                uf = -999
+                exchangeTime = null,
+                drainVolume = null,
+                fillConcentration = null,
+                fillVolume = null,
+                uf = null
             )
             exchangesFromOcr.add(firstExchange)
         }
@@ -356,51 +356,58 @@ class RecordWrite02Fragment : Fragment() {
 
         val requestList = mutableListOf<RecordExchangeCreateRequest>()
         for (item in exchanges) {
+            val exNo = item.exchangeNo ?: 0
 
-            if (item.drainVolume == -1) {
-                showError("${item.exchangeNo}회차 배액량을 입력해주세요.")
+            if (item.exchangeTime == null) {
+                showError("${exNo}회차 시간을 입력해주세요.")
                 enableButtonAndReturn()
                 return
             }
 
-            if (item.fillVolume == -1) {
-                showError("${item.exchangeNo}회차 주입량을 입력해주세요.")
+            if (item.drainVolume == null) {
+                showError("${exNo}회차 배액량을 입력해주세요.")
                 enableButtonAndReturn()
                 return
             }
 
-            if (item.fillConcentration == -1.0) {
-                showError("${item.exchangeNo}회차 주입액 농도를 입력해주세요.")
+            if (item.fillVolume == null) {
+                showError("${exNo}회차 주입량을 입력해주세요.")
                 enableButtonAndReturn()
                 return
             }
 
-            if (item.uf == -999) {
-                showError("${item.exchangeNo}회차 제수량을 입력해주세요.")
+            if (item.fillConcentration == null) {
+                showError("${exNo}회차 주입액 농도를 입력해주세요.")
+                enableButtonAndReturn()
+                return
+            }
+
+            if (item.uf == null) {
+                showError("${exNo}회차 제수량을 입력해주세요.")
                 enableButtonAndReturn()
                 return
             }
 
             if (item.drainVolume < 0 || item.drainVolume > 6000) {
-                showError("${item.exchangeNo}회차 배액량은 0 ~ 6000 g 사이로 입력해주세요. (현재: ${item.drainVolume})")
+                showError("${exNo}회차 배액량은 0 ~ 6000 g 사이로 입력해주세요. (현재: ${item.drainVolume})")
                 enableButtonAndReturn()
                 return
             }
 
             if (item.fillVolume < 0 || item.fillVolume > 6000) {
-                showError("${item.exchangeNo}회차 주입량은 0 ~ 6000 g 사이로 입력해주세요. (현재: ${item.fillVolume})")
+                showError("${exNo}회차 주입량은 0 ~ 6000 g 사이로 입력해주세요. (현재: ${item.fillVolume})")
                 enableButtonAndReturn()
                 return
             }
 
             if (item.fillConcentration < 0.0 || item.fillConcentration > 100.0) {
-                showError("${item.exchangeNo}회차 주입액 농도는 0.0 ~ 100.0 % 사이로 입력해주세요. (현재: ${item.fillConcentration})")
+                showError("${exNo}회차 주입액 농도는 0.0 ~ 100.0 % 사이로 입력해주세요. (현재: ${item.fillConcentration})")
                 enableButtonAndReturn()
                 return
             }
 
             if (item.uf < -500 || item.uf > 500) {
-                showError("${item.exchangeNo}회차 제수량은 -500 ~ 500 g 사이로 입력해주세요. (현재: ${item.uf})")
+                showError("${exNo}회차 제수량은 -500 ~ 500 g 사이로 입력해주세요. (현재: ${item.uf})")
                 enableButtonAndReturn()
                 return
             }
@@ -486,10 +493,13 @@ class RecordWrite02Fragment : Fragment() {
         var sumUf = 0
 
         exchanges.forEach { item ->
-            val uf = item.uf
+            val uf = item.uf ?: return@forEach
             sumUf += uf
 
-            val calculatedUf = item.drainVolume - item.fillVolume
+            val drainVol = item.drainVolume ?: return@forEach
+            val fillVol = item.fillVolume ?: return@forEach
+            val calculatedUf = drainVol - fillVol
+
             if (uf != calculatedUf) {
                 hasPerExchangeMismatch = true
             }
@@ -551,7 +561,7 @@ class RecordWrite02Fragment : Fragment() {
             }
             val isExpanded = expandedStates[index]
 
-            itemBinding.exchangeNoTv.text = "${index + 1}회차"
+            itemBinding.exchangeNoTv.text = "${item.exchangeNo ?: (index + 1)}회차"
 
             // 드롭다운 상태에 따라 보이기/숨기기
             itemBinding.detailsContainer.visibility =
@@ -625,46 +635,46 @@ class RecordWrite02Fragment : Fragment() {
                 }.show()
             }
 
-            val timeText = item.exchangeTime.format(TIME_FORMATTER)
+            val timeText = item.exchangeTime?.format(TIME_FORMATTER) ?: ""
             itemBinding.exchangeTimeEt.setText(timeText)
             itemBinding.exchangeTimeEt.setOnClickListener {
                 showTimePickerDialog(itemBinding.exchangeTimeEt, index)
             }
 
             itemBinding.drainVolumeEt.setText(
-                if (item.drainVolume == -1) "" else item.drainVolume.toString()
+                item.drainVolume?.toString() ?: ""
             )
             itemBinding.fillVolumeEt.setText(
-                if (item.fillVolume == -1) "" else item.fillVolume.toString()
+                item.fillVolume?.toString() ?: ""
             )
             itemBinding.fillConcentrationEt.setText(
-                if (item.fillConcentration == -1.0) "" else item.fillConcentration.toString()
+                item.fillConcentration?.toString() ?: ""
             )
             itemBinding.ufEt.setText(
-                if (item.uf == -999) "" else item.uf.toString()
+                item.uf?.toString() ?: ""
             )
 
             itemBinding.drainVolumeEt.addTextChangedListener {
                 val text = it?.toString()?.trim()
-                val v = if (text.isNullOrEmpty()) -1 else text.toIntOrNull() ?: -1
+                val v = text?.toIntOrNull()
                 exchangeList[index] = exchangeList[index].copy(drainVolume = v)
             }
 
             itemBinding.fillVolumeEt.addTextChangedListener {
                 val text = it?.toString()?.trim()
-                val v = if (text.isNullOrEmpty()) -1 else text.toIntOrNull() ?: -1
+                val v = text?.toIntOrNull()
                 exchangeList[index] = exchangeList[index].copy(fillVolume = v)
             }
 
             itemBinding.fillConcentrationEt.addTextChangedListener {
                 val text = it?.toString()?.trim()
-                val v = if (text.isNullOrEmpty()) -1.0 else text.toDoubleOrNull() ?: -1.0
+                val v = text?.toDoubleOrNull()
                 exchangeList[index] = exchangeList[index].copy(fillConcentration = v)
             }
 
             itemBinding.ufEt.addTextChangedListener {
                 val text = it?.toString()?.trim()
-                val v = if (text.isNullOrEmpty()) -999 else text.toIntOrNull() ?: -999
+                val v = text?.toIntOrNull()
                 exchangeList[index] = exchangeList[index].copy(uf = v)
             }
 
