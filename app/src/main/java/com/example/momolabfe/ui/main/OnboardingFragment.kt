@@ -1,7 +1,6 @@
 package com.example.momolabfe.ui.main
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.viewpager2.widget.ViewPager2
 import com.example.momolabfe.R
 import com.example.momolabfe.databinding.FragmentOnboardingBinding
+import com.example.momolabfe.ui.auth.LoginFragment
 import com.example.momolabfe.ui.main.adapter.OnboardingAdapter
 import com.example.momolabfe.ui.main.data.OnboardingPage
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -80,36 +80,44 @@ class OnboardingFragment : Fragment() {
     // 인디케이터 설정
     private fun setupIndicators() = with(binding) {
         indicatorContainer.removeAllViews()
-        val indicators = Array(pages.size) { View(requireContext()) }
 
-        val params = LinearLayout.LayoutParams(
-            ViewGroup.LayoutParams.WRAP_CONTENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        ).apply {
-            val m = 6.dp
-            leftMargin = m
-            rightMargin = m
-        }
-
-        indicators.forEach { v ->
-            v.setBackgroundResource(R.drawable.indicator_onboarding_inactive)
-            v.layoutParams = params
-            indicatorContainer.addView(v)
+        for (i in pages.indices) {
+            val indicator = View(requireContext()).apply {
+                val size = if (i == 0) 28.dp to 8.dp else 8.dp to 8.dp
+                layoutParams = LinearLayout.LayoutParams(size.first, size.second).apply {
+                    val m = 6.dp
+                    leftMargin = m
+                    rightMargin = m
+                }
+                setBackgroundResource(
+                    if (i == 0) R.drawable.indicator_onboarding_active
+                    else R.drawable.indicator_onboarding_inactive
+                )
+            }
+            indicatorContainer.addView(indicator)
         }
     }
 
     private fun setCurrentIndicator(position: Int) = with(binding) {
         for (i in 0 until indicatorContainer.childCount) {
             val v = indicatorContainer.getChildAt(i)
-            if (i == position) {
-                v.setBackgroundResource(R.drawable.indicator_onboarding_active)
-            } else {
-                v.setBackgroundResource(R.drawable.indicator_onboarding_inactive)
+            val isActive = i == position
+
+            // 크기와 배경을 동시에 업데이트
+            v.layoutParams = (v.layoutParams as LinearLayout.LayoutParams).apply {
+                width = if (isActive) 28.dp else 8.dp
+                height = 8.dp
             }
+            v.setBackgroundResource(
+                if (isActive) R.drawable.indicator_onboarding_active
+                else R.drawable.indicator_onboarding_inactive
+            )
         }
 
         prevBtn.isEnabled = position != 0
         nextBtn.text = if (position == pages.lastIndex) "시작하기" else "다음"
+
+        nextBtn.isEnabled = true
     }
 
     private fun setupListeners() = with(binding) {
@@ -126,6 +134,9 @@ class OnboardingFragment : Fragment() {
         }
 
         nextBtn.setOnClickListener {
+            if (it.isEnabled.not()) return@setOnClickListener
+            it.isEnabled = false
+
             val current = viewPager.currentItem
             if (current < pages.lastIndex) {
                 viewPager.currentItem = current + 1
@@ -145,7 +156,7 @@ class OnboardingFragment : Fragment() {
 //        prefs.edit().putBoolean("has_seen_onboarding", true).apply()
 
         parentFragmentManager.beginTransaction()
-            .replace(R.id.main_frm, HomeFragment())
+            .replace(R.id.main_frm, LoginFragment())
             .commit()
     }
 
