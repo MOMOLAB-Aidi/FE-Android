@@ -63,7 +63,7 @@ class HomeFragment : Fragment() {
         try {
             // 날짜 포맷
             val now = Date()
-            val format = SimpleDateFormat("yyyy년 MM월 dd일 EEEE", Locale.KOREA)
+            val format = SimpleDateFormat("yyyy년 MM월 d일 EEEE", Locale.KOREA)
 
             val formattedDate = format.format(now)
             binding.contentTv.text = formattedDate
