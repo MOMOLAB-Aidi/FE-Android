@@ -20,6 +20,7 @@ import com.example.momolabfe.remote.auth.model.LoginRequest
 import com.example.momolabfe.databinding.FragmentLoginBinding
 import com.example.momolabfe.ui.auth.viewModel.AuthViewModel
 import com.example.momolabfe.ui.main.HomeFragment
+import com.example.momolabfe.ui.main.OnboardingFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -139,7 +140,7 @@ class LoginFragment : Fragment() {
                     Log.d("Login", "로그인 성공!")
 
                     parentFragmentManager.beginTransaction()
-                        .replace(R.id.main_frm, HomeFragment())
+                        .replace(R.id.main_frm, OnboardingFragment())
                         .commit()
                 }
             }
