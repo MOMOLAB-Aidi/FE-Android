@@ -651,7 +651,7 @@ class RecordWrite01Fragment : Fragment() {
                 null -> {}
             }
 
-            binding.notesEt.setText(ocr.ocrData.notes ?: "")
+            binding.notesEt.setText(ocrData.notes ?: "")
 
             // gCS Path를 사용하여 이미지 다운로드 시작
             val gcsPath = ocr.gcsPath

@@ -274,8 +274,8 @@ class RecordWrite02Fragment : Fragment() {
                 exchangeTime = null,
                 drainVolume = null,
                 fillConcentration = null,
-                fillVolume = -1,
-                uf = -999
+                fillVolume = null,
+                uf = null
             )
             exchangesFromOcr.add(firstExchange)
         }
@@ -493,10 +493,13 @@ class RecordWrite02Fragment : Fragment() {
         var sumUf = 0
 
         exchanges.forEach { item ->
-            val uf = item.uf!!
+            val uf = item.uf ?: return@forEach
             sumUf += uf
 
-            val calculatedUf = item.drainVolume!! - item.fillVolume!!
+            val drainVol = item.drainVolume ?: return@forEach
+            val fillVol = item.fillVolume ?: return@forEach
+            val calculatedUf = drainVol - fillVol
+
             if (uf != calculatedUf) {
                 hasPerExchangeMismatch = true
             }
