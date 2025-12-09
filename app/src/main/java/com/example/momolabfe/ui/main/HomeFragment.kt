@@ -81,17 +81,13 @@ class HomeFragment : Fragment() {
         }
 
         binding.recordCv.setOnClickListener {
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.main_frm, RecordFragment())
-                .addToBackStack(null)
-                .commit()
+            val bottomNav = requireActivity().findViewById<BottomNavigationView>(R.id.main_bnv)
+            bottomNav.selectedItemId = R.id.fragment_record
         }
 
         binding.detailStatisticsBtn.setOnClickListener {
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.main_frm, StatsFragment())
-                .addToBackStack(null)
-                .commit()
+            val bottomNav = requireActivity().findViewById<BottomNavigationView>(R.id.main_bnv)
+            bottomNav.selectedItemId = R.id.fragment_statistics
         }
 
         binding.totalTv.setOnClickListener {
