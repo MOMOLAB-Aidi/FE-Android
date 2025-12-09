@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -116,6 +117,13 @@ class HomeFragment : Fragment() {
 
             binding.completeContentTv.text = "${summary.exchangeCount} / 5회"
             binding.ufContentTv.text = String.format(Locale.KOREA, "%dg", summary.totalUf)
+
+            val isMismatch = summary.totalUf != summary.recordUfSum
+
+            val colorResId = if (isMismatch) R.color.red else R.color.secondary_text
+            binding.ufContentTv.setTextColor(
+                ContextCompat.getColor(requireContext(), colorResId)
+            )
         }
 
         recordViewModel.recordlistItems.observe(viewLifecycleOwner) { itemList ->

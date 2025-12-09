@@ -78,5 +78,6 @@ data class WeeklyAverageResponse (
 data class TodayExchangeSummary (
     @SerializedName("has_record") val hasRecord: Boolean,
     @SerializedName("exchange_count") val exchangeCount: Int,
-    @SerializedName("total_uf") val totalUf: Int
+    @SerializedName("total_uf") val totalUf: Int,
+    @SerializedName("record_uf_sum") val recordUfSum: Int
 )
