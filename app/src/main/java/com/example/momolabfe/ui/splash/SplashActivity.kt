@@ -18,6 +18,6 @@ class SplashActivity : AppCompatActivity() {
         Handler(Looper.getMainLooper()).postDelayed({
             startActivity(Intent(this, MainActivity::class.java))
             finish()
-        }, 500) // 시간 5초 이후 실행
+        }, 1000) // 시간 1초 이후 실행
     }
 }

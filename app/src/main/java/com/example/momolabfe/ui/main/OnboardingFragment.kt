@@ -19,6 +19,8 @@ class OnboardingFragment : Fragment() {
     private var _binding: FragmentOnboardingBinding? = null
     private val binding get() = _binding!!
 
+    private var isFinishing = false
+
     private val pages by lazy {
         listOf(
             OnboardingPage(
@@ -146,6 +148,7 @@ class OnboardingFragment : Fragment() {
         }
 
         skipTv.setOnClickListener {
+            if (isFinishing) return@setOnClickListener
             finishOnboarding()
         }
     }
@@ -154,6 +157,9 @@ class OnboardingFragment : Fragment() {
 //        val prefs = requireContext()
 //            .getSharedPreferences("aidi_prefs", Context.MODE_PRIVATE)
 //        prefs.edit().putBoolean("has_seen_onboarding", true).apply()
+
+        if (isFinishing) return
+        isFinishing = true
 
         parentFragmentManager.beginTransaction()
             .replace(R.id.main_frm, LoginFragment())
