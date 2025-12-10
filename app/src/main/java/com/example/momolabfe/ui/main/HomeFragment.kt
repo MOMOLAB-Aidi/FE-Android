@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -25,6 +26,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
@@ -38,6 +40,8 @@ class HomeFragment : Fragment() {
     private val recordViewModel: RecordViewModel by activityViewModels()
     private val educationViewModel: EducationViewModel by viewModels()
     private val statsViewModel: StatsViewModel by activityViewModels()
+
+    private var todayRecordId: Long? = null // 오늘 날짜 기록 id 저장용
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -112,14 +116,25 @@ class HomeFragment : Fragment() {
         binding.tipRefreshIv.setOnClickListener {
             educationViewModel.getTodayTip()
         }
+
+        binding.completeCv.setOnClickListener {
+            navigateToTodayRecordDetail()
+        }
+
+        binding.ufCv.setOnClickListener {
+            navigateToTodayRecordDetail()
+        }
     }
 
     private fun setupObservers() {
         recordViewModel.todayExchangeSummary.observe(viewLifecycleOwner) { summary ->
+            val defaultColor = ContextCompat.getColor(requireContext(), R.color.secondary_text)
+
             if (summary == null || !summary.hasRecord) {
                 // 오늘 기록이 없을 때 기본 표시
                 binding.completeContentTv.text = "-회"
                 binding.ufContentTv.text = "-g"
+                binding.ufContentTv.setTextColor(defaultColor)
                 return@observe
             }
 
@@ -140,6 +155,7 @@ class HomeFragment : Fragment() {
 
             if (itemList.isEmpty()) {
                 container.visibility = View.GONE
+                todayRecordId = null
                 return@observe
             } else {
                 container.visibility = View.VISIBLE
@@ -149,6 +165,9 @@ class HomeFragment : Fragment() {
 
             val normalColor = ContextCompat.getColor(requireContext(), R.color.main_text)
             val errorColor = ContextCompat.getColor(requireContext(), R.color.red)
+
+            val today = LocalDate.now()
+            todayRecordId = null
 
             itemList.forEach { item ->
                 val itemBinding = ItemRecentRecordBinding.inflate(inflater, container, false)
@@ -161,6 +180,11 @@ class HomeFragment : Fragment() {
 
                 itemBinding.totalUfTv.text = item.totalUf.let { uf ->
                     String.format(Locale.KOREA, "%dg", uf)
+                }
+
+                // 오늘 날짜 기록이면 todayRecordId에 저장
+                if (item.recordDate == today) {
+                    todayRecordId = item.id
                 }
 
                 // 제수량 검증 로직
@@ -281,6 +305,27 @@ class HomeFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun navigateToTodayRecordDetail() {
+        val recordId = todayRecordId
+        if (recordId == null) {
+            Toast.makeText(requireContext(), "오늘 작성된 기록이 없습니다.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val args = Bundle().apply {
+            putLong("record_id", recordId)
+        }
+
+        val recordInfoFragment = RecordInfoFragment().apply {
+            arguments = args
+        }
+
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.main_frm, recordInfoFragment)
+            .addToBackStack(null)
+            .commit()
     }
 
     override fun onDestroyView() {
