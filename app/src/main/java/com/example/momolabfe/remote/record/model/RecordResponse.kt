@@ -79,5 +79,7 @@ data class TodayExchangeSummary (
     @SerializedName("has_record") val hasRecord: Boolean,
     @SerializedName("exchange_count") val exchangeCount: Int,
     @SerializedName("total_uf") val totalUf: Int,
-    @SerializedName("record_uf_sum") val recordUfSum: Int
+    @SerializedName("record_uf_sum") val recordUfSum: Int,
+    @SerializedName("calculated_uf_sum") val calculatedUfSum: Int,
+    @SerializedName("has_uf_mismatch") val hasUfMismatch: Boolean
 )
