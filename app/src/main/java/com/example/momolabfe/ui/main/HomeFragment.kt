@@ -133,7 +133,7 @@ class HomeFragment : Fragment() {
 
             val inflater = LayoutInflater.from(requireContext())
 
-            val normalColor = ContextCompat.getColor(requireContext(), R.color.secondary_text)
+            val normalColor = ContextCompat.getColor(requireContext(), R.color.main_text)
             val errorColor = ContextCompat.getColor(requireContext(), R.color.red)
 
             itemList.forEach { item ->

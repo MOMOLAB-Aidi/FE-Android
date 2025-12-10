@@ -365,7 +365,7 @@ class RecordListFragment : Fragment() {
                 binding.noteContentTv.text = recordItem.notes ?: ""
 
                 // 제수량 검증
-                val normalColor = ContextCompat.getColor(requireContext(), R.color.secondary_text)
+                val normalColor = ContextCompat.getColor(requireContext(), R.color.white)
                 val errorColor = ContextCompat.getColor(requireContext(), R.color.red)
 
                 var sumUf = 0
@@ -482,7 +482,7 @@ class RecordListFragment : Fragment() {
 
         val inflater = LayoutInflater.from(requireContext())
 
-        val normalColor = ContextCompat.getColor(requireContext(), R.color.secondary_text)
+        val normalColor = ContextCompat.getColor(requireContext(), R.color.main_1)
         val errorColor = ContextCompat.getColor(requireContext(), R.color.red)
 
         exchanges.forEach { item ->
