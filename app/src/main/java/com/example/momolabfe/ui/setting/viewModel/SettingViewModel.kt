@@ -43,7 +43,7 @@ class SettingViewModel @Inject constructor(
                 _getPageResult.value = it
             }.onFailure { e ->
                 val message = e.localizedMessage ?: "마이페이지 조회에 실패했습니다."
-                _errorEvent.emit(message)
+                _errorEvent.tryEmit(message)
             }
         }
     }
@@ -56,7 +56,7 @@ class SettingViewModel @Inject constructor(
                 _passwordSuccess.tryEmit(Unit)
             }.onFailure { e ->
                 val message = e.localizedMessage ?: "비밀번호 재설정에 실패했습니다."
-                _errorEvent.emit(message)
+                _errorEvent.tryEmit(message)
             }
         }
     }
@@ -69,7 +69,7 @@ class SettingViewModel @Inject constructor(
                 _getHospitalResult.value = it
             }.onFailure { e ->
                 val message = e.localizedMessage ?: "자주 가는 병원 조회에 실패했습니다."
-                _errorEvent.emit(message)
+                _errorEvent.tryEmit(message)
             }
         }
     }

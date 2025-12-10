@@ -31,7 +31,7 @@ class EducationViewModel @Inject constructor(
                 _getTipResult.value = it
             }.onFailure { e ->
                 val message = e.localizedMessage ?: "오늘의 복막투석 관리 TIP 조회에 실패했습니다."
-                _errorEvent.emit(message)
+                _errorEvent.tryEmit(message)
             }
         }
     }

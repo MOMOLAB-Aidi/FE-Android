@@ -478,6 +478,7 @@ class RecordWrite02Fragment : Fragment() {
                 launch {
                     viewModel.errorEvent.collect { errorMsg ->
                         Log.e("RECORD_WRITE_FRAGMENT", "기록 작성 실패: $errorMsg")
+                        showError("기록 저장에 실패했습니다. 다시 시도해주세요.")
                         binding.saveBtn.isEnabled = true
                     }
                 }

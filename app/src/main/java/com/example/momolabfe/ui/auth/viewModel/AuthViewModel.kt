@@ -48,7 +48,7 @@ class AuthViewModel @Inject constructor(
                 _loginSuccess.tryEmit(Unit)
             }.onFailure { e ->
                 val message = e.localizedMessage ?: "로그인에 실패했습니다."
-                _errorEvent.emit(message)
+                _errorEvent.tryEmit(message)
             }
         }
     }

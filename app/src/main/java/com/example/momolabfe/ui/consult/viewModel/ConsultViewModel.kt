@@ -92,7 +92,7 @@ class ConsultViewModel @Inject constructor(
                 }
             }.onFailure { e ->
                 val message = e.localizedMessage ?: "상담 시작 세션 아이디 발급에 실패했습니다."
-                _errorEvent.emit(message)
+                _errorEvent.tryEmit(message)
             }
         }
     }
@@ -165,7 +165,7 @@ class ConsultViewModel @Inject constructor(
                     }
             } catch (e: Exception) {
                 val message = e.localizedMessage ?: "에이전트 대화 중 오류가 발생했습니다."
-                _errorEvent.emit(message)
+                _errorEvent.tryEmit(message)
             } finally {
                 isStreaming = false
 
@@ -185,7 +185,7 @@ class ConsultViewModel @Inject constructor(
                 _endConsultSuccess.tryEmit(request.sessionId)
             }.onFailure { e ->
                 val message = e.localizedMessage ?: "상담 종료에 실패했습니다."
-                _errorEvent.emit(message)
+                _errorEvent.tryEmit(message)
             }
         }
     }
@@ -198,7 +198,7 @@ class ConsultViewModel @Inject constructor(
                 _history.value = list
             }.onFailure { e ->
                 val message = e.localizedMessage ?: "상담 기록을 불러오지 못했습니다."
-                _errorEvent.emit(message)
+                _errorEvent.tryEmit(message)
             }
         }
     }
@@ -224,7 +224,7 @@ class ConsultViewModel @Inject constructor(
                 _messages.value = mapped
             }.onFailure { e ->
                 val message = e.localizedMessage ?: "특정 상담 기록 상세 조회에 실패했습니다."
-                _errorEvent.emit(message)
+                _errorEvent.tryEmit(message)
             }
         }
     }
@@ -241,7 +241,7 @@ class ConsultViewModel @Inject constructor(
                 _deleteSuccess.tryEmit(Unit)
             }.onFailure { e ->
                 val message = e.localizedMessage ?: "특정 세션 상담 기록 삭제에 실패했습니다."
-                _errorEvent.emit(message)
+                _errorEvent.tryEmit(message)
             }
         }
     }
@@ -260,7 +260,7 @@ class ConsultViewModel @Inject constructor(
                 )
             }.onFailure { e ->
                 val message = e.localizedMessage ?: "특정 상담 세션 요약에 실패했습니다."
-                _errorEvent.emit(message)
+                _errorEvent.tryEmit(message)
 
                 // 실패해도 상태는 종료로 리셋
                 _summaryUiState.value = _summaryUiState.value.copy(

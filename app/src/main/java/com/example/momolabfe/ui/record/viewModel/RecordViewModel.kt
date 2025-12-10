@@ -74,7 +74,7 @@ class RecordViewModel @Inject constructor(
                 _calendarData.value = calendarList
             }.onFailure { e ->
                 val message = e.localizedMessage ?: "캘린더 조회에 실패했습니다."
-                _errorEvent.emit(message)
+                _errorEvent.tryEmit(message)
             }
         }
     }
@@ -87,7 +87,7 @@ class RecordViewModel @Inject constructor(
                 _recordSuccess.tryEmit(Unit)
             }.onFailure { e ->
                 val message = e.localizedMessage ?: "기록 작성에 실패했습니다."
-                _errorEvent.emit(message)
+                _errorEvent.tryEmit(message)
             }
         }
     }
@@ -100,7 +100,7 @@ class RecordViewModel @Inject constructor(
                 _recordSuccess.tryEmit(Unit)
             }.onFailure { e ->
                 val message = e.localizedMessage ?: "기록 수정에 실패했습니다."
-                _errorEvent.emit(message)
+                _errorEvent.tryEmit(message)
             }
         }
     }
@@ -113,7 +113,7 @@ class RecordViewModel @Inject constructor(
                 _recordlistItems.value = list
             }.onFailure { e ->
                 val message = e.localizedMessage ?: "전체 기록 조회에 실패했습니다."
-                _errorEvent.emit(message)
+                _errorEvent.tryEmit(message)
             }
         }
     }
@@ -126,7 +126,7 @@ class RecordViewModel @Inject constructor(
                 _record.value = it
             }.onFailure { e ->
                 val message = e.localizedMessage ?: "특정 기록 조회에 실패했습니다."
-                _errorEvent.emit(message)
+                _errorEvent.tryEmit(message)
             }
         }
     }
@@ -139,7 +139,7 @@ class RecordViewModel @Inject constructor(
                 _recordlistItems.value = list
             }.onFailure { e ->
                 val message = e.localizedMessage ?: "최근 3개 기록 조회에 실패했습니다."
-                _errorEvent.emit(message)
+                _errorEvent.tryEmit(message)
             }
         }
     }
@@ -152,7 +152,7 @@ class RecordViewModel @Inject constructor(
                 _weeklyAverageData.value = weeklyAvgData
             }.onFailure { e ->
                 val message = e.localizedMessage ?: "주간 평균 기록 조회에 실패했습니다."
-                _errorEvent.emit(message)
+                _errorEvent.tryEmit(message)
             }
         }
     }
@@ -165,7 +165,7 @@ class RecordViewModel @Inject constructor(
                 _todayExchangeSummary.value = summary
             }.onFailure { e ->
                 val message = e.localizedMessage ?: "오늘의 요약 조회에 실패했습니다."
-                _errorEvent.emit(message)
+                _errorEvent.tryEmit(message)
             }
         }
     }
@@ -178,7 +178,7 @@ class RecordViewModel @Inject constructor(
                 _deleteSuccess.tryEmit(Unit)
             }.onFailure { e ->
                 val message = e.localizedMessage ?: "특정 기록 삭제에 실패했습니다."
-                _errorEvent.emit(message)
+                _errorEvent.tryEmit(message)
             }
         }
     }
@@ -193,7 +193,7 @@ class RecordViewModel @Inject constructor(
                 _ocrRecordResult.value = it
             }.onFailure { e ->
                 val message = e.localizedMessage ?: "OCR 텍스트 추출에 실패했습니다."
-                _errorEvent.emit(message)
+                _errorEvent.tryEmit(message)
             }
         }
     }

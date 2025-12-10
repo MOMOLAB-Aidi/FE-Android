@@ -30,7 +30,7 @@ class StatsViewModel @Inject constructor(
                 _getStatsResult.value = list
             }.onFailure { e ->
                 val message = e.localizedMessage ?: "최근 7일간의 통계를 불러오지 못했습니다."
-                _errorEvent.emit(message)
+                _errorEvent.tryEmit(message)
             }
         }
     }
