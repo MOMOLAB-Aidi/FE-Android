@@ -364,6 +364,35 @@ class RecordListFragment : Fragment() {
                 binding.totalUfValueTv.text = "${recordItem.totalUf}g"
                 binding.noteContentTv.text = recordItem.notes ?: ""
 
+                // 제수량 검증
+                val normalColor = ContextCompat.getColor(requireContext(), R.color.secondary_text)
+                val errorColor = ContextCompat.getColor(requireContext(), R.color.red)
+
+                var sumUf = 0
+                var hasPerExchangeMismatch = false
+
+                recordItem.exchanges.forEach { ex ->
+
+                    if (ex.uf != null) {
+                        sumUf += ex.uf
+                    }
+
+                    val calculatedUf =
+                        if (ex.drainVolume != null && ex.fillVolume != null) ex.drainVolume - ex.fillVolume else null
+
+                    if (ex.uf != null && calculatedUf != null && ex.uf != calculatedUf) {
+                        hasPerExchangeMismatch = true
+                    }
+                }
+
+                val hasTotalMismatch = (sumUf != recordItem.totalUf)
+
+                val isMismatch = hasPerExchangeMismatch || hasTotalMismatch
+
+                binding.totalUfValueTv.setTextColor(
+                    if (isMismatch) errorColor else normalColor
+                )
+
                 renderExchanges(recordItem.exchanges)
 
             } else {
@@ -408,6 +437,9 @@ class RecordListFragment : Fragment() {
         binding.bloodPressureValueTv.text = "-/-"
         binding.fastingGlucoseValueTv.text = "- mg/dL"
         binding.totalUfValueTv.text = "-g"
+        binding.totalUfValueTv.setTextColor(
+            ContextCompat.getColor(requireContext(), R.color.secondary_text)
+        )
 
         // 비고 내용 초기화
         binding.noteContentTv.text = ""
@@ -450,10 +482,12 @@ class RecordListFragment : Fragment() {
 
         val inflater = LayoutInflater.from(requireContext())
 
+        val normalColor = ContextCompat.getColor(requireContext(), R.color.secondary_text)
+        val errorColor = ContextCompat.getColor(requireContext(), R.color.red)
+
         exchanges.forEach { item ->
             val itemBinding = ItemExchangeDetailBinding.inflate(inflater, container, false)
 
-            // 기존 onBindViewHolder 내용 그대로
             itemBinding.exchangeNumberBadgeTv.text = item.exchangeNo.toString()
             itemBinding.exchangeTimeTv.text = item.exchangeTime.format(
                 DateTimeFormatter.ofPattern("HH:mm", Locale.KOREA)
@@ -463,6 +497,16 @@ class RecordListFragment : Fragment() {
             val drainText = "배액량: ${item.drainVolume}g"
             val fillText = "주입량: ${item.fillVolume}g"
             itemBinding.volumeTv.text = "$drainText | $fillText"
+
+            // 회차별 제수량 검증
+            val calculatedUf =
+                if (item.drainVolume != null && item.fillVolume != null) item.drainVolume - item.fillVolume else null
+
+            if (item.uf != null && calculatedUf != null && item.uf != calculatedUf) {
+                itemBinding.ufValueTv.setTextColor(errorColor)
+            } else {
+                itemBinding.ufValueTv.setTextColor(normalColor)
+            }
 
             container.addView(itemBinding.root)
         }
