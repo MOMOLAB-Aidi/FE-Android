@@ -241,17 +241,17 @@ class RecordListFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            // 이미 표시된 BottomSheet가 있는지 확인
-            if (parentFragmentManager.findFragmentByTag("BottomSheetRecordDelete") != null) {
+            // 이미 떠 있는 다이얼로그가 있는지 확인
+            if (parentFragmentManager.findFragmentByTag("RecordDeleteDialog") != null) {
                 return@setOnClickListener
             }
 
-            val bottomSheet = BottomSheetRecordDeleteFragment().apply {
+            val dialog = DialogRecordDeleteFragment().apply {
                 arguments = Bundle().apply {
                     putLong("record_id", currentId)
                 }
             }
-            bottomSheet.show(parentFragmentManager, "BottomSheetRecordDelete")
+            dialog.show(parentFragmentManager, "RecordDeleteDialog")
         }
 
         parentFragmentManager.setFragmentResultListener("record_delete", viewLifecycleOwner) { _, _ ->
