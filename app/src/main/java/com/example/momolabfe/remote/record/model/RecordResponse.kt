@@ -64,17 +64,6 @@ data class OcrRecordExchangeData (
     @SerializedName("uf") val uf: Int?
 )
 
-data class WeeklyAverageData (
-    @SerializedName("weight_avg") val weightAvg: Float,
-    @SerializedName("total_uf_avg") val totalUfAvg: Float
-)
-
-data class WeeklyAverageResponse (
-    @SerializedName("start_date") val startDate: LocalDate,
-    @SerializedName("end_date") val endDate: LocalDate,
-    @SerializedName("data") val data: WeeklyAverageData
-)
-
 data class TodayExchangeSummary (
     @SerializedName("has_record") val hasRecord: Boolean,
     @SerializedName("exchange_count") val exchangeCount: Int,

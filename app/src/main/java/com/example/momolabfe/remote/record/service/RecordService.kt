@@ -6,7 +6,6 @@ import com.example.momolabfe.remote.record.model.RecordGetResponse
 import com.example.momolabfe.remote.record.model.RecordOcrResponse
 import com.example.momolabfe.remote.record.model.RecordUpdateRequest
 import com.example.momolabfe.remote.record.model.TodayExchangeSummary
-import com.example.momolabfe.remote.record.model.WeeklyAverageResponse
 import com.example.momolabfe.utils.ApiResponse
 import com.example.momolabfe.utils.AuthRetrofit
 import com.example.momolabfe.utils.PythonRetrofit
@@ -58,10 +57,6 @@ class RecordService @Inject constructor (
         @GET("/api/v1/records/latest")
         suspend fun getRecentRecords(): Response<List<RecordGetResponse>>
 
-        // 주간 평균 기록 조회
-        @GET("/api/v1/records/weekly-average")
-        suspend fun getWeeklyAvgRecords(@Query("target_date") targetDate: String? = null): Response<WeeklyAverageResponse>
-
         // 오늘의 요약 조회
         @GET("/api/v1/records/today-summary")
         suspend fun getTodayExchangeSummary(): Response<TodayExchangeSummary>
@@ -102,10 +97,6 @@ class RecordService @Inject constructor (
 
     suspend fun getRecentRecords(): Response<List<RecordGetResponse>> {
         return pythonService.getRecentRecords()
-    }
-
-    suspend fun getWeeklyAvgRecords(targetDate: String? = null): Response<WeeklyAverageResponse> {
-        return pythonService.getWeeklyAvgRecords(targetDate)
     }
 
     suspend fun getTodayExchangeSummary(): Response<TodayExchangeSummary> {

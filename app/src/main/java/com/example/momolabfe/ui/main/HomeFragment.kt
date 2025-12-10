@@ -20,6 +20,7 @@ import com.example.momolabfe.ui.record.RecordInfoFragment
 import com.example.momolabfe.ui.record.RecordListFragment
 import com.example.momolabfe.ui.record.viewModel.RecordViewModel
 import com.example.momolabfe.ui.setting.SettingFragment
+import com.example.momolabfe.ui.stats.viewModel.StatsViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -36,6 +37,7 @@ class HomeFragment : Fragment() {
 
     private val recordViewModel: RecordViewModel by activityViewModels()
     private val educationViewModel: EducationViewModel by viewModels()
+    private val statsViewModel: StatsViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -59,7 +61,7 @@ class HomeFragment : Fragment() {
 
         setupObservers()
         recordViewModel.getRecentRecords()
-        recordViewModel.getWeeklyAvgRecords()
+        statsViewModel.getLast7DaysAverage()
         recordViewModel.getTodayExchangeSummary()
 
         try {
@@ -210,39 +212,39 @@ class HomeFragment : Fragment() {
             }
         }
 
-        recordViewModel.weeklyAverageData.observe(viewLifecycleOwner) { weeklyAvgResponse ->
+        statsViewModel.last7DaysAverage.observe(viewLifecycleOwner) { last7DaysResponse ->
 
-            if (weeklyAvgResponse != null) {
+            if (last7DaysResponse != null) {
 
-                val data = weeklyAvgResponse.data
-
+                val data = last7DaysResponse.data
                 val rangeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.KOREA)
 
-                val startDateStr = weeklyAvgResponse.startDate.format(rangeFormatter)
-                val endDateStr = weeklyAvgResponse.endDate.format(rangeFormatter)
+                val startDateStr = last7DaysResponse.startDate.format(rangeFormatter)
+                val endDateStr = last7DaysResponse.endDate.format(rangeFormatter)
 
                 binding.weeklyAvgTv.text = String.format(
                     Locale.KOREA,
-                    "이번 주 평균 (%s ~ %s)",
+                    "최근 7일 평균 (%s ~ %s)",
                     startDateStr,
                     endDateStr
                 )
 
                 binding.weeklyWeightTv.text =
-                    String.format(
-                        Locale.KOREA,
-                        "체중: %.1fkg",
-                        data.weightAvg
-                    )
+                    if (data.weightAvg != null) {
+                        String.format(Locale.KOREA, "체중: %.1fkg", data.weightAvg)
+                    } else {
+                        "체중: -.-kg"
+                    }
 
                 binding.weeklyUfTv.text =
-                    String.format(
-                        Locale.KOREA,
-                        "제수량 합계: %.0fg/일",
-                        data.totalUfAvg
-                    )
+                    if (data.totalUfAvg != null) {
+                        String.format(Locale.KOREA, "제수량 합계: %.0fg/일", data.totalUfAvg)
+                    } else {
+                        "제수량 합계: -g/일"
+                    }
+
             } else {
-                binding.weeklyAvgTv.text = "이번 주 평균 (데이터 없음)"
+                binding.weeklyAvgTv.text = "최근 7일 평균 (데이터 없음)"
                 binding.weeklyWeightTv.text = "체중: -.-kg"
                 binding.weeklyUfTv.text = "제수량 합계: -g/일"
             }
@@ -252,6 +254,14 @@ class HomeFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 recordViewModel.errorEvent.collect { errorMsg ->
                     Log.e("HOME_FRAGMENT", "오늘의 요약 조회 실패: $errorMsg")
+                }
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                statsViewModel.errorEvent.collect { errorMsg ->
+                    Log.e("HOME_FRAGMENT", "최근 7일 평균 조회 실패: $errorMsg")
                 }
             }
         }

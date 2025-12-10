@@ -61,7 +61,7 @@ class StatsFragment : Fragment() {
     }
 
     private fun setupObservers() {
-        viewModel.getStatsResult.observe(viewLifecycleOwner) { stats ->
+        viewModel.last7DaysStats.observe(viewLifecycleOwner) { stats ->
             bindStats(stats)
         }
 
