@@ -34,6 +34,8 @@ class LoginFragment : Fragment() {
     private val viewModel: AuthViewModel by viewModels()
     private var isPasswordVisible = false
 
+    private var isNavigating = false
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -98,10 +100,12 @@ class LoginFragment : Fragment() {
 
         binding.idEt.addTextChangedListener {
             clearError()
+            viewModel.clearError()
         }
 
         binding.passwordEt.addTextChangedListener {
             clearError()
+            viewModel.clearError()
         }
     }
 
@@ -136,6 +140,9 @@ class LoginFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.loginSuccess.collectLatest {
+                    if (isNavigating) return@collectLatest
+                    isNavigating = true
+
                     Log.d("Login", "로그인 성공!")
 
                     parentFragmentManager.beginTransaction()
