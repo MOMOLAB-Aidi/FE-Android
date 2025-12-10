@@ -29,7 +29,7 @@ class AuthViewModel @Inject constructor(
     @ApplicationContext private val appContext: Context
 ) : ViewModel() {
 
-    private val _errorEvent = MutableSharedFlow<String>()
+    private val _errorEvent = MutableSharedFlow<String>(extraBufferCapacity = 1)
     val errorEvent = _errorEvent.asSharedFlow()
 
     private val _loginSuccess = MutableSharedFlow<Unit>(extraBufferCapacity = 1)

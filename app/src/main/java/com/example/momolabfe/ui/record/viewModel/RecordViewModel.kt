@@ -25,7 +25,7 @@ class RecordViewModel @Inject constructor(
     private val recordRepository: RecordRepository
 ) : ViewModel() {
 
-    private val _errorEvent = MutableSharedFlow<String>()
+    private val _errorEvent = MutableSharedFlow<String>(extraBufferCapacity = 1)
     val errorEvent = _errorEvent.asSharedFlow()
 
     // 교환 시간 (24시간 형식, 서버 전송용)

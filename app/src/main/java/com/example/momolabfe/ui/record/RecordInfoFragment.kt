@@ -162,13 +162,11 @@ class RecordInfoFragment : Fragment() {
                         parentFragmentManager.popBackStack()
                     }
                 }
-            }
-        }
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.errorEvent.collect { errorMsg ->
-                    Log.e("RECORD_INFO_FRAGMENT", "기록 상세 작업 실패: $errorMsg")
+                launch {
+                    viewModel.errorEvent.collect { errorMsg ->
+                        Log.e("RECORD_INFO_FRAGMENT", "기록 상세 작업 실패: $errorMsg")
+                    }
                 }
             }
         }

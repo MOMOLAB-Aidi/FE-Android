@@ -458,28 +458,28 @@ class RecordWrite02Fragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.recordSuccess.collectLatest {
-                    // 기록 저장 성공 시에만 OCR 상태 정리
-                    viewModel.clearOcr()
+                launch {
+                    viewModel.recordSuccess.collectLatest {
+                        // 기록 저장 성공 시에만 OCR 상태 정리
+                        viewModel.clearOcr()
 
-                    // 기존 백스택 다 비우기
-                    parentFragmentManager.popBackStack(
-                        null,
-                        FragmentManager.POP_BACK_STACK_INCLUSIVE
-                    )
+                        // 기존 백스택 다 비우기
+                        parentFragmentManager.popBackStack(
+                            null,
+                            FragmentManager.POP_BACK_STACK_INCLUSIVE
+                        )
 
-                    parentFragmentManager.beginTransaction()
-                        .replace(R.id.main_frm, HomeFragment())
-                        .commit()
+                        parentFragmentManager.beginTransaction()
+                            .replace(R.id.main_frm, HomeFragment())
+                            .commit()
+                    }
                 }
-            }
-        }
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.errorEvent.collect { errorMsg ->
-                    Log.e("RECORD_WRITE_FRAGMENT", "기록 작성 실패: $errorMsg")
-                    binding.saveBtn.isEnabled = true
+                launch {
+                    viewModel.errorEvent.collect { errorMsg ->
+                        Log.e("RECORD_WRITE_FRAGMENT", "기록 작성 실패: $errorMsg")
+                        binding.saveBtn.isEnabled = true
+                    }
                 }
             }
         }

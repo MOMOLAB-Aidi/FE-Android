@@ -17,7 +17,7 @@ class StatsViewModel @Inject constructor(
     private val statsRepository: StatsRepository
 ) : ViewModel() {
 
-    private val _errorEvent = MutableSharedFlow<String>()
+    private val _errorEvent = MutableSharedFlow<String>(extraBufferCapacity = 1)
     val errorEvent = _errorEvent.asSharedFlow()
 
     private val _getStatsResult = MutableLiveData<Last7DaysStats>()

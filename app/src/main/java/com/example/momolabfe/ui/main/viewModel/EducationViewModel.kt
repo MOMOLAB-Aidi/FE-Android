@@ -17,7 +17,7 @@ class EducationViewModel @Inject constructor(
     private val educationRepository: EducationRepository
 ) : ViewModel() {
 
-    private val _errorEvent = MutableSharedFlow<String>()
+    private val _errorEvent = MutableSharedFlow<String>(extraBufferCapacity = 1)
     val errorEvent = _errorEvent.asSharedFlow()
 
     private val _getTipResult = MutableLiveData<EducationResponse>()
