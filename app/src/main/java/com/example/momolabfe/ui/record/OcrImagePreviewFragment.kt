@@ -47,11 +47,6 @@ class OcrImagePreviewFragment : Fragment() {
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
     companion object {
         private const val ARG_IMAGE_URL = "image_url"
 
@@ -62,5 +57,10 @@ class OcrImagePreviewFragment : Fragment() {
                 }
             }
         }
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
     }
 }

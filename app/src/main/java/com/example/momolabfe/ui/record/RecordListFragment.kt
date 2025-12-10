@@ -426,7 +426,10 @@ class RecordListFragment : Fragment() {
         }
 
         viewModel.errorMessage.observe(viewLifecycleOwner) { errorMsg ->
+            if (errorMsg.isNullOrBlank()) return@observe
             Log.e("RECORD_LIST_FRAGMENT", errorMsg.toString())
+
+            viewModel.clearError()
         }
     }
 
@@ -513,7 +516,7 @@ class RecordListFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
         _binding = null
+        super.onDestroyView()
     }
 }

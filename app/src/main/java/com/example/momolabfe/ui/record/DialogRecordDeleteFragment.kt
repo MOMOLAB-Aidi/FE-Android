@@ -62,7 +62,7 @@ class DialogRecordDeleteFragment : DialogFragment() {
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
         _binding = null
+        super.onDestroyView()
     }
 }

@@ -321,7 +321,8 @@ class StatsFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
+        viewModel.clearError()
         _binding = null
+        super.onDestroyView()
     }
 }

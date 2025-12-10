@@ -237,7 +237,10 @@ class HomeFragment : Fragment() {
         }
 
         recordViewModel.errorMessage.observe(viewLifecycleOwner) { errorMsg ->
+            if (errorMsg.isNullOrBlank()) return@observe
             Log.e("HOME_FRAGMENT", errorMsg.toString())
+
+            recordViewModel.clearError()
         }
     }
 
@@ -256,7 +259,7 @@ class HomeFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
         _binding = null
+        super.onDestroyView()
     }
 }

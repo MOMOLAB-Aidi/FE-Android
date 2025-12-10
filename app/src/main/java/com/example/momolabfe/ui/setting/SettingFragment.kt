@@ -130,16 +130,15 @@ class SettingFragment : Fragment() {
         }
 
         viewModel.errorMessage.observe(viewLifecycleOwner) { message ->
-            message?.let {
-                Log.e("MyPage", "마이페이지 조회 실패: $it")
-            }
+            if (message.isNullOrBlank()) return@observe
+            Log.e("MyPage", "마이페이지 조회 실패: $message")
+
+            viewModel.clearError()
         }
     }
 
-
-
     override fun onDestroyView() {
-        super.onDestroyView()
         _binding = null
+        super.onDestroyView()
     }
 }

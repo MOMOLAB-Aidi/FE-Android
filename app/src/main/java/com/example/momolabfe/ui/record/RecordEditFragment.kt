@@ -526,7 +526,10 @@ class RecordEditFragment : Fragment() {
         }
 
         viewModel.errorMessage.observe(viewLifecycleOwner) { errorMsg ->
+            if (errorMsg.isNullOrBlank()) return@observe
             Log.e("RECORD_EDIT_FRAGMENT", errorMsg.toString())
+
+            viewModel.clearError()
             binding.saveBtn.isEnabled = true
         }
     }
@@ -947,7 +950,7 @@ class RecordEditFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
         _binding = null
+        super.onDestroyView()
     }
 }

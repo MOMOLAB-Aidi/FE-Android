@@ -584,10 +584,10 @@ class ConsultFragment : Fragment() {
 
     override fun onDestroyView() {
         hideSummaryDialog()
-        super.onDestroyView()
         tts?.stop()
         chatAdapter.onTtsFinished()
         _binding = null
+        super.onDestroyView()
     }
 
     override fun onDestroy() {
