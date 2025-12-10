@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import com.example.momolabfe.R
 import com.example.momolabfe.databinding.FragmentStatsBinding
 import com.example.momolabfe.remote.stats.model.Last7DaysStats
@@ -33,7 +33,7 @@ class StatsFragment : Fragment() {
     private var _binding: FragmentStatsBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: StatsViewModel by activityViewModels()
+    private val viewModel: StatsViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -62,6 +62,7 @@ class StatsFragment : Fragment() {
         viewModel.errorMessage.observe(viewLifecycleOwner) { msg ->
             if (msg != null) {
                 Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+                viewModel.clearError()
             }
         }
     }
@@ -321,6 +322,7 @@ class StatsFragment : Fragment() {
     }
 
     override fun onDestroyView() {
+        viewModel.clearError()
         super.onDestroyView()
         _binding = null
     }

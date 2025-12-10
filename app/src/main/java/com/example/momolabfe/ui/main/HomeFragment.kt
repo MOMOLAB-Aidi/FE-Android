@@ -72,10 +72,14 @@ class HomeFragment : Fragment() {
         }
 
         binding.settingIv.setOnClickListener {
+            it.isEnabled = false
+
             parentFragmentManager.beginTransaction()
                 .replace(R.id.main_frm, SettingFragment())
                 .addToBackStack(null)
                 .commit()
+
+            it.postDelayed({ it.isEnabled = true }, 500)
         }
 
         binding.recordCv.setOnClickListener {
@@ -89,10 +93,14 @@ class HomeFragment : Fragment() {
         }
 
         binding.totalTv.setOnClickListener {
+            it.isEnabled = false
+
             parentFragmentManager.beginTransaction()
                 .replace(R.id.main_frm, RecordListFragment())
                 .addToBackStack(null)
                 .commit()
+
+            it.postDelayed({ it.isEnabled = true }, 500)
         }
 
         binding.tipRefreshIv.setOnClickListener {
@@ -237,7 +245,10 @@ class HomeFragment : Fragment() {
         }
 
         recordViewModel.errorMessage.observe(viewLifecycleOwner) { errorMsg ->
+            if (errorMsg.isNullOrBlank()) return@observe
             Log.e("HOME_FRAGMENT", errorMsg.toString())
+
+            recordViewModel.clearError()
         }
     }
 

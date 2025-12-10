@@ -67,11 +67,6 @@ class RecordOcrPreviewFragment : Fragment() {
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
     companion object {
         private const val ARG_IMAGE_URI = "imageUri"
 
@@ -80,5 +75,10 @@ class RecordOcrPreviewFragment : Fragment() {
                 putString(ARG_IMAGE_URI, imageUri)
             }
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

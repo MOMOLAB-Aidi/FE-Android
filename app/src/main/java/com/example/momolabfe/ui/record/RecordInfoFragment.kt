@@ -58,8 +58,10 @@ class RecordInfoFragment : Fragment() {
         setupObservers()
 
         binding.editBtn.setOnClickListener {
+            binding.editBtn.isEnabled = false
 
             if (recordId == -1L) {
+                binding.editBtn.isEnabled = true
                 return@setOnClickListener
             }
 
@@ -73,6 +75,8 @@ class RecordInfoFragment : Fragment() {
                 .replace(R.id.main_frm, fragment)
                 .addToBackStack(null)
                 .commit()
+
+            binding.editBtn.postDelayed({ binding.editBtn.isEnabled = true }, 500)
         }
 
         binding.deleteBtn.setOnClickListener {
@@ -162,7 +166,10 @@ class RecordInfoFragment : Fragment() {
         }
 
         viewModel.errorMessage.observe(viewLifecycleOwner) { errorMsg ->
+            if (errorMsg.isNullOrBlank()) return@observe
             Log.e("RECORD_INFO_FRAGMENT", errorMsg.toString())
+
+            viewModel.clearError()
         }
     }
 

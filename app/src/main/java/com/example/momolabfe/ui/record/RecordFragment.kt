@@ -32,6 +32,8 @@ class RecordFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.manualEntryCv.setOnClickListener {
+            it.isEnabled = false
+
             val fragment = RecordWrite01Fragment().apply {
                 arguments = Bundle().apply {
                     putBoolean("fromOcr", false)
@@ -41,9 +43,13 @@ class RecordFragment : Fragment() {
                 .replace(R.id.main_frm, fragment)
                 .addToBackStack(null)
                 .commit()
+
+            it.postDelayed({ it.isEnabled = true }, 500)
         }
 
         binding.cameraCv.setOnClickListener {
+            it.isEnabled = false
+
             val fragment = RecordOcrFragment().apply {
                 arguments = Bundle().apply {
                     putBoolean("fromOcr", true)
@@ -53,6 +59,8 @@ class RecordFragment : Fragment() {
                 .replace(R.id.main_frm, fragment)
                 .addToBackStack(null)
                 .commit()
+
+            it.postDelayed({ it.isEnabled = true }, 500)
         }
     }
 

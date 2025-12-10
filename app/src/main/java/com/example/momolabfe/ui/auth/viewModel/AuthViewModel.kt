@@ -100,4 +100,8 @@ class AuthViewModel @Inject constructor(
 
     // ID 불러오기
     fun getSavedPatientId(): LiveData<String> = prefRepository.getPatientId()
+
+    fun clearError() {
+        _errorMessage.value = null
+    }
 }

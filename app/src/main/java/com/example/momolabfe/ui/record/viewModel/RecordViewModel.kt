@@ -196,4 +196,8 @@ class RecordViewModel @Inject constructor(
         _ocrRecordResult.value = null
         _errorMessage.value = null
     }
+
+    fun clearError() {
+        _errorMessage.value = null
+    }
 }

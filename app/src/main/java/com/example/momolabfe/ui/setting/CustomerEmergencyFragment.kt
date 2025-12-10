@@ -57,6 +57,7 @@ class CustomerEmergencyFragment : Fragment() {
     }
 
     override fun onDestroyView() {
+        viewModel.clearError()
         super.onDestroyView()
         _binding = null
     }

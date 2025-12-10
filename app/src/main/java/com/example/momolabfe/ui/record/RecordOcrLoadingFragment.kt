@@ -200,6 +200,7 @@ class RecordOcrLoadingFragment : Fragment() {
 
                 Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
                 parentFragmentManager.popBackStack()
+                viewModel.clearError()
             }
         }
     }

@@ -475,7 +475,10 @@ class RecordWrite02Fragment : Fragment() {
             }
         }
         viewModel.errorMessage.observe(viewLifecycleOwner) { errorMsg ->
+            if (errorMsg.isNullOrBlank()) return@observe
             Log.e("RECORD_WRITE_02_FRAGMENT", errorMsg.toString())
+
+            viewModel.clearError()
             binding.saveBtn.isEnabled = true
         }
     }
