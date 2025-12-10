@@ -8,6 +8,9 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.bumptech.glide.Glide
 import com.example.momolabfe.R
 import com.example.momolabfe.databinding.FragmentRecordInfoBinding
@@ -17,6 +20,7 @@ import com.example.momolabfe.remote.record.model.RecordGetResponse
 import com.example.momolabfe.remote.record.model.Turbidity
 import com.example.momolabfe.ui.record.viewModel.RecordViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -70,6 +74,25 @@ class RecordInfoFragment : Fragment() {
                 .addToBackStack(null)
                 .commit()
         }
+
+        binding.deleteBtn.setOnClickListener {
+            if (recordId == -1L) {
+                Log.e("RECORD_INFO_FRAGMENT", "삭제할 recordId가 없습니다.")
+                return@setOnClickListener
+            }
+
+            // 이미 표시된 BottomSheet가 있는지 확인
+            if (parentFragmentManager.findFragmentByTag("BottomSheetRecordDelete") != null) {
+                return@setOnClickListener
+            }
+
+            val bottomSheet = BottomSheetRecordDeleteFragment().apply {
+                arguments = Bundle().apply {
+                    putLong("record_id", recordId)
+                }
+            }
+            bottomSheet.show(parentFragmentManager, "BottomSheetRecordDelete")
+        }
     }
 
     private fun setupObservers() {
@@ -122,6 +145,19 @@ class RecordInfoFragment : Fragment() {
                 } else {
                     binding.ocrImageTitleTv.visibility = View.GONE
                     binding.ocrImageIv.visibility = View.GONE
+                }
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.deleteSuccess.collect {
+                        Log.d("RECORD_INFO_FRAGMENT", "deleteSuccess 수신 - 기록 상세 화면 종료")
+
+                        parentFragmentManager.setFragmentResult("record_delete", Bundle())
+                        parentFragmentManager.popBackStack()
+                    }
                 }
             }
         }
