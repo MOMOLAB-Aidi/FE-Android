@@ -522,15 +522,15 @@ class RecordEditFragment : Fragment() {
                         parentFragmentManager.popBackStack()
                     }
                 }
+
+                launch {
+                    viewModel.errorEvent.collect { errorMsg ->
+                        Log.e("RECORD_EDIT_FRAGMENT", "기록 작업 실패: $errorMsg")
+                        showError("기록 저장에 실패했습니다. 다시 시도해주세요.")
+                        binding.saveBtn.isEnabled = true
+                    }
+                }
             }
-        }
-
-        viewModel.errorMessage.observe(viewLifecycleOwner) { errorMsg ->
-            if (errorMsg.isNullOrBlank()) return@observe
-            Log.e("RECORD_EDIT_FRAGMENT", errorMsg.toString())
-
-            viewModel.clearError()
-            binding.saveBtn.isEnabled = true
         }
     }
 

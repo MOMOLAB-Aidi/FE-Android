@@ -1,11 +1,15 @@
 package com.example.momolabfe.ui.consult
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.momolabfe.R
 import com.example.momolabfe.databinding.FragmentConsultHistoryDetailBinding
@@ -14,6 +18,7 @@ import com.example.momolabfe.ui.consult.data.ChatMessage
 import com.example.momolabfe.ui.consult.viewModel.ConsultViewModel
 import com.example.momolabfe.remote.consult.model.MessageRole
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.coroutines.launch
 
 class ConsultHistoryDetailFragment : Fragment() {
 
@@ -77,6 +82,14 @@ class ConsultHistoryDetailFragment : Fragment() {
                 )
             }
             chatAdapter.submitList(chatList)
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.errorEvent.collect { errorMsg ->
+                    Log.e("CONSULT_HISTORY_DETAIL_FRAGMENT", "상담 상세 조회 실패: $errorMsg")
+                }
+            }
         }
     }
 

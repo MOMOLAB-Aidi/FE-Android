@@ -1,13 +1,16 @@
 package com.example.momolabfe.ui.stats
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.example.momolabfe.R
 import com.example.momolabfe.databinding.FragmentStatsBinding
 import com.example.momolabfe.remote.stats.model.Last7DaysStats
@@ -24,10 +27,13 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import kotlin.math.roundToInt
 
+@AndroidEntryPoint
 class StatsFragment : Fragment() {
 
     private var _binding: FragmentStatsBinding? = null
@@ -59,10 +65,11 @@ class StatsFragment : Fragment() {
             bindStats(stats)
         }
 
-        viewModel.errorMessage.observe(viewLifecycleOwner) { msg ->
-            if (msg != null) {
-                Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
-                viewModel.clearError()
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.errorEvent.collect { errorMsg ->
+                    Log.e("STATS_FRAGMENT", "통계 조회 실패: $errorMsg")
+                }
             }
         }
     }
@@ -322,7 +329,6 @@ class StatsFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-        viewModel.clearError()
         super.onDestroyView()
         _binding = null
     }

@@ -2,6 +2,7 @@ package com.example.momolabfe.ui.record
 
 import android.animation.ObjectAnimator
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,7 +18,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import androidx.core.net.toUri
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.example.momolabfe.ui.record.data.LoadingStep
 import com.example.momolabfe.ui.record.viewModel.RecordViewModel
 import kotlinx.coroutines.isActive
@@ -192,15 +195,19 @@ class RecordOcrLoadingFragment : Fragment() {
             }
         }
 
-        viewModel.errorMessage.observe(viewLifecycleOwner) { msg ->
-            if (!msg.isNullOrBlank() && !navigated) {
-                isOcrFinished = true
-                navigated = true
-                loadingJob?.cancel()
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.errorEvent.collect { errorMsg ->
+                    if (!navigated) {
+                        isOcrFinished = true
+                        navigated = true
+                        loadingJob?.cancel()
 
-                Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
-                parentFragmentManager.popBackStack()
-                viewModel.clearError()
+                        Log.e("RECORD_OCR_LOADING_FRAGMENT", "OCR 인식 실패: $errorMsg")
+                        Toast.makeText(requireContext(), "OCR 인식에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                        parentFragmentManager.popBackStack()
+                    }
+                }
             }
         }
     }
@@ -231,6 +238,7 @@ class RecordOcrLoadingFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        loadingJob?.cancel()
         _binding = null
     }
 }

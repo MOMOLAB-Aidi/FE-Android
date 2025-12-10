@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -162,14 +163,14 @@ class RecordInfoFragment : Fragment() {
                         parentFragmentManager.popBackStack()
                     }
                 }
+
+                launch {
+                    viewModel.errorEvent.collect { errorMsg ->
+                        Log.e("RECORD_INFO_FRAGMENT", "기록 상세 작업 실패: $errorMsg")
+                        Toast.makeText(requireContext(), "기록을 불러오는데 실패했습니다.", Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
-        }
-
-        viewModel.errorMessage.observe(viewLifecycleOwner) { errorMsg ->
-            if (errorMsg.isNullOrBlank()) return@observe
-            Log.e("RECORD_INFO_FRAGMENT", errorMsg.toString())
-
-            viewModel.clearError()
         }
     }
 

@@ -151,12 +151,15 @@ class PasswordFragment : Fragment() {
                         parentFragmentManager.popBackStack()
                     }
                 }
-            }
-        }
 
-        viewModel.errorMessage.observe(viewLifecycleOwner) { errorMsg ->
-            Log.e("PASSWORD_FRAGMENT", errorMsg.toString())
-            binding.changeBtn.isEnabled = true
+                launch {
+                    viewModel.errorEvent.collect { errorMsg ->
+                        Log.e("PASSWORD_FRAGMENT", "비밀번호 재설정 실패: $errorMsg")
+                        showError("비밀번호 변경에 실패했습니다.")
+                        binding.changeBtn.isEnabled = true
+                    }
+                }
+            }
         }
     }
 
@@ -172,7 +175,6 @@ class PasswordFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-        viewModel.clearError()
         super.onDestroyView()
         _binding = null
     }

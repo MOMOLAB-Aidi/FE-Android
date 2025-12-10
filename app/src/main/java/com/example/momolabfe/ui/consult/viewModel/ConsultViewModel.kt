@@ -30,8 +30,8 @@ class ConsultViewModel @Inject constructor(
     private val consultRepository: ConsultRepository
 ) : ViewModel() {
 
-    private val _errorMessage = MutableLiveData<String?>()
-    val errorMessage: LiveData<String?> get() = _errorMessage
+    private val _errorEvent = MutableSharedFlow<String>(extraBufferCapacity = 1)
+    val errorEvent = _errorEvent.asSharedFlow()
 
     private val _startConsult = MutableLiveData<StartConsultResponse>()
     val startConsult: LiveData<StartConsultResponse> get() = _startConsult
@@ -91,7 +91,8 @@ class ConsultViewModel @Inject constructor(
                     _agentMessage.value = response.message
                 }
             }.onFailure { e ->
-                _errorMessage.value = e.localizedMessage ?: "상담 시작 세션 아이디 발급에 실패했습니다."
+                val message = e.localizedMessage ?: "상담 시작 세션 아이디 발급에 실패했습니다."
+                _errorEvent.tryEmit(message)
             }
         }
     }
@@ -163,7 +164,8 @@ class ConsultViewModel @Inject constructor(
                         updateAgentStreamingMessage(buffer)
                     }
             } catch (e: Exception) {
-                _errorMessage.value = e.localizedMessage ?: "에이전트 대화 중 오류가 발생했습니다."
+                val message = e.localizedMessage ?: "에이전트 대화 중 오류가 발생했습니다."
+                _errorEvent.tryEmit(message)
             } finally {
                 isStreaming = false
 
@@ -182,7 +184,8 @@ class ConsultViewModel @Inject constructor(
                 _endConsult.value = response
                 _endConsultSuccess.tryEmit(request.sessionId)
             }.onFailure { e ->
-                _errorMessage.value = e.localizedMessage ?: "상담 종료에 실패했습니다."
+                val message = e.localizedMessage ?: "상담 종료에 실패했습니다."
+                _errorEvent.tryEmit(message)
             }
         }
     }
@@ -194,7 +197,8 @@ class ConsultViewModel @Inject constructor(
             result.onSuccess { list ->
                 _history.value = list
             }.onFailure { e ->
-                _errorMessage.value = e.localizedMessage ?: "상담 기록을 불러오지 못했습니다."
+                val message = e.localizedMessage ?: "상담 기록을 불러오지 못했습니다."
+                _errorEvent.tryEmit(message)
             }
         }
     }
@@ -219,7 +223,8 @@ class ConsultViewModel @Inject constructor(
 
                 _messages.value = mapped
             }.onFailure { e ->
-                _errorMessage.value = e.localizedMessage ?: "특정 상담 기록 상세 조회에 실패했습니다."
+                val message = e.localizedMessage ?: "특정 상담 기록 상세 조회에 실패했습니다."
+                _errorEvent.tryEmit(message)
             }
         }
     }
@@ -235,7 +240,8 @@ class ConsultViewModel @Inject constructor(
 
                 _deleteSuccess.tryEmit(Unit)
             }.onFailure { e ->
-                _errorMessage.value = e.localizedMessage ?: "특정 세션 상담 기록 삭제에 실패했습니다."
+                val message = e.localizedMessage ?: "특정 세션 상담 기록 삭제에 실패했습니다."
+                _errorEvent.tryEmit(message)
             }
         }
     }
@@ -253,7 +259,8 @@ class ConsultViewModel @Inject constructor(
                     isSummarizing = false
                 )
             }.onFailure { e ->
-                _errorMessage.value = e.localizedMessage ?: "특정 상담 세션 요약에 실패했습니다."
+                val message = e.localizedMessage ?: "특정 상담 세션 요약에 실패했습니다."
+                _errorEvent.tryEmit(message)
 
                 // 실패해도 상태는 종료로 리셋
                 _summaryUiState.value = _summaryUiState.value.copy(
@@ -424,9 +431,5 @@ class ConsultViewModel @Inject constructor(
         _agentMessage.value = ""
         nextMessageId = 0L
         isStreaming = false
-    }
-
-    fun clearError() {
-        _errorMessage.value = null
     }
 }

@@ -10,7 +10,7 @@
         android:id="@+id/skip_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="40dp"
         android:text="건너뛰기"
         android:textSize="14sp"
         android:textColor="#A0A4B0"

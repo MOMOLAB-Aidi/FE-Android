@@ -422,14 +422,13 @@ class RecordListFragment : Fragment() {
                         renderExchanges(emptyList())
                     }
                 }
+
+                launch {
+                    viewModel.errorEvent.collect { errorMsg ->
+                        Log.e("RECORD_LIST_FRAGMENT", "기록 목록 작업 실패: $errorMsg")
+                    }
+                }
             }
-        }
-
-        viewModel.errorMessage.observe(viewLifecycleOwner) { errorMsg ->
-            if (errorMsg.isNullOrBlank()) return@observe
-            Log.e("RECORD_LIST_FRAGMENT", errorMsg.toString())
-
-            viewModel.clearError()
         }
     }
 

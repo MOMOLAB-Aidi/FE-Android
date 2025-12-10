@@ -2,18 +2,23 @@ package com.example.momolabfe.ui.consult
 
 import android.app.AlertDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.momolabfe.databinding.FragmentConsultHistoryBinding
 import com.example.momolabfe.ui.consult.adapter.ConsultHistoryAdapter
 import com.example.momolabfe.ui.consult.viewModel.ConsultViewModel
 import com.example.momolabfe.R
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.coroutines.launch
 
 class ConsultHistoryFragment : Fragment() {
 
@@ -79,13 +84,14 @@ class ConsultHistoryFragment : Fragment() {
         viewModel.summaryResult.observe(viewLifecycleOwner) { row ->
             if (row == null) return@observe
 
-            viewModel.applySummaryToHistory(row) // 기록 화면에서 재시도한 요약도 이걸로 반영
+            viewModel.applySummaryToHistory(row) // 기록 화면에서 재시도한 요약도 반영
         }
 
-        viewModel.errorMessage.observe(viewLifecycleOwner) { msg ->
-            msg?.let {
-                Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
-                viewModel.clearError()
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.errorEvent.collect { errorMsg ->
+                    Log.e("CONSULT_HISTORY_FRAGMENT", "상담 목록 조회 실패: $errorMsg")
+                }
             }
         }
     }
