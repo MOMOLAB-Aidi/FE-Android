@@ -254,6 +254,16 @@ class RecordListFragment : Fragment() {
             bottomSheet.show(parentFragmentManager, "BottomSheetRecordDelete")
         }
 
+        parentFragmentManager.setFragmentResultListener("record_delete", viewLifecycleOwner) { _, _ ->
+            Log.d("RECORD_LIST_FRAGMENT", "record_delete 결과 수신 - 캘린더/리스트 재조회")
+
+            val year = visibleMonth.year
+            val monthValue = visibleMonth.monthValue
+
+            viewModel.getCalendar(year, monthValue)
+            viewModel.getRecordList(year, monthValue)
+        }
+
         hideDetailViews()
     }
 
