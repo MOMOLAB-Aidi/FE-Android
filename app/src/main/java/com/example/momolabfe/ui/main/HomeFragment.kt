@@ -112,7 +112,7 @@ class HomeFragment : Fragment() {
             binding.completeContentTv.text = "${summary.exchangeCount} / 5회"
             binding.ufContentTv.text = String.format(Locale.KOREA, "%dg", summary.totalUf)
 
-            val isMismatch = summary.totalUf != summary.recordUfSum
+            val isMismatch = summary.hasUfMismatch
 
             val colorResId = if (isMismatch) R.color.red else R.color.secondary_text
             binding.ufContentTv.setTextColor(
