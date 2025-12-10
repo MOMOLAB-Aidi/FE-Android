@@ -133,6 +133,9 @@ class HomeFragment : Fragment() {
 
             val inflater = LayoutInflater.from(requireContext())
 
+            val normalColor = ContextCompat.getColor(requireContext(), R.color.secondary_text)
+            val errorColor = ContextCompat.getColor(requireContext(), R.color.red)
+
             itemList.forEach { item ->
                 val itemBinding = ItemRecentRecordBinding.inflate(inflater, container, false)
 
@@ -145,6 +148,33 @@ class HomeFragment : Fragment() {
                 itemBinding.totalUfTv.text = item.totalUf.let { uf ->
                     String.format(Locale.KOREA, "%dg", uf)
                 }
+
+                // 제수량 검증 로직
+                var sumUf = 0
+                var hasPerExchangeMismatch = false
+
+                item.exchanges.forEach { ex ->
+
+                    if (ex.uf != null) {
+                        sumUf += ex.uf
+                    }
+
+                    val calculatedUf =
+                        if (ex.drainVolume != null && ex.fillVolume != null) ex.drainVolume - ex.fillVolume else null
+
+                    if (ex.uf != null && calculatedUf != null && ex.uf != calculatedUf) {
+                        hasPerExchangeMismatch = true
+                    }
+                }
+
+                val hasTotalMismatch = (sumUf != item.totalUf)
+
+                val isMismatch = hasPerExchangeMismatch || hasTotalMismatch
+
+                // 하나라도 불일치하면 제수량 텍스트를 빨간색으로 표시
+                itemBinding.totalUfTv.setTextColor(
+                    if (isMismatch) errorColor else normalColor
+                )
 
                 val exchangeCount = item.exchanges.size
                 itemBinding.completeTv.text = "${exchangeCount}회차 완료"
