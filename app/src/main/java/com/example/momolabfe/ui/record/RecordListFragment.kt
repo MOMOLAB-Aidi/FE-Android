@@ -357,10 +357,10 @@ class RecordListFragment : Fragment() {
 
                 binding.weightValueTv.text = String.format(Locale.KOREA, "%.1fkg", recordItem.weight)
 
-                val bpText = "${recordItem.systolic}/${recordItem.diastolic}"
+                val bpText = "${recordItem.systolic}/${recordItem.diastolic}mmHg"
                 binding.bloodPressureValueTv.text = bpText
 
-                binding.fastingGlucoseValueTv.text = "${recordItem.fastingGlucose} mg/dL"
+                binding.fastingGlucoseValueTv.text = "${recordItem.fastingGlucose}mg/dL"
                 binding.totalUfValueTv.text = "${recordItem.totalUf}g"
                 binding.noteContentTv.text = recordItem.notes ?: ""
 
