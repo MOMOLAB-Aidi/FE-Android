@@ -200,6 +200,7 @@ class RecordOcrLoadingFragment : Fragment() {
 
                 Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
                 parentFragmentManager.popBackStack()
+                viewModel.clearError()
             }
         }
     }
@@ -229,7 +230,7 @@ class RecordOcrLoadingFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-        _binding = null
         super.onDestroyView()
+        _binding = null
     }
 }

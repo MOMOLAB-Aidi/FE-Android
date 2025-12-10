@@ -170,7 +170,7 @@ class OnboardingFragment : Fragment() {
         get() = (this * resources.displayMetrics.density).toInt()
 
     override fun onDestroyView() {
-        _binding = null
         super.onDestroyView()
+        _binding = null
     }
 }

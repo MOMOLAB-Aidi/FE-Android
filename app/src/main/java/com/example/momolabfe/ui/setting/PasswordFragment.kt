@@ -172,7 +172,8 @@ class PasswordFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-        _binding = null
+        viewModel.clearError()
         super.onDestroyView()
+        _binding = null
     }
 }

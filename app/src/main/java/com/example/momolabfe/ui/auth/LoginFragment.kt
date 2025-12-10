@@ -162,7 +162,7 @@ class LoginFragment : Fragment() {
 
     override fun onDestroyView() {
         viewModel.clearError()
-        _binding = null
         super.onDestroyView()
+        _binding = null
     }
 }
