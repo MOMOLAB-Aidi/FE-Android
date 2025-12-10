@@ -154,9 +154,13 @@ class PasswordFragment : Fragment() {
             }
         }
 
-        viewModel.errorMessage.observe(viewLifecycleOwner) { errorMsg ->
-            Log.e("PASSWORD_FRAGMENT", errorMsg.toString())
-            binding.changeBtn.isEnabled = true
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.errorEvent.collect { errorMsg ->
+                    Toast.makeText(requireContext(), errorMsg, Toast.LENGTH_SHORT).show()
+                    binding.changeBtn.isEnabled = true
+                }
+            }
         }
     }
 
@@ -172,7 +176,6 @@ class PasswordFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-        viewModel.clearError()
         super.onDestroyView()
         _binding = null
     }

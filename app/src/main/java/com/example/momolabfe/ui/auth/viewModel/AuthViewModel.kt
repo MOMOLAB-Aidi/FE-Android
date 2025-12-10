@@ -3,7 +3,6 @@ package com.example.momolabfe.ui.auth.viewModel
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.momolabfe.BuildConfig
@@ -30,8 +29,8 @@ class AuthViewModel @Inject constructor(
     @ApplicationContext private val appContext: Context
 ) : ViewModel() {
 
-    private val _errorMessage = MutableLiveData<String?>()
-    val errorMessage: LiveData<String?> get() = _errorMessage
+    private val _errorEvent = MutableSharedFlow<String>()
+    val errorEvent = _errorEvent.asSharedFlow()
 
     private val _loginSuccess = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
     val loginSuccess: SharedFlow<Unit> = _loginSuccess.asSharedFlow()
@@ -47,9 +46,9 @@ class AuthViewModel @Inject constructor(
                 registerFcmTokenAfterLogin()
 
                 _loginSuccess.tryEmit(Unit)
-                _errorMessage.value = null
             }.onFailure { e ->
-                _errorMessage.value = e.localizedMessage ?: "로그인에 실패했습니다."
+                val message = e.localizedMessage ?: "로그인에 실패했습니다."
+                _errorEvent.emit(message)
             }
         }
     }
@@ -100,8 +99,4 @@ class AuthViewModel @Inject constructor(
 
     // ID 불러오기
     fun getSavedPatientId(): LiveData<String> = prefRepository.getPatientId()
-
-    fun clearError() {
-        _errorMessage.value = null
-    }
 }

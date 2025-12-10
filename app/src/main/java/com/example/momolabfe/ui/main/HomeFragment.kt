@@ -5,10 +5,14 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.example.momolabfe.R
 import com.example.momolabfe.databinding.FragmentHomeBinding
 import com.example.momolabfe.databinding.ItemRecentRecordBinding
@@ -19,6 +23,7 @@ import com.example.momolabfe.ui.record.viewModel.RecordViewModel
 import com.example.momolabfe.ui.setting.SettingFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
 import java.util.Date
@@ -244,11 +249,12 @@ class HomeFragment : Fragment() {
             }
         }
 
-        recordViewModel.errorMessage.observe(viewLifecycleOwner) { errorMsg ->
-            if (errorMsg.isNullOrBlank()) return@observe
-            Log.e("HOME_FRAGMENT", errorMsg.toString())
-
-            recordViewModel.clearError()
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                recordViewModel.errorEvent.collect { errorMsg ->
+                    Toast.makeText(requireContext(), errorMsg, Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 
@@ -259,9 +265,11 @@ class HomeFragment : Fragment() {
             }
         }
 
-        educationViewModel.errorMessage.observe(viewLifecycleOwner) { message ->
-            message?.let {
-                Log.e("TodayTip", "오늘의 복막투석 관리 TIP 조회 실패: $it")
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                educationViewModel.errorEvent.collect { errorMsg ->
+                    Toast.makeText(requireContext(), errorMsg, Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }

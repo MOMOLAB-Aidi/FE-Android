@@ -525,12 +525,13 @@ class RecordEditFragment : Fragment() {
             }
         }
 
-        viewModel.errorMessage.observe(viewLifecycleOwner) { errorMsg ->
-            if (errorMsg.isNullOrBlank()) return@observe
-            Log.e("RECORD_EDIT_FRAGMENT", errorMsg.toString())
-
-            viewModel.clearError()
-            binding.saveBtn.isEnabled = true
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.errorEvent.collect { errorMsg ->
+                    Toast.makeText(requireContext(), errorMsg, Toast.LENGTH_SHORT).show()
+                    binding.saveBtn.isEnabled = true
+                }
+            }
         }
     }
 

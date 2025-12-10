@@ -95,17 +95,18 @@ class LoginFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            BottomSheetForgetPasswordFragment().show(parentFragmentManager, "BottomSheetForgetPassword")
+            BottomSheetForgetPasswordFragment().show(
+                parentFragmentManager,
+                "BottomSheetForgetPassword"
+            )
         }
 
         binding.idEt.addTextChangedListener {
             clearError()
-            viewModel.clearError()
         }
 
         binding.passwordEt.addTextChangedListener {
             clearError()
-            viewModel.clearError()
         }
     }
 
@@ -124,10 +125,12 @@ class LoginFragment : Fragment() {
             isPasswordVisible = !isPasswordVisible
 
             if (isPasswordVisible) { // 비밀번호 보이기
-                binding.passwordEt.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+                binding.passwordEt.inputType =
+                    InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
                 binding.passwordTil.setEndIconDrawable(R.drawable.ic_eye_opened_sv)
             } else { // 비밀번호 숨기기
-                binding.passwordEt.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+                binding.passwordEt.inputType =
+                    InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
                 binding.passwordTil.setEndIconDrawable(R.drawable.ic_eye_closed_sv)
             }
 
@@ -139,23 +142,25 @@ class LoginFragment : Fragment() {
     private fun observeLoginResult() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.loginSuccess.collectLatest {
-                    if (isNavigating) return@collectLatest
-                    isNavigating = true
+                launch {
+                    viewModel.loginSuccess.collectLatest {
+                        if (isNavigating) return@collectLatest
+                        isNavigating = true
 
-                    Log.d("Login", "로그인 성공!")
+                        Log.d("Login", "로그인 성공!")
 
-                    parentFragmentManager.beginTransaction()
-                        .replace(R.id.main_frm, HomeFragment())
-                        .commit()
+                        parentFragmentManager.beginTransaction()
+                            .replace(R.id.main_frm, HomeFragment())
+                            .commit()
+                    }
                 }
-            }
-        }
 
-        viewModel.errorMessage.observe(viewLifecycleOwner) { message ->
-            message?.let {
-                Log.e("Login", "로그인 실패: $it")
-                showError("아이디 또는 비밀번호가 일치하지 않습니다.")
+                launch {
+                    viewModel.errorEvent.collectLatest { message ->
+                        Log.e("Login", "로그인 실패: $message")
+                        showError("아이디 또는 비밀번호가 일치하지 않습니다.")
+                    }
+                }
             }
         }
     }
@@ -168,7 +173,6 @@ class LoginFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-        viewModel.clearError()
         super.onDestroyView()
         _binding = null
     }

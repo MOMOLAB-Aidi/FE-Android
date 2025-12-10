@@ -7,6 +7,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.momolabfe.remote.education.model.EducationResponse
 import com.example.momolabfe.remote.education.repository.EducationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -15,8 +17,8 @@ class EducationViewModel @Inject constructor(
     private val educationRepository: EducationRepository
 ) : ViewModel() {
 
-    private val _errorMessage = MutableLiveData<String?>()
-    val errorMessage: LiveData<String?> get() = _errorMessage
+    private val _errorEvent = MutableSharedFlow<String>()
+    val errorEvent = _errorEvent.asSharedFlow()
 
     private val _getTipResult = MutableLiveData<EducationResponse>()
     val getTipResult: LiveData<EducationResponse> get() = _getTipResult
@@ -28,7 +30,8 @@ class EducationViewModel @Inject constructor(
             result.onSuccess {
                 _getTipResult.value = it
             }.onFailure { e ->
-                _errorMessage.value = e.localizedMessage ?: "오늘의 복막투석 관리 TIP 조회에 실패했습니다."
+                val message = e.localizedMessage ?: "오늘의 복막투석 관리 TIP 조회에 실패했습니다."
+                _errorEvent.emit(message)
             }
         }
     }

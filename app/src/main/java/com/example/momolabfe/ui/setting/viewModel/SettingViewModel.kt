@@ -20,8 +20,8 @@ class SettingViewModel @Inject constructor(
     private val userRepository: UserRepository
 ) : ViewModel() {
 
-    private val _errorMessage = MutableLiveData<String?>()
-    val errorMessage: LiveData<String?> get() = _errorMessage
+    private val _errorEvent = MutableSharedFlow<String>()
+    val errorEvent = _errorEvent.asSharedFlow()
 
     private val _passwordSuccess = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
     val passwordSuccess: SharedFlow<Unit> = _passwordSuccess.asSharedFlow()
@@ -42,7 +42,8 @@ class SettingViewModel @Inject constructor(
             result.onSuccess {
                 _getPageResult.value = it
             }.onFailure { e ->
-                _errorMessage.value = e.localizedMessage ?: "마이페이지 조회에 실패했습니다."
+                val message = e.localizedMessage ?: "마이페이지 조회에 실패했습니다."
+                _errorEvent.emit(message)
             }
         }
     }
@@ -54,7 +55,8 @@ class SettingViewModel @Inject constructor(
             result.onSuccess {
                 _passwordSuccess.tryEmit(Unit)
             }.onFailure { e ->
-                _errorMessage.value = e.localizedMessage ?: "비밀번호 재설정에 실패했습니다."
+                val message = e.localizedMessage ?: "비밀번호 재설정에 실패했습니다."
+                _errorEvent.emit(message)
             }
         }
     }
@@ -66,12 +68,9 @@ class SettingViewModel @Inject constructor(
             result.onSuccess {
                 _getHospitalResult.value = it
             }.onFailure { e ->
-                _errorMessage.value = e.localizedMessage ?: "자주 가는 병원 조회에 실패했습니다."
+                val message = e.localizedMessage ?: "자주 가는 병원 조회에 실패했습니다."
+                _errorEvent.emit(message)
             }
         }
-    }
-
-    fun clearError() {
-        _errorMessage.value = null
     }
 }

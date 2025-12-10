@@ -25,8 +25,8 @@ class RecordViewModel @Inject constructor(
     private val recordRepository: RecordRepository
 ) : ViewModel() {
 
-    private val _errorMessage = MutableLiveData<String?>()
-    val errorMessage: LiveData<String?> get() = _errorMessage
+    private val _errorEvent = MutableSharedFlow<String>()
+    val errorEvent = _errorEvent.asSharedFlow()
 
     // 교환 시간 (24시간 형식, 서버 전송용)
     private val _exchangeTime = MutableLiveData<String>()
@@ -73,7 +73,8 @@ class RecordViewModel @Inject constructor(
             result.onSuccess { calendarList ->
                 _calendarData.value = calendarList
             }.onFailure { e ->
-                _errorMessage.value = e.localizedMessage ?: "캘린더 조회에 실패했습니다."
+                val message = e.localizedMessage ?: "캘린더 조회에 실패했습니다."
+                _errorEvent.emit(message)
             }
         }
     }
@@ -85,7 +86,8 @@ class RecordViewModel @Inject constructor(
             result.onSuccess {
                 _recordSuccess.tryEmit(Unit)
             }.onFailure { e ->
-                _errorMessage.value = e.localizedMessage ?: "기록 작성에 실패했습니다."
+                val message = e.localizedMessage ?: "기록 작성에 실패했습니다."
+                _errorEvent.emit(message)
             }
         }
     }
@@ -97,7 +99,8 @@ class RecordViewModel @Inject constructor(
             result.onSuccess {
                 _recordSuccess.tryEmit(Unit)
             }.onFailure { e ->
-                _errorMessage.value = e.localizedMessage ?: "기록 수정에 실패했습니다."
+                val message = e.localizedMessage ?: "기록 수정에 실패했습니다."
+                _errorEvent.emit(message)
             }
         }
     }
@@ -109,7 +112,8 @@ class RecordViewModel @Inject constructor(
             result.onSuccess { list ->
                 _recordlistItems.value = list
             }.onFailure { e ->
-                _errorMessage.value = e.localizedMessage ?: "전체 기록 조회에 실패했습니다."
+                val message = e.localizedMessage ?: "전체 기록 조회에 실패했습니다."
+                _errorEvent.emit(message)
             }
         }
     }
@@ -121,7 +125,8 @@ class RecordViewModel @Inject constructor(
             result.onSuccess {
                 _record.value = it
             }.onFailure { e ->
-                _errorMessage.value = e.localizedMessage ?: "특정 기록 조회에 실패했습니다."
+                val message = e.localizedMessage ?: "특정 기록 조회에 실패했습니다."
+                _errorEvent.emit(message)
             }
         }
     }
@@ -133,7 +138,8 @@ class RecordViewModel @Inject constructor(
             result.onSuccess { list ->
                 _recordlistItems.value = list
             }.onFailure { e ->
-                _errorMessage.value = e.localizedMessage ?: "최근 3개 기록 조회에 실패했습니다."
+                val message = e.localizedMessage ?: "최근 3개 기록 조회에 실패했습니다."
+                _errorEvent.emit(message)
             }
         }
     }
@@ -145,7 +151,8 @@ class RecordViewModel @Inject constructor(
             result.onSuccess { weeklyAvgData ->
                 _weeklyAverageData.value = weeklyAvgData
             }.onFailure { e ->
-                _errorMessage.value = e.localizedMessage ?: "주간 평균 기록 조회에 실패했습니다."
+                val message = e.localizedMessage ?: "주간 평균 기록 조회에 실패했습니다."
+                _errorEvent.emit(message)
             }
         }
     }
@@ -157,7 +164,8 @@ class RecordViewModel @Inject constructor(
             result.onSuccess { summary ->
                 _todayExchangeSummary.value = summary
             }.onFailure { e ->
-                _errorMessage.value = e.localizedMessage ?: "오늘의 요약 조회에 실패했습니다."
+                val message = e.localizedMessage ?: "오늘의 요약 조회에 실패했습니다."
+                _errorEvent.emit(message)
             }
         }
     }
@@ -169,7 +177,8 @@ class RecordViewModel @Inject constructor(
             result.onSuccess {
                 _deleteSuccess.tryEmit(Unit)
             }.onFailure { e ->
-                _errorMessage.value = e.localizedMessage ?: "특정 기록 삭제에 실패했습니다."
+                val message = e.localizedMessage ?: "특정 기록 삭제에 실패했습니다."
+                _errorEvent.emit(message)
             }
         }
     }
@@ -183,7 +192,8 @@ class RecordViewModel @Inject constructor(
             result.onSuccess {
                 _ocrRecordResult.value = it
             }.onFailure { e ->
-                _errorMessage.value = e.localizedMessage ?: "OCR 텍스트 추출에 실패했습니다."
+                val message = e.localizedMessage ?: "OCR 텍스트 추출에 실패했습니다."
+                _errorEvent.emit(message)
             }
         }
     }
@@ -194,10 +204,5 @@ class RecordViewModel @Inject constructor(
 
     fun clearOcr() {
         _ocrRecordResult.value = null
-        _errorMessage.value = null
-    }
-
-    fun clearError() {
-        _errorMessage.value = null
     }
 }

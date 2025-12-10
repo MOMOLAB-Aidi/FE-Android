@@ -6,11 +6,16 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.example.momolabfe.databinding.FragmentCustomerEmergencyBinding
 import com.example.momolabfe.ui.setting.viewModel.SettingViewModel
+import kotlinx.coroutines.launch
 
 class CustomerEmergencyFragment : Fragment() {
 
@@ -49,15 +54,16 @@ class CustomerEmergencyFragment : Fragment() {
             }
         }
 
-        viewModel.errorMessage.observe(viewLifecycleOwner) { message ->
-            message?.let {
-                Log.e("HospitalInfo", "자주 가는 병원 조회 실패: $it")
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.errorEvent.collect { errorMsg ->
+                    Toast.makeText(requireContext(), errorMsg, Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }
 
     override fun onDestroyView() {
-        viewModel.clearError()
         super.onDestroyView()
         _binding = null
     }

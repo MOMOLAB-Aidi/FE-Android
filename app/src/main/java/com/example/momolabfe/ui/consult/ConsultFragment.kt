@@ -91,7 +91,6 @@ class ConsultFragment : Fragment() {
 
         currentSessionId = null // 이전 세션 ID 무효화
         viewModel.resetMessages() // 말풍선 / 에이전트 버퍼 모두 초기화
-        viewModel.clearError()
 
         setupRecyclerView()
         setupObservers()
@@ -386,20 +385,22 @@ class ConsultFragment : Fragment() {
             }
         }
 
-        viewModel.errorMessage.observe(viewLifecycleOwner) { errorMsg ->
-            if (errorMsg != null) {
-                hideSummaryDialog()
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.errorEvent.collect { errorMsg ->
+                    hideSummaryDialog()
 
-                val msg = if (waitingSummaryForSessionId != null && navigateToHistoryOnEnd) {
-                    waitingSummaryForSessionId = null
-                    navigateToHistoryOnEnd = false
-                    getString(R.string.summary_error_message)
-                } else {
-                    errorMsg
+                    val msg = if (waitingSummaryForSessionId != null && navigateToHistoryOnEnd) {
+                        // 요약 도중 에러 발생
+                        waitingSummaryForSessionId = null
+                        navigateToHistoryOnEnd = false
+                        getString(R.string.summary_error_message)
+                    } else {
+                        errorMsg
+                    }
+
+                    Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
                 }
-
-                Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
-                viewModel.clearError()
             }
         }
     }
