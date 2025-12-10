@@ -22,3 +22,14 @@ data class BloodPressureSummary (
     @SerializedName("min_systolic") val minSystolic: Int?,
     @SerializedName("min_diastolic") val minDiastolic: Int?
 )
+
+data class Last7DaysAverageData (
+    @SerializedName("weight_avg") val weightAvg: Float?,
+    @SerializedName("total_uf_avg") val totalUfAvg: Float?
+)
+
+data class Last7DaysAverageResponse (
+    @SerializedName("start_date") val startDate: LocalDate,
+    @SerializedName("end_date") val endDate: LocalDate,
+    @SerializedName("data") val data: Last7DaysAverageData
+)

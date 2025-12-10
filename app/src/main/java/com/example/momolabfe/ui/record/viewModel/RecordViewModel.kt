@@ -11,7 +11,6 @@ import com.example.momolabfe.remote.record.model.RecordGetResponse
 import com.example.momolabfe.remote.record.model.RecordOcrResponse
 import com.example.momolabfe.remote.record.model.RecordUpdateRequest
 import com.example.momolabfe.remote.record.model.TodayExchangeSummary
-import com.example.momolabfe.remote.record.model.WeeklyAverageResponse
 import com.example.momolabfe.remote.record.repository.RecordRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -43,9 +42,6 @@ class RecordViewModel @Inject constructor(
 
     private val _recordlistItems = MutableLiveData<List<RecordGetResponse>>()
     val recordlistItems: LiveData<List<RecordGetResponse>> get() = _recordlistItems
-
-    private val _weeklyAverageData = MutableLiveData<WeeklyAverageResponse?>()
-    val weeklyAverageData: LiveData<WeeklyAverageResponse?> = _weeklyAverageData
 
     private val _ocrRecordResult = MutableLiveData<RecordOcrResponse?>()
     val ocrRecordResult: LiveData<RecordOcrResponse?> get() = _ocrRecordResult
@@ -139,19 +135,6 @@ class RecordViewModel @Inject constructor(
                 _recordlistItems.value = list
             }.onFailure { e ->
                 val message = e.localizedMessage ?: "최근 3개 기록 조회에 실패했습니다."
-                _errorEvent.tryEmit(message)
-            }
-        }
-    }
-
-    // 주간 평균 기록 조회
-    fun getWeeklyAvgRecords() {
-        viewModelScope.launch {
-            val result = recordRepository.getWeeklyAvgRecords(null)
-            result.onSuccess { weeklyAvgData ->
-                _weeklyAverageData.value = weeklyAvgData
-            }.onFailure { e ->
-                val message = e.localizedMessage ?: "주간 평균 기록 조회에 실패했습니다."
                 _errorEvent.tryEmit(message)
             }
         }

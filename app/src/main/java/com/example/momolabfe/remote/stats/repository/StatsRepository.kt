@@ -1,5 +1,6 @@
 package com.example.momolabfe.remote.stats.repository
 
+import com.example.momolabfe.remote.stats.model.Last7DaysAverageResponse
 import com.example.momolabfe.remote.stats.model.Last7DaysStats
 import com.example.momolabfe.remote.stats.service.StatsService
 import com.example.momolabfe.utils.ApiException
@@ -15,6 +16,14 @@ class StatsRepository @Inject constructor(
         val response = statsService.getLast7Days()
         if (!response.isSuccessful) {
             throw ApiException(response.code(), "최근 7일간의 통계 조회 실패: HTTP ${response.code()}")
+        }
+        response.body() ?: throw ApiException(response.code(), "빈 본문")
+    }
+
+    suspend fun getLast7DaysAverage(): Result<Last7DaysAverageResponse> = runCatching {
+        val response = statsService.getLast7DaysAverage()
+        if (!response.isSuccessful) {
+            throw ApiException(response.code(), "최근 7일간의 평균 통계 조회 실패: HTTP ${response.code()}")
         }
         response.body() ?: throw ApiException(response.code(), "빈 본문")
     }
