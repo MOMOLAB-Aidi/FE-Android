@@ -459,7 +459,7 @@ class RecordWrite02Fragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
-                    viewModel.recordSuccess.collectLatest {
+                    viewModel.recordSuccess.collect {
                         // 기록 저장 성공 시에만 OCR 상태 정리
                         viewModel.clearOcr()
 

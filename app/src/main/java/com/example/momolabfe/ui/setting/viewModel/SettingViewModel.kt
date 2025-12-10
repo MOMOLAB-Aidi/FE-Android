@@ -21,7 +21,7 @@ class SettingViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _errorEvent = MutableSharedFlow<String>(extraBufferCapacity = 1)
-    val errorEvent = _errorEvent.asSharedFlow()
+    val errorEvent: SharedFlow<String> = _errorEvent.asSharedFlow()
 
     private val _passwordSuccess = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
     val passwordSuccess: SharedFlow<Unit> = _passwordSuccess.asSharedFlow()
