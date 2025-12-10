@@ -5,7 +5,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
@@ -135,7 +134,7 @@ class SettingFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.errorEvent.collect { errorMsg ->
-                    Toast.makeText(requireContext(), errorMsg, Toast.LENGTH_SHORT).show()
+                    Log.e("SETTING_FRAGMENT", "환자 정보 실패: $errorMsg")
                 }
             }
         }

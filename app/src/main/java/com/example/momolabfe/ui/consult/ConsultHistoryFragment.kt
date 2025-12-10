@@ -2,6 +2,7 @@ package com.example.momolabfe.ui.consult
 
 import android.app.AlertDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -89,7 +90,7 @@ class ConsultHistoryFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.errorEvent.collect { errorMsg ->
-                    Toast.makeText(requireContext(), errorMsg, Toast.LENGTH_SHORT).show()
+                    Log.e("CONSULT_HISTORY_FRAGMENT", "상담 목록 조회 실패: $errorMsg")
                 }
             }
         }

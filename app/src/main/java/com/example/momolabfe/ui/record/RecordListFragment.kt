@@ -11,7 +11,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -429,7 +428,7 @@ class RecordListFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.errorEvent.collect { errorMsg ->
-                    Toast.makeText(requireContext(), errorMsg, Toast.LENGTH_SHORT).show()
+                    Log.e("RECORD_LIST_FRAGMENT", "기록 목록 작업 실패: $errorMsg")
                 }
             }
         }

@@ -478,7 +478,7 @@ class RecordWrite02Fragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.errorEvent.collect { errorMsg ->
-                    Toast.makeText(requireContext(), errorMsg, Toast.LENGTH_SHORT).show()
+                    Log.e("RECORD_WRITE_FRAGMENT", "기록 작성 실패: $errorMsg")
                     binding.saveBtn.isEnabled = true
                 }
             }

@@ -157,7 +157,7 @@ class PasswordFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.errorEvent.collect { errorMsg ->
-                    Toast.makeText(requireContext(), errorMsg, Toast.LENGTH_SHORT).show()
+                    Log.e("PASSWORD_FRAGMENT", "비밀번호 재설정 실패: $errorMsg")
                     binding.changeBtn.isEnabled = true
                 }
             }

@@ -528,7 +528,7 @@ class RecordEditFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.errorEvent.collect { errorMsg ->
-                    Toast.makeText(requireContext(), errorMsg, Toast.LENGTH_SHORT).show()
+                    Log.e("RECORD_EDIT_FRAGMENT", "기록 작업 실패: $errorMsg")
                     binding.saveBtn.isEnabled = true
                 }
             }

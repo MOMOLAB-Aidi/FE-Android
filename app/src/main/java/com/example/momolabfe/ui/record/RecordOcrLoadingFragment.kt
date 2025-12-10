@@ -2,6 +2,7 @@ package com.example.momolabfe.ui.record
 
 import android.animation.ObjectAnimator
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -196,13 +197,13 @@ class RecordOcrLoadingFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.errorEvent.collect { msg ->
+                viewModel.errorEvent.collect { errorMsg ->
                     if (!navigated) {
                         isOcrFinished = true
                         navigated = true
                         loadingJob?.cancel()
 
-                        Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+                        Log.e("RECORD_OCR_LOADING_FRAGMENT", "OCR 인식 실패: $errorMsg")
                         parentFragmentManager.popBackStack()
                     }
                 }

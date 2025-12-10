@@ -399,7 +399,7 @@ class ConsultFragment : Fragment() {
                         errorMsg
                     }
 
-                    Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+                    Log.e("CONSULT_FRAGMENT", "상담 요약 실패: $msg")
                 }
             }
         }
