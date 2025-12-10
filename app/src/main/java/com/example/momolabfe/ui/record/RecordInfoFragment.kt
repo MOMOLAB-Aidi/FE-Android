@@ -59,7 +59,6 @@ class RecordInfoFragment : Fragment() {
         setupObservers()
 
         binding.editBtn.setOnClickListener {
-            binding.editBtn.isEnabled = false
 
             if (recordId == -1L) {
                 binding.editBtn.isEnabled = true
@@ -76,8 +75,6 @@ class RecordInfoFragment : Fragment() {
                 .replace(R.id.main_frm, fragment)
                 .addToBackStack(null)
                 .commit()
-
-            binding.editBtn.postDelayed({ binding.editBtn.isEnabled = true }, 500)
         }
 
         binding.deleteBtn.setOnClickListener {
