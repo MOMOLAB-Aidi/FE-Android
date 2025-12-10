@@ -71,6 +71,8 @@ class RecordWrite01Fragment : Fragment() {
         arguments?.getBoolean("fromOcr", false) ?: false
     }
 
+    private lateinit var backCallback: OnBackPressedCallback // 콜백 변수
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -90,14 +92,13 @@ class RecordWrite01Fragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        requireActivity().onBackPressedDispatcher.addCallback(
-            this,
-            object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    showBackConfirmDialog()
-                }
+        backCallback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                showBackConfirmDialog()
             }
-        )
+        }
+
+        requireActivity().onBackPressedDispatcher.addCallback(this, backCallback)
     }
 
     private fun showBackConfirmDialog() {
@@ -110,6 +111,8 @@ class RecordWrite01Fragment : Fragment() {
             }
             .setPositiveButton("예") { dialog, _ ->
                 dialog.dismiss()
+                backCallback.isEnabled = false
+
                 viewModel.clearOcr()
                 parentFragmentManager.popBackStack()
             }
